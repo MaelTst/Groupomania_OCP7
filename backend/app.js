@@ -4,21 +4,12 @@ const userRoutes = require('./routes/user');
 const postRoutes = require('./routes/post')
 const path = require('path');
 const helmet = require("helmet");
-const { Sequelize } = require('sequelize');
+const db = require("./models");
 require('dotenv').config();
 const app = express();
 
-// Test connexion a la base de données
-const sequelize = new Sequelize(`postgres://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_HOST}/${process.env.DB_NAME}`)
-async function test() { 
-  try {
-    await sequelize.authenticate();
-    console.log('Connection has been established successfully.');
-  } catch (error) {
-    console.error('Unable to connect to the database:', error);
-  }
-}
-test();
+// Synchronisation de la base de données
+db.sequelize.sync();
 
 // Attribution des headers aux réponses du serveur
 app.use((req, res, next) => {

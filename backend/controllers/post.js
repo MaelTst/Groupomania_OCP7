@@ -1,19 +1,18 @@
-const Post = require('../models/post');
-const User = require('../models/user');
+const db = require('../models');
 const fs = require('fs');
 
 // Controlleur pour la route POST /api/posts/ - Création d'un post
 exports.createPost = (req, res, next) => {
     let imgUrl = req.file ? req.file.filename : null
-    User.findOne({
+    db.users.findOne({
         attributes: ["id"],
         where: { userId: req.token.userId }
     })
         .then(user => {
-            Post.create({
+            db.posts.create({
                 content: req.body.content,
                 imgUrl: imgUrl,
-                UserId: user.id
+                userId: user.id
             })
                 .then(() => res.status(201).json({ message: "Post créé" }))
                 .catch(error => res.status(400).json({ message: error }));
@@ -23,15 +22,32 @@ exports.createPost = (req, res, next) => {
 
 // Controlleur pour la route GET /api/posts/ - Affichage de tous les posts
 exports.getAll = (req, res, next) => {
-    Post.findAll()
+    db.posts.findAll({
+        include: [
+            {
+                model: db.users
+            },
+            {
+                model: db.comments,
+                include: [{ model: db.users }]
+            }]
+    })
         .then(posts => res.status(200).json(posts))
         .catch(error => res.status(400).json({ error }));
 }
 
 // Controlleur pour la route GET /api/posts/user/:id - Affichage des posts d'un utilisateurs
 exports.getUserPost = (req, res, next) => {
-    Post.findAll({
-        where: { UserId: req.params.id }
+    db.posts.findAll({
+        where: { userId: req.params.id },
+        include: [
+            {
+                model: db.users
+            },
+            {
+                model: db.comments,
+                include: [{ model: db.users }]
+            }]
     })
         .then(posts => res.status(200).json(posts))
         .catch(error => res.status(404).json({ error }))
@@ -39,14 +55,14 @@ exports.getUserPost = (req, res, next) => {
 
 // Controlleur pour la route PUT /api/posts/:id - Modification d'un post
 exports.updatePost = (req, res, next) => {
-    Post.findOne({
+    db.posts.findOne({
         where: { id: req.params.id },
-        include: User
+        include: db.users
     })
         .then(post => {
-            if (post.User.userId === req.token.userId) {
+            if (post.user.userId === req.token.userId) {
                 let imgUrl = req.file ? req.file.filename : post.imgUrl
-                Post.update({
+                db.posts.update({
                     content: req.body.content,
                     imgUrl: imgUrl
                 }, {
@@ -65,14 +81,14 @@ exports.updatePost = (req, res, next) => {
 
 // Controlleur pour la route DELETE /api/posts/:id - Suppression d'un post
 exports.deletePost = (req, res, next) => {
-    Post.findOne({
+    db.posts.findOne({
         where: { id: req.params.id },
-        include: User
+        include: db.users
     })
         .then(post => {
-            if (post.User.userId === req.token.userId) {
+            if (post.user.userId === req.token.userId) {
                 if (post.imgUrl) { fs.unlink(`images/${post.imgUrl}`) }
-                Post.destroy({
+                db.posts.destroy({
                     where: {
                         id: post.id
                     }
@@ -91,6 +107,71 @@ exports.deletePost = (req, res, next) => {
 
 
 
+
+// COMMENTAIRES
+// Controlleur pour la route POST /api/posts/:id/comment - Création d'un commentaire
+exports.createComment = (req, res, next) => {
+    db.users.findOne({
+        attributes: ["id"],
+        where: { userId: req.token.userId }
+    })
+        .then(user => {
+            db.comments.create({
+                content: req.body.content,
+                userId: user.id,
+                postId: req.params.id
+            })
+                .then(() => res.status(201).json({ message: "Commentaire créé" }))
+                .catch(error => res.status(400).json({ message: error }));
+        })
+        .catch(error => res.status(404).json({ error }));
+}
+
+// Controlleur pour la route DELETE /api/posts/:id/comment/:commentId - Suppression d'un commentaire
+exports.deleteComment = (req, res, next) => {
+    db.comments.findOne({
+        where: { id: req.params.commentId },
+        include: db.users
+    })
+        .then(comment => {
+            if (comment.user.userId === req.token.userId) {
+                db.comments.destroy({
+                    where: {
+                        id: comment.id
+                    }
+                })
+                    .then(() => res.status(200).json({ message: `Le commentaire a été supprimé` }))
+                    .catch(error => res.status(404).json({ error }));
+            } else {
+                res.status(401).json({ error: "Vous n'êtes pas autorisé à supprimer ce commentaire" })
+            }
+        })
+        .catch(error => res.status(404).json({ error }));
+}
+
+// Controlleur pour la route PUT /api/posts/:id - Modification d'un post
+exports.updateComment = (req, res, next) => {
+    db.comments.findOne({
+        where: { id: req.params.commentId },
+        include: db.users
+    })
+        .then(comment => {
+            if (comment.user.userId === req.token.userId) {
+                db.comments.update({
+                    content: req.body.content
+                }, {
+                    where: {
+                        id: comment.id
+                    }
+                })
+                    .then(() => res.status(200).json({ message: "Commentaire modifié !" }))
+                    .catch(error => res.status(400).json({ error }));
+            } else {
+                res.status(401).json({ error: "Vous n'êtes pas autorisé à modifier ce commentaire" })
+            }
+        })
+        .catch(error => res.status(400).json({ error }));
+}
 
 
 

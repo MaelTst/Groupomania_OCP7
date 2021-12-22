@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-    const Post = sequelize.define("post", {
+    const Comment = sequelize.define("comment", {
         content: {
             type: Sequelize.TEXT,
             allowNull: false,
@@ -8,11 +8,8 @@ module.exports = (sequelize, Sequelize) => {
                 len: [6,30],
                 notEmpty: true
             }
-        },
-        imgUrl: {
-            type: Sequelize.STRING
         }
     });
   
-    return Post;
+    return Comment;
   };

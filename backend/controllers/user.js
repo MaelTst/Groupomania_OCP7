@@ -1,4 +1,4 @@
-const User = require('../models/user');
+const db = require("../models");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 exports.signup = (req, res, next) => {
     bcrypt.hash(req.body.password, 10)
         .then(hash => {
-            User.create({
+            db.users.create({
                 email: req.body.email,
                 password: hash,
                 nickname: req.body.nickname
@@ -20,7 +20,7 @@ exports.signup = (req, res, next) => {
 
 // Controlleur pour la route POST /api/user/auth/login - Connexion d'un utilisateur
 exports.login = (req, res, next) => {
-    User.findOne({ where: { email: req.body.email } })
+    db.users.findOne({ where: { email: req.body.email } })
         .then(user => {
             if (!user) {
                 return res.status(401).json({ message: "Utilisateur non trouvé" });
@@ -62,7 +62,7 @@ exports.logout = (req, res, next) => {
 
 // Controlleur pour la route GET /api/user/ - Affichage de tous les utilisateurs
 exports.getAll = (req, res, next) => {
-    User.findAll({
+    db.users.findAll({
         attributes: ['nickname', 'imgUrl', 'id', 'loggedIn']
     })
         .then(users => res.status(200).json(users))
@@ -71,7 +71,7 @@ exports.getAll = (req, res, next) => {
 
 // Controlleur pour la route GET /api/user/:id - Affichage d'un utilisateur
 exports.getOne = (req, res, next) => {
-    User.findByPk(req.params.id, {
+    db.users.findByPk(req.params.id, {
         attributes: ['nickname', 'imgUrl', 'id', 'loggedIn']
     })
         .then(user => res.status(200).json(user))
@@ -80,11 +80,11 @@ exports.getOne = (req, res, next) => {
 
 // Controlleur pour la route PUT /api/user/:id - Modification d'un utilisateur
 exports.updateUser = (req, res, next) => {
-    User.findByPk(req.params.id)
+    db.users.findByPk(req.params.id)
         .then(user => {
             if (user.userId === req.token.userId) {
                 let imgUrl = req.file ? req.file.filename : user.imgUrl
-                User.update({
+                db.users.update({
                     nickname: req.body.nickname,
                     email: req.body.email,
                     imgUrl: imgUrl
@@ -104,11 +104,11 @@ exports.updateUser = (req, res, next) => {
 
 // Controlleur pour la route DELETE /api/user/:id - Suppression d'un utilisateur
 exports.deleteUser = (req, res, next) => {
-    User.findByPk(req.params.id)
+    db.users.findByPk(req.params.id)
         .then(user => {
             if (user.userId === req.token.userId) {
                 //fs.unlink(`images/${user.imgUrl}`, () => {
-                User.destroy({
+                db.users.destroy({
                     where: {
                         id: req.params.id
                     }
