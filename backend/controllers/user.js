@@ -23,12 +23,12 @@ exports.login = (req, res, next) => {
     db.users.findOne({ where: { email: req.body.email } })
         .then(user => {
             if (!user) {
-                return res.status(401).json({ message: "Utilisateur non trouvé" });
+                return res.status(401).json({ message: "Cet utilisateur n'existe pas" });
             }
             bcrypt.compare(req.body.password, user.password)
                 .then(valid => {
                     if (!valid) {
-                        return res.status(401).json({ message: "Mot de passe incorrect" });
+                        return res.status(401).json({ message: "Votre mot de passe est incorrect" });
                     }
                     let token = jwt.sign(
                         { userId: user.userId },
@@ -41,7 +41,7 @@ exports.login = (req, res, next) => {
                             httpOnly: true,
                             expires: new Date(Date.now() + 8 * 3600000)
                         })
-                        .redirect(301, '/home')
+                        .status(200).json({ message: "Connecté !" });
 
                 })
                 .catch(error => res.status(500).json({ error }))
@@ -63,7 +63,7 @@ exports.logout = (req, res, next) => {
 // Controlleur pour la route GET /api/user/ - Affichage de tous les utilisateurs
 exports.getAll = (req, res, next) => {
     db.users.findAll({
-        attributes: ['nickname', 'imgUrl', 'id', 'loggedIn']
+        attributes: ['nickname', 'imgUrl', 'id', 'loggedIn', 'isAdmin']
     })
         .then(users => res.status(200).json(users))
         .catch(error => res.status(400).json({ error }));
@@ -72,7 +72,7 @@ exports.getAll = (req, res, next) => {
 // Controlleur pour la route GET /api/user/:id - Affichage d'un utilisateur
 exports.getOne = (req, res, next) => {
     db.users.findByPk(req.params.id, {
-        attributes: ['nickname', 'imgUrl', 'id', 'loggedIn']
+        attributes: ['nickname', 'imgUrl', 'id', 'loggedIn', 'isAdmin']
     })
         .then(user => res.status(200).json(user))
         .catch(error => res.status(404).json({ error }))

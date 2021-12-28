@@ -20,7 +20,7 @@ exports.createPost = (req, res, next) => {
         .catch(error => res.status(404).json({ error }));
 }
 
-// Controlleur pour la route GET /api/posts/ - Affichage de tous les posts
+// Controlleur pour la route GET /api/posts/ - Affichage de tous les posts et commentaires associés
 exports.getAll = (req, res, next) => {
     db.posts.findAll({
         include: [
@@ -149,7 +149,7 @@ exports.deleteComment = (req, res, next) => {
         .catch(error => res.status(404).json({ error }));
 }
 
-// Controlleur pour la route PUT /api/posts/:id - Modification d'un post
+// Controlleur pour la route PUT /api/posts/:id - Modification d'un commentaire
 exports.updateComment = (req, res, next) => {
     db.comments.findOne({
         where: { id: req.params.commentId },
