@@ -11,10 +11,23 @@ exports.signup = (req, res, next) => {
                 password: hash,
                 nickname: req.body.nickname
             })
-                .then(() => res.status(201).json({ message: 'Utilisateur créé' }))
+                .then(user => {
+                    let token = jwt.sign(
+                        { userId: user.userId },
+                        process.env.JWT,
+                        { expiresIn: '1d' }
+                    )
+                    res
+                        .status(200)
+                        .cookie('access_token', token, {
+                            httpOnly: true,
+                            expires: new Date(Date.now() + 8 * 3600000)
+                        })
+                        .status(200).json({ createdAt: user.createdAt, email: user.email, userId: user.userId, imgUrl: user.imgUrl, isAdmin: user.isAdmin, nickname: user.nickname });
+
+                })
                 .catch(error => res.status(400).json({ error }))
         })
-
         .catch(error => res.status(500).json({ error }))
 };
 
@@ -23,17 +36,17 @@ exports.login = (req, res, next) => {
     db.users.findOne({ where: { email: req.body.email } })
         .then(user => {
             if (!user) {
-                return res.status(401).json({ message: "Cet utilisateur n'existe pas" });
+                return res.status(401).json({ code: 1, message: "Cet utilisateur n'existe pas" });
             }
             bcrypt.compare(req.body.password, user.password)
                 .then(valid => {
                     if (!valid) {
-                        return res.status(401).json({ message: "Votre mot de passe est incorrect" });
+                        return res.status(401).json({ code: 2, message: "Le mot de passe est incorrect" });
                     }
                     let token = jwt.sign(
                         { userId: user.userId },
                         process.env.JWT,
-                        { expiresIn: '8h' }
+                        { expiresIn: '1d' }
                     )
                     res
                         .status(200)
@@ -41,7 +54,7 @@ exports.login = (req, res, next) => {
                             httpOnly: true,
                             expires: new Date(Date.now() + 8 * 3600000)
                         })
-                        .status(200).json({ message: "Connecté !" });
+                        .status(200).json({ createdAt: user.createdAt, email: user.email, userId: user.userId, imgUrl: user.imgUrl, isAdmin: user.isAdmin, nickname: user.nickname });
 
                 })
                 .catch(error => res.status(500).json({ error }))

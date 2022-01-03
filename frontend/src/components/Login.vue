@@ -1,120 +1,248 @@
 <template>
-  <div>
+  <div class="loginForm">
     <v-tabs v-model="tabs" fixed-tabs>
       <v-tab>Connexion</v-tab>
       <v-tab>Inscription</v-tab>
     </v-tabs>
-
     <v-tabs-items v-model="tabs">
       <v-tab-item>
         <v-card flat class="pa-5">
-          <v-form ref="form" v-model="validLoginForm" lazy-validation>
-            <v-text-field v-model="emailLogin" :rules="emailRules" label="E-mail" required></v-text-field>
-            <v-text-field v-model="passwordLogin" :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" :type="showPassword ? 'text' : 'password'" @click:append="showPassword = !showPassword" :rules="passwordRules" label="Mot de passe" required></v-text-field>
-
+          <v-form ref="formLogin" v-model="validLoginForm" lazy-validation>
+            <v-text-field
+              id="emailLogin"
+              v-model="emailLogin"
+              :rules="emailRules"
+              label="E-mail"
+              @click="resetForm('emailLogin', 'E-mail');"
+              required
+            ></v-text-field>
+            <v-text-field
+              id="passwordLogin"
+              v-model="passwordLogin"
+              :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+              :type="showPassword ? 'text' : 'password'"
+              @click:append="showPassword = !showPassword"
+              :rules="passwordRules"
+              label="Mot de passe"
+              @click="resetForm('passwordLogin', 'Mot de passe');"
+              required
+            ></v-text-field>
             <v-btn
               block
-              :disabled="!validLoginForm"
+              :disabled="!validLoginForm || loadingLogin"
               color="primary"
               class="mr-4 mt-5"
-              @click="login(); validate();"
-            >Connexion</v-btn>
+              @click="login();"
+            >
+              Connexion<v-progress-circular
+                v-show="loadingLogin"
+                size="19"
+                color="info"
+                indeterminate
+                class="ml-2"
+              ></v-progress-circular>
+            </v-btn>
           </v-form>
         </v-card>
       </v-tab-item>
+
       <v-tab-item>
         <v-card flat class="pa-5">
-          <v-form ref="form" v-model="validSignupForm" lazy-validation>
-            
-
-            <v-text-field v-model="email" :rules="emailRules" label="E-mail" required></v-text-field>
-<v-text-field v-model="password" :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" :type="showPassword ? 'text' : 'password'" @click:append="showPassword = !showPassword" :rules="passwordRules" label="Mot de passe" required></v-text-field>
-<v-text-field v-model="name" :counter="30" :rules="nameRules" label="Name" required></v-text-field>
+          <v-form ref="formSignup" v-model="validSignupForm" lazy-validation>
+            <v-text-field
+              id="emailSignup"
+              v-model="emailSignup"
+              :rules="emailRules"
+              label="E-mail"
+              required
+            ></v-text-field>
+            <v-text-field
+              id="passwordSignup"
+              v-model="passwordSignup"
+              :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+              :type="showPassword ? 'text' : 'password'"
+              @click:append="showPassword = !showPassword"
+              :rules="passwordRules"
+              label="Mot de passe"
+              required
+            ></v-text-field>
+            <v-text-field
+              v-model="nameSignup"
+              :counter="30"
+              :rules="nameRules"
+              label="Nom d'affichage"
+              required
+            ></v-text-field>
             <v-btn
               block
-              :disabled="!validSignupForm"
+              :disabled="!validSignupForm || loadingSignup"
               color="primary"
               class="mr-4 mt-5"
-              @click="validate();"
-            >S'inscrire</v-btn>
+              @click="signup();"
+            >S'inscrire<v-progress-circular
+                v-show="loadingSignup"
+                size="19"
+                color="info"
+                indeterminate
+                class="ml-2"
+              ></v-progress-circular></v-btn>
           </v-form>
         </v-card>
       </v-tab-item>
     </v-tabs-items>
+
+    <v-snackbar v-model="snackbar" :timeout="4000" color="red darken-3">Erreur : 
+      {{ snackbarMsg }}
+      <template v-slot:action="{ attrs }">
+        <v-btn color="white" text v-bind="attrs" @click="snackbar = false">Fermer</v-btn>
+      </template>
+    </v-snackbar>
   </div>
 </template>
-
 
 <script>
 export default {
   data: () => ({
     validLoginForm: true,
     validSignupForm: true,
-    name: "",
+    loadingLogin: false,
+    loadingSignup: false,
+    snackbar: false,
+    snackbarMsg: "",
+    nameSignup: "",
     nameRules: [
-      (v) => !!v || "Name is required",
-      (v) => (v && v.length <= 20) || "Name must be less than 10 characters",
+      (v) => !!v || "Veuillez renseigner votre nom d'affichage",
+      (v) =>
+        (v && v.length <= 30) ||
+        "Le nom d'affichage doit contenir moins de 30 caractères",
     ],
-    email: "",
-    emailLogin: "admin@groupomania.fr",
+    emailSignup: "",
+    emailLogin: "",
     emailRules: [
       (v) => !!v || "Veuillez renseigner votre adresse email",
       (v) => /.+@.+\..+/.test(v) || "L'adresse email doit être valide",
     ],
-    password: "",
+    passwordSignup: "",
     passwordLogin: "",
     passwordRules: [
       (v) => !!v || "Veuillez renseigner votre mot de passe",
-      (v) => (v && v.length >= 8) || "Votre mot de passe doit contenir au moins 8 caractères",
+      (v) =>
+        (v && v.length >= 8) ||
+        "Votre mot de passe doit contenir au moins 8 caractères",
     ],
-    select: null,
-    items: ["Item 1", "Item 2", "Item 3", "Item 4"],
-    checkbox: false,
     tabs: null,
     showPassword: false,
   }),
 
   methods: {
-    validate() {
-      this.$refs.form.validate();
-    },
     login() {
+      this.$refs.formLogin.validate();
+      if (this.emailLogin && this.passwordLogin) {
+        this.loadingLogin = true;
         let loginData = {
-            email: this.emailLogin,
-            password: this.passwordLogin 
-        }
+          email: this.emailLogin,
+          password: this.passwordLogin,
+        };
         fetch("http://localhost:3000/api/user/auth/login", {
-            method: "POST",
-            credentials: 'include',
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(loginData),
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(loginData),
         })
-            .then((response) => {
-                if (response.ok) {
-                    this.$router.push({ name: 'Home' })
-                } 
-                else {
-                    response.json()
-                        .then((error) => { console.log(error.message) 
-                        switch(error.message) {
-                            case "Cet utilisateur n'existe pas": 
-                            console.log(this)
-                            this.email = ""
-                            break;
-                            case "Votre mot de passe est incorrect":
-                            this.password = "" 
-                            break;
-                        }
-                        })
+          .then((response) => {
+            if (response.ok) {
+              response.json().then((response) => { 
+                this.$store.dispatch('logIn', response);
+                this.$router.push({ name: "Home" });
+                })
+            } else {
+              response.json().then((error) => {
+                switch (error.code) {
+                  case 1:
+                    this.emailLogin = "";
+                    document.querySelector("label[for=emailLogin]").innerHTML =
+                      error.message;
+                    break;
+                  case 2:
+                    this.passwordLogin = "";
+                    document.querySelector(
+                      "label[for=passwordLogin]"
+                    ).innerHTML = error.message;
+                    break;
+                  default:
+                    this.snackbarMsg = error.message;
+                    this.snackbar = true;
+                    break;
                 }
+              });
+            }
+            this.loadingLogin = false;
+          })
+          .catch((error) => {
+            console.log("Erreur lors du fetch : " + error.message);
+            this.snackbarMsg = error.message;
+            this.snackbar = true;
+            this.loadingLogin = false;
+          });
+      }
+    },
+
+    signup() {
+      this.$refs.formSignup.validate();
+      if (this.emailSignup && this.passwordSignup && this.nameSignup) {
+        this.loadingSignup = true;
+        let signupData = {
+          email: this.emailSignup,
+          password: this.passwordSignup,
+          nickname: this.nameSignup,
+        };
+        fetch("http://localhost:3000/api/user/auth/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(signupData),
+        })
+          .then((response) => {
+            if (response.ok) {
+              response.json().then((response) => { 
+                this.$store.dispatch('logIn', response);
+                this.$router.push({ name: "Home" });
+                })
+            } else {
+              response.json().then((error) => {
+                if (error.code) {
+                  if (error.code.includes("1")) { console.log("code 1") }
+                  if (error.code.includes("2")) { console.log("code 2") }
+                  if (error.code.includes("3")) { console.log("code 3") }
+                }
+                console.log(error) // GESTION ERREURS A TERMINER
                 
-            })
-            .catch((error) => {
-                console.log('Erreur lors du fetch : ' + error.message)
-            });
-    }
+              });
+            }
+            this.loadingSignup = false;
+          })
+          .catch((error) => {
+            console.log("Erreur lors du fetch : " + error.message);
+            this.snackbarMsg = error.message;
+            this.snackbar = true;
+            this.loadingSignup = false;
+          });
+      }
+    },
+
+    resetForm(input, text) {
+      document.querySelector(`label[for=${input}]`).innerHTML = text;
+    },
   },
 };
 </script>
+
+<style lang="scss" scoped>
+.loginForm {
+  max-width: 420px;
+  margin: auto;
+}
+</style>

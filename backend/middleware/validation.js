@@ -5,15 +5,19 @@
 exports.signup = (req, res, next) => {
     const passwordValidation = new RegExp(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/);
     const mailValidation = new RegExp(/\S+@\S+\.\S+/);
-    let validationMsg = "";
-    if (!mailValidation.test(req.body.email) || !passwordValidation.test(req.body.password)) {
+    const nicknameValidation = new RegExp(/^.{6,30}$/);
+    let validationCode = "";
+    if (!mailValidation.test(req.body.email) || !passwordValidation.test(req.body.password) || !nicknameValidation.test(req.body.nickname)) {
         if (!mailValidation.test(req.body.email)) {
-            validationMsg += "Adresse email invalide !\n";
+            validationCode += "1";
         }
         if (!passwordValidation.test(req.body.password)) {
-            validationMsg += "Mot de passe invalide ! (Doit contenir au moins 8 caractères, une lettre, un chiffre, une majuscule et une minuscule";
+            validationCode += "2";
         }
-        res.status(400).json({ message: validationMsg });
+        if (!nicknameValidation.test(req.body.nickname)) {
+            validationCode += "3";
+        }
+        res.status(400).json({ code: validationCode });
     }
     else {
         next();

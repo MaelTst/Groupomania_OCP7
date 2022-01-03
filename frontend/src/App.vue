@@ -1,58 +1,31 @@
 <template>
-  <v-app><!--
-    <v-app-bar app color="primary" dark>
-      <div class="d-flex align-center">
-        <router-link to="/">
-          <v-img
-            alt="Vuetify Logo"
-            class="shrink mr-2"
-            contain
-            src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-            transition="scale-transition"
-            width="40"
-          />
-        </router-link>
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
-
-      <v-spacer></v-spacer>
-
-      <v-btn href="https://github.com/vuetifyjs/vuetify/releases/latest" target="_blank" text>
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
-
-      <v-btn link to="/login" text>
-        <span class="mr-2">Login</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
-    </v-app-bar>
-
+  <v-app>
     <v-main>
-      <router-view />
-      <Footer></Footer>
-    </v-main>-->
-    <router-view />
+      <Header v-if="this.$store.state.isLoggedIn"/>
+      <v-container fluid class="pa-0">
+        <v-row>
+          <NotificationList v-if="this.$store.state.isLoggedIn"/>
+          <router-view />
+          <UsersList v-if="this.$store.state.isLoggedIn"/>
+        </v-row>
+      </v-container>
+    </v-main>
   </v-app>
 </template>
 
 <script>
-//import Footer from "./components/Footer.vue";
+import Header from './components/Header'
+import NotificationList from './components/NotificationList'
+import UsersList from './components/UsersList'
 
 export default {
-  //components: { Footer },
   name: "App",
-
+  components: {
+      Header,
+      NotificationList,
+      UsersList
+    },
   data: () => ({
-    //
   }),
 };
 </script>

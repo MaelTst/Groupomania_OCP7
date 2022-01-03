@@ -46,14 +46,6 @@ server.on('listening', () => {
   const bind = typeof address === 'string' ? 'pipe ' + address : 'port ' + port;
   db.sequelize.sync()
     .then(function () {
-      console.log(`
- ██████╗ ██████╗  ██████╗ ██╗   ██╗██████╗  ██████╗ ███╗   ███╗ █████╗ ███╗   ██╗██╗ █████╗      █████╗ ██████╗ ██╗
-██╔════╝ ██╔══██╗██╔═══██╗██║   ██║██╔══██╗██╔═══██╗████╗ ████║██╔══██╗████╗  ██║██║██╔══██╗    ██╔══██╗██╔══██╗██║
-██║  ███╗██████╔╝██║   ██║██║   ██║██████╔╝██║   ██║██╔████╔██║███████║██╔██╗ ██║██║███████║    ███████║██████╔╝██║
-██║   ██║██╔══██╗██║   ██║██║   ██║██╔═══╝ ██║   ██║██║╚██╔╝██║██╔══██║██║╚██╗██║██║██╔══██║    ██╔══██║██╔═══╝ ██║
-╚██████╔╝██║  ██║╚██████╔╝╚██████╔╝██║     ╚██████╔╝██║ ╚═╝ ██║██║  ██║██║ ╚████║██║██║  ██║    ██║  ██║██║     ██║
- ╚═════╝ ╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝      ╚═════╝ ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝╚═╝  ╚═╝    ╚═╝  ╚═╝╚═╝     ╚═╝
-`)
       console.log('Tables synchronisées');
       console.log('Listening on ' + bind);
       db.users.findOne({ where: { isAdmin: true } })
@@ -70,7 +62,7 @@ server.on('listening', () => {
                   nickname: "SuperAdmin",
                   isAdmin: true
                 })
-                  .then(user => console.log(`Compte administrateur créé :\nEmail : ${process.env.ADMIN_EMAIL}\nMot de passe : ${process.env.ADMIN_PASSWORD}\nConservez bien vos identifiants`))
+                  .then(() => console.log(`Compte administrateur créé :\nEmail : ${process.env.ADMIN_EMAIL}\nMot de passe : ${process.env.ADMIN_PASSWORD}\nConservez bien vos identifiants`))
                   .catch(error => console.log(error.message))
               })
               .catch(error => console.log(error.message))
