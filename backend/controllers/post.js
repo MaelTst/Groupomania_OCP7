@@ -1,5 +1,6 @@
 const db = require('../models');
 const fs = require('fs');
+const { Op } = require("sequelize");
 
 // Controlleur pour la route POST /api/posts/ - Création d'un post
 exports.createPost = (req, res, next) => {
@@ -51,6 +52,25 @@ exports.getUserPost = (req, res, next) => {
     })
         .then(posts => res.status(200).json(posts))
         .catch(error => res.status(404).json({ error }))
+}
+
+// Controlleur pour la route GET /api/posts/mostlikedpics - Affichage des 5 images postées les plus likées => manque systeme like pour l'instant, à finir plus tard
+exports.getMostLikedPics = (req, res, next) => {
+    db.posts.findAll({
+        limit: 5,
+        //order: ['','ASC'],
+        where: {
+            imgUrl: { 
+            [Op.not]: null }
+        },
+        include: [
+            {
+                model: db.users
+            }
+        ]
+    })
+        .then(posts => res.status(200).json(posts))
+        .catch(error => res.status(400).json({ error }));
 }
 
 // Controlleur pour la route PUT /api/posts/:id - Modification d'un post

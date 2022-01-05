@@ -8,6 +8,7 @@ const auth = require('../middleware/auth');
 router.post('/', auth, multer, postCtrl.createPost);
 router.get('/', auth, postCtrl.getAll);
 router.get('/user/:id', auth, postCtrl.getUserPost);
+router.get('/mostlikedpics', auth, postCtrl.getMostLikedPics);
 router.put('/:id', auth, multer, postCtrl.updatePost);
 router.delete('/:id', auth, postCtrl.deletePost);
 //router.post('/:id/like', auth, postCtrl.likePost);

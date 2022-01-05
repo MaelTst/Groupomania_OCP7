@@ -1,5 +1,5 @@
 <template>
-  <v-col cols="12" class="pb-0">
+  <v-col cols="12" class="pa-0">
     <div class="d-flex flex-column mainContainer px-5">
       <div class="header d-flex">
         <v-img

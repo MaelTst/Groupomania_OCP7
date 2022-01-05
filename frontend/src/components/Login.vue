@@ -1,12 +1,12 @@
 <template>
   <div class="loginForm">
-    <v-tabs v-model="tabs" fixed-tabs>
+    <v-tabs background-color="transparent" v-model="tabs" fixed-tabs>
       <v-tab>Connexion</v-tab>
       <v-tab>Inscription</v-tab>
     </v-tabs>
-    <v-tabs-items v-model="tabs">
+    <v-tabs-items class="loginForm__tabsItem" v-model="tabs">
       <v-tab-item>
-        <v-card flat class="pa-5">
+        <v-card color="transparent" flat class="pa-5">
           <v-form ref="formLogin" v-model="validLoginForm" lazy-validation>
             <v-text-field
               id="emailLogin"
@@ -47,7 +47,7 @@
       </v-tab-item>
 
       <v-tab-item>
-        <v-card flat class="pa-5">
+        <v-card color="transparent" flat class="pa-5">
           <v-form ref="formSignup" v-model="validSignupForm" lazy-validation>
             <v-text-field
               id="emailSignup"
@@ -244,5 +244,8 @@ export default {
 .loginForm {
   max-width: 420px;
   margin: auto;
+  &__tabsItem {
+    background-color: transparent !important;
+  }
 }
 </style>

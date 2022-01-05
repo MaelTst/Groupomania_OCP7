@@ -5,7 +5,6 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false,
             unique: true,
             validate: {
-                isAlphanumeric: true,
                 len: [6,30],
                 notEmpty: true
             }
@@ -29,7 +28,7 @@ module.exports = (sequelize, Sequelize) => {
         },
         imgUrl: {
             type: Sequelize.STRING,
-            defaultValue: "placeholder.jpg"
+            defaultValue: null
         },
         isAdmin: {
             type: Sequelize.BOOLEAN,

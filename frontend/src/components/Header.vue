@@ -1,26 +1,15 @@
 <template>
-  <v-app-bar color="#fff" elevation="3">
+  <v-app-bar class="px-5 header" flat>
     <v-img
       alt="Logo Groupomania"
       class="flex-grow-0 d-none d-sm-flex me-2"
       contain
-      :src="require('../assets/logo-blue-faded.png')"
+      :src="require('../assets/logo_blue_rounded.png')"
       transition="scale-transition"
       origin="center center"
-      width="36"
+      width="42"
     />
-    <v-responsive max-width="260">
-      <v-text-field
-        flat
-        hide-details
-        rounded
-        background-color="#f0f2f5"
-        placeholder="Rechercher"
-        prepend-inner-icon="mdi-magnify"
-        solo
-      ></v-text-field>
-    </v-responsive>
-    <v-tabs class="px-5 headerBtn" centered absolute light mobile-breakpoint="500" icons-and-text>
+    <v-tabs class="px-5 header__Btn" centered absolute light mobile-breakpoint="500" icons-and-text>
       <v-tabs-slider></v-tabs-slider>
 
       <v-tab href="#tab-1">
@@ -39,7 +28,12 @@
       </v-tab>
     </v-tabs>
     <v-spacer></v-spacer>
-    <v-avatar color="primary" size="42"></v-avatar>
+    <v-avatar class="rounded-lg" size="42">
+      <img
+        :src="this.$store.state.userInfo.imgUrl ? this.$store.state.userInfo.imgUrl : require('../assets/placeholder.png')"
+        alt="Photo de profil"
+      />
+    </v-avatar>
   </v-app-bar>
 </template>
 
@@ -50,8 +44,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.headerBtn {
-  position: absolute;
-  z-index: -10;
+.header {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #f2f3f7 !important;
+  &__Btn {
+    position: absolute;
+    z-index: -10;
+  }
 }
 </style>
