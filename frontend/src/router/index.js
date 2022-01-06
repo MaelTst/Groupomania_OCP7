@@ -2,7 +2,6 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
-import store from '../store'
 
 Vue.use(VueRouter)
 
@@ -20,7 +19,7 @@ const routes = [
     name: 'Login',
     component: Login,
     meta: {
-      
+
     }
   },
   {
@@ -38,9 +37,26 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
+function getCookie() {
+  let name = "isLoggedIn=";
+  let ca = document.cookie.split(';');
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
+
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    if (!store.state.isLoggedIn) {
+    if (!getCookie()) {
       next({ name: 'Login' })
     } else {
       next()

@@ -1,7 +1,6 @@
 <template>
 <v-card class="boxShadowed rounded-lg mt-6">
-   
-  <v-text-field :append-outer-icon="message ? 'mdi-send' : 'mdi-microphone'" single-line class="pa-5 pt-10"  :label="'Quoi de neuf, '+this.$store.state.userInfo.nickname + ' ?'" type="text">
+  <v-text-field v-model="postContent" @click:append-outer="sendPost" @keydown.enter="sendPost" hide-details append-icon="mdi-camera" :append-outer-icon="postContent ? 'mdi-send' : ''" single-line class="pa-6"  :label="'Quoi de neuf, '+this.$store.state.userInfo.nickname + ' ?'" type="text">
   </v-text-field>
   </v-card>
 </template>
@@ -9,7 +8,7 @@
 <script>
 export default {
   data: () => ({
-    message: "Hey!",
+    postContent: "",
     loading: false,
   }),
   methods: {
@@ -21,6 +20,16 @@ export default {
         this.message = `You've clicked me!`;
       }, 2000);
     },
+
+    sendPost() {
+      if (this.postContent) {
+          this.$store.dispatch('sendPost', this.postContent)
+          this.postContent = ""
+      }
+    },
+
+
+
   },
 };
 </script>

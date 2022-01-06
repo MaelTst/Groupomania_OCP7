@@ -24,13 +24,15 @@ exports.createPost = (req, res, next) => {
 // Controlleur pour la route GET /api/posts/ - Affichage de tous les posts et commentaires associés
 exports.getAll = (req, res, next) => {
     db.posts.findAll({
+        order: [['createdAt', 'DESC']],
         include: [
             {
-                model: db.users
+                model: db.users,
+                attributes: ["id","nickname","imgUrl","isAdmin","loggedIn"]
             },
             {
                 model: db.comments,
-                include: [{ model: db.users }]
+                include: [{ model: db.users, attributes: ["id","nickname","imgUrl","isAdmin","loggedIn"] }]
             }]
     })
         .then(posts => res.status(200).json(posts))
@@ -43,11 +45,12 @@ exports.getUserPost = (req, res, next) => {
         where: { userId: req.params.id },
         include: [
             {
-                model: db.users
+                model: db.users,
+                attributes: ["id","nickname","imgUrl","isAdmin","loggedIn"]
             },
             {
                 model: db.comments,
-                include: [{ model: db.users }]
+                include: [{ model: db.users, attributes: ["id","nickname","imgUrl","isAdmin","loggedIn"] }]
             }]
     })
         .then(posts => res.status(200).json(posts))
@@ -65,7 +68,7 @@ exports.getMostLikedPics = (req, res, next) => {
         },
         include: [
             {
-                model: db.users
+                model: db.users, attributes: ["id","nickname","imgUrl","isAdmin","loggedIn"]
             }
         ]
     })

@@ -51,7 +51,7 @@ export default {
     Login,
   },
   beforeCreate() {
-    if (this.$store.state.isLoggedIn) {
+    if (this.$getCookie('isLoggedIn')) {
       this.$router.push({ name: "Home" });
     }
   },

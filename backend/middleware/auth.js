@@ -6,13 +6,20 @@ module.exports = (req, res, next) => {
         const token = req.cookies.access_token;
         req.token = jwt.verify(token, process.env.JWT);
         const userId = req.token.userId;
-        if (req.body.userId && req.body.userId !== userId) {
-            throw 'User ID non valable';
-        }
-        else {
+        if (req.token) {
             next();
         }
     } catch (error) {
-        res.status(401).json({ error: "Requete non authentifiée !" });
+        res.status(401)
+        .cookie('access_token', "", {
+            expires: new Date(Date.now() - 1)
+        })
+        .cookie('isLoggedIn', false, {
+            expires: new Date(Date.now() - 1)
+        })
+        .cookie('ID', "", {
+            expires: new Date(Date.now() - 1)
+        })
+        .json({ error: "Requete non authentifiée !" })
     }
 };

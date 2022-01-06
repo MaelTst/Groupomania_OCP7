@@ -15,7 +15,7 @@ exports.signup = (req, res, next) => {
                     let token = jwt.sign(
                         { userId: user.userId },
                         process.env.JWT,
-                        { expiresIn: '1d' }
+                        { expiresIn: '8h' }
                     )
                     res
                         .status(200)
@@ -23,7 +23,15 @@ exports.signup = (req, res, next) => {
                             httpOnly: true,
                             expires: new Date(Date.now() + 8 * 3600000)
                         })
-                        .status(200).json({ createdAt: user.createdAt, email: user.email, userId: user.userId, imgUrl: user.imgUrl, isAdmin: user.isAdmin, nickname: user.nickname });
+                        .cookie('isLoggedIn', true, {
+                            httpOnly: false,
+                            expires: new Date(Date.now() + 8 * 3600000)
+                        })
+                        .cookie('ID', user.id, {
+                            httpOnly: false,
+                            expires: new Date(Date.now() + 8 * 3600000)
+                        })
+                        .json({ id: user.id, createdAt: user.createdAt, email: user.email, userId: user.userId, imgUrl: user.imgUrl, isAdmin: user.isAdmin, nickname: user.nickname });
 
                 })
                 .catch(error => res.status(400).json({ error }))
@@ -46,7 +54,7 @@ exports.login = (req, res, next) => {
                     let token = jwt.sign(
                         { userId: user.userId },
                         process.env.JWT,
-                        { expiresIn: '1d' }
+                        { expiresIn: '8h' }
                     )
                     res
                         .status(200)
@@ -54,7 +62,15 @@ exports.login = (req, res, next) => {
                             httpOnly: true,
                             expires: new Date(Date.now() + 8 * 3600000)
                         })
-                        .status(200).json({ createdAt: user.createdAt, email: user.email, userId: user.userId, imgUrl: user.imgUrl, isAdmin: user.isAdmin, nickname: user.nickname });
+                        .cookie('isLoggedIn', true, {
+                            httpOnly: false,
+                            expires: new Date(Date.now() + 8 * 3600000)
+                        })
+                        .cookie('ID', user.id, {
+                            httpOnly: false,
+                            expires: new Date(Date.now() + 8 * 3600000)
+                        })
+                        .json({ id: user.id, createdAt: user.createdAt, email: user.email, userId: user.userId, imgUrl: user.imgUrl, isAdmin: user.isAdmin, nickname: user.nickname });
 
                 })
                 .catch(error => res.status(500).json({ error }))
@@ -65,10 +81,17 @@ exports.login = (req, res, next) => {
 // Controlleur pour la route GET /api/user/ - Déconnexion d'un utilisateur
 exports.logout = (req, res, next) => {
     res
-        .status(200).cookie('access_token', "", {
+        .status(200)
+        .cookie('access_token', "", {
             expires: new Date(Date.now() - 1)
         })
-        .redirect(301, '/login')
+        .cookie('isLoggedIn', false, {
+            expires: new Date(Date.now() - 1)
+        })
+        .cookie('ID', "", {
+            expires: new Date(Date.now() - 1)
+        })
+        .json({message: "Deconnecté"})
 
 
 }
@@ -85,9 +108,12 @@ exports.getAll = (req, res, next) => {
 // Controlleur pour la route GET /api/user/:id - Affichage d'un utilisateur
 exports.getOne = (req, res, next) => {
     db.users.findByPk(req.params.id, {
-        attributes: ['nickname', 'imgUrl', 'id', 'loggedIn', 'isAdmin']
+        attributes: ['userId','id', 'nickname', 'email', 'imgUrl', 'isAdmin','loggedIn','createdAt','updatedAt']
     })
-        .then(user => res.status(200).json(user))
+        .then(user => {
+            if (user.userId === req.token.userId) { res.status(200).json(user) }
+            else { res.status(200).json({nickname: user.nickname, imgUrl: user.imgUrl, id: user.id, loggedIn: user.loggedIn, isAdmin: user.isAdmin})}
+        })
         .catch(error => res.status(404).json({ error }))
 }
 
