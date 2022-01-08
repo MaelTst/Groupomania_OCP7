@@ -31,7 +31,7 @@ export default {
   },
   beforeCreate() {
     if (this.$getCookie('isLoggedIn')) {
-      fetch("http://localhost:3000/api/user/"+this.$getCookie('ID'), {
+      fetch(`${process.env.VUE_APP_ROOT_API}api/user/${this.$getCookie('ID')}`, {
           method: "GET",
           credentials: "include",
           headers: {
@@ -58,7 +58,7 @@ export default {
   background-color: #fafbfc;
 }
 .boxShadowed {
-  box-shadow: 0px 0px 10px 5px rgb(0 0 0 / 2%) !important
+  box-shadow: 0px 0px 10px 5px rgb(0 0 0 / 2%) !important;
 }
 .content {
   max-width: 1400px;

@@ -1,7 +1,7 @@
 <template>
   <div class="py-4 header">
       <div class="header__content px-4">
-          <div class="header__content__leftSide">
+          <router-link to="/"><div class="header__content__leftSide">
     <v-img
       alt="Logo Groupomania"
       class="flex-grow-0 d-flex me-2"
@@ -20,7 +20,7 @@
       origin="center center"
       width="100"
     />
-          </div>
+          </div></router-link>
     <div class="header__content__rightSide">
         <v-text-field hide-details
         class="rounded-lg"
@@ -32,12 +32,12 @@
             label="Rechercher"
             prepend-inner-icon="mdi-magnify"
           ></v-text-field>
-    <v-avatar class="rounded-lg d-none d-sm-flex ml-6" size="42">
+     <router-link :to="'/user/'+this.$store.state.userInfo.id"><v-avatar class="rounded-lg d-none d-sm-flex ml-6" size="42">
       <img
         :src="this.$store.state.userInfo.imgUrl ? this.$store.state.userInfo.imgUrl : require('../assets/placeholder.png')"
         alt="Photo de profil"
       />
-    </v-avatar></div>
+    </v-avatar></router-link></div>
       </div>
   </div>
 </template>

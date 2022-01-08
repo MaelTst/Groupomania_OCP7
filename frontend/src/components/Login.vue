@@ -28,19 +28,14 @@
               required
             ></v-text-field>
             <v-btn
+            :loading="loadingLogin"
               block
               :disabled="!validLoginForm || loadingLogin"
               color="primary"
               class="mr-4 mt-5"
               @click="login();"
             >
-              Connexion<v-progress-circular
-                v-show="loadingLogin"
-                size="19"
-                color="info"
-                indeterminate
-                class="ml-2"
-              ></v-progress-circular>
+              Connexion
             </v-btn>
           </v-form>
         </v-card>
@@ -75,17 +70,12 @@
             ></v-text-field>
             <v-btn
               block
+              :loading="loadingSignup"
               :disabled="!validSignupForm || loadingSignup"
               color="primary"
               class="mr-4 mt-5"
               @click="signup();"
-            >S'inscrire<v-progress-circular
-                v-show="loadingSignup"
-                size="19"
-                color="info"
-                indeterminate
-                class="ml-2"
-              ></v-progress-circular></v-btn>
+            >S'inscrire</v-btn>
           </v-form>
         </v-card>
       </v-tab-item>
@@ -143,7 +133,7 @@ export default {
           email: this.emailLogin,
           password: this.passwordLogin,
         };
-        fetch("http://localhost:3000/api/user/auth/login", {
+        fetch(`${process.env.VUE_APP_ROOT_API}api/user/auth/login`, {
           method: "POST",
           credentials: "include",
           headers: {
@@ -198,8 +188,9 @@ export default {
           password: this.passwordSignup,
           nickname: this.nameSignup,
         };
-        fetch("http://localhost:3000/api/user/auth/signup", {
+        fetch(`${process.env.VUE_APP_ROOT_API}api/user/auth/signup`, {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },

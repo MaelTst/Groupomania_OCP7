@@ -21,14 +21,17 @@ exports.signup = (req, res, next) => {
                         .status(200)
                         .cookie('access_token', token, {
                             httpOnly: true,
+                            domain: process.env.SITE_DOMAIN,
                             expires: new Date(Date.now() + 8 * 3600000)
                         })
                         .cookie('isLoggedIn', true, {
                             httpOnly: false,
+                            domain: process.env.SITE_DOMAIN,
                             expires: new Date(Date.now() + 8 * 3600000)
                         })
                         .cookie('ID', user.id, {
                             httpOnly: false,
+                            domain: process.env.SITE_DOMAIN,
                             expires: new Date(Date.now() + 8 * 3600000)
                         })
                         .json({ id: user.id, createdAt: user.createdAt, email: user.email, userId: user.userId, imgUrl: user.imgUrl, isAdmin: user.isAdmin, nickname: user.nickname });
@@ -60,14 +63,17 @@ exports.login = (req, res, next) => {
                         .status(200)
                         .cookie('access_token', token, {
                             httpOnly: true,
+                            domain: process.env.SITE_DOMAIN,
                             expires: new Date(Date.now() + 8 * 3600000)
                         })
                         .cookie('isLoggedIn', true, {
                             httpOnly: false,
+                            domain: process.env.SITE_DOMAIN,
                             expires: new Date(Date.now() + 8 * 3600000)
                         })
                         .cookie('ID', user.id, {
                             httpOnly: false,
+                            domain: process.env.SITE_DOMAIN,
                             expires: new Date(Date.now() + 8 * 3600000)
                         })
                         .json({ id: user.id, createdAt: user.createdAt, email: user.email, userId: user.userId, imgUrl: user.imgUrl, isAdmin: user.isAdmin, nickname: user.nickname });
@@ -83,12 +89,15 @@ exports.logout = (req, res, next) => {
     res
         .status(200)
         .cookie('access_token', "", {
+            domain: process.env.SITE_DOMAIN,
             expires: new Date(Date.now() - 1)
         })
         .cookie('isLoggedIn', false, {
+            domain: process.env.SITE_DOMAIN,
             expires: new Date(Date.now() - 1)
         })
         .cookie('ID', "", {
+            domain: process.env.SITE_DOMAIN,
             expires: new Date(Date.now() - 1)
         })
         .json({message: "Deconnecté"})

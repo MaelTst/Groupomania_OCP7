@@ -26,7 +26,7 @@ export default new Vuex.Store({
       commit('USER_LOGIN', userInfo)
     },
     getPosts({ commit }) {
-      fetch("http://localhost:3000/api/posts/", {
+      fetch(`${process.env.VUE_APP_ROOT_API}api/posts/`, {
       method: "GET",
       credentials: "include",
     }).then((response) => {
@@ -37,14 +37,16 @@ export default new Vuex.Store({
       }
     });
     },
-    sendPost({ dispatch }, content) {
-      fetch("http://localhost:3000/api/posts/", {
+
+    sendPost({ dispatch }, { content, file }) {
+      var formData = new FormData()
+      formData.append('content', content)
+      if (file) { formData.append('image', file) }
+
+      fetch(`${process.env.VUE_APP_ROOT_API}api/posts/`, {
       method: "POST",
       credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({content: content}),
+      body: formData,
     })
       .then((response) => {
         if (response.ok) {
@@ -62,13 +64,11 @@ export default new Vuex.Store({
         console.log("Erreur lors du fetch : " + error.message);
       });
     },
+
     deletePost({ commit }, { postId, index }) {
-      fetch(`http://localhost:3000/api/posts/${postId}`, {
+      fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}`, {
           method: "DELETE",
           credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          }
         })
           .then((response) => {
             if (response.ok) {

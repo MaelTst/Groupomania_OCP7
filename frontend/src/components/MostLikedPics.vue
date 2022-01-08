@@ -27,7 +27,7 @@ export default {
   }),
   methods: {},
   beforeMount() {
-    fetch("http://localhost:3000/api/posts/mostlikedpics", {
+    fetch(`${process.env.VUE_APP_ROOT_API}api/posts/mostlikedpics`, {
       method: "GET",
       credentials: "include",
     }).then((response) => {

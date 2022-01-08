@@ -3,9 +3,12 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify'
+import moment from 'moment'
+moment.locale('fr')
 
 Vue.config.productionTip = false
 
+Vue.prototype.$moment = moment
 Vue.prototype.$getCookie = function (cname) {
     let name = cname + "=";
     let ca = document.cookie.split(';');

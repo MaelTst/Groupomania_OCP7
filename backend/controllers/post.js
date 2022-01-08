@@ -4,7 +4,6 @@ const { Op } = require("sequelize");
 
 // Controlleur pour la route POST /api/posts/ - Création d'un post
 exports.createPost = (req, res, next) => {
-    let imgUrl = req.file ? req.file.filename : null
     db.users.findOne({
         attributes: ["id"],
         where: { userId: req.token.userId }
@@ -12,7 +11,7 @@ exports.createPost = (req, res, next) => {
         .then(user => {
             db.posts.create({
                 content: req.body.content,
-                imgUrl: imgUrl,
+                imgUrl: req.file ? `${process.env.API_URL}/images/${req.file.filename}` : null,
                 userId: user.id
             })
                 .then(() => res.status(201).json({ message: "Post créé" }))
@@ -28,11 +27,11 @@ exports.getAll = (req, res, next) => {
         include: [
             {
                 model: db.users,
-                attributes: ["id","nickname","imgUrl","isAdmin","loggedIn"]
+                attributes: ["id", "nickname", "imgUrl", "isAdmin", "loggedIn"]
             },
             {
                 model: db.comments,
-                include: [{ model: db.users, attributes: ["id","nickname","imgUrl","isAdmin","loggedIn"] }]
+                include: [{ model: db.users, attributes: ["id", "nickname", "imgUrl", "isAdmin", "loggedIn"] }]
             }]
     })
         .then(posts => res.status(200).json(posts))
@@ -46,11 +45,11 @@ exports.getUserPost = (req, res, next) => {
         include: [
             {
                 model: db.users,
-                attributes: ["id","nickname","imgUrl","isAdmin","loggedIn"]
+                attributes: ["id", "nickname", "imgUrl", "isAdmin", "loggedIn"]
             },
             {
                 model: db.comments,
-                include: [{ model: db.users, attributes: ["id","nickname","imgUrl","isAdmin","loggedIn"] }]
+                include: [{ model: db.users, attributes: ["id", "nickname", "imgUrl", "isAdmin", "loggedIn"] }]
             }]
     })
         .then(posts => res.status(200).json(posts))
@@ -63,12 +62,13 @@ exports.getMostLikedPics = (req, res, next) => {
         limit: 5,
         //order: ['','ASC'],
         where: {
-            imgUrl: { 
-            [Op.not]: null }
+            imgUrl: {
+                [Op.not]: null
+            }
         },
         include: [
             {
-                model: db.users, attributes: ["id","nickname","imgUrl","isAdmin","loggedIn"]
+                model: db.users, attributes: ["id", "nickname", "imgUrl", "isAdmin", "loggedIn"]
             }
         ]
     })
@@ -110,14 +110,18 @@ exports.deletePost = (req, res, next) => {
     })
         .then(post => {
             if (post.user.userId === req.token.userId) {
-                if (post.imgUrl) { fs.unlink(`images/${post.imgUrl}`) }
-                db.posts.destroy({
-                    where: {
-                        id: post.id
-                    }
-                })
-                    .then(() => res.status(200).json({ message: `Le post a été supprimé` }))
-                    .catch(error => res.status(404).json({ error }));
+                if (post.imgUrl) {
+                    const filename = post.imgUrl.split('/images/')[1]
+                    fs.unlink(`img/${filename}`, () => {
+                        db.posts.destroy({ where: { id: post.id } })
+                            .then(() => res.status(200).json({ message: `Le post a été supprimé` }))
+                            .catch(error => res.status(404).json({ error }));
+                    })
+                } else {
+                    db.posts.destroy({ where: { id: post.id } })
+                        .then(() => res.status(200).json({ message: `Le post a été supprimé` }))
+                        .catch(error => res.status(404).json({ error }));
+                }
             } else {
                 res.status(401).json({ error: "Vous n'êtes pas autorisé à supprimer ce post" })
             }

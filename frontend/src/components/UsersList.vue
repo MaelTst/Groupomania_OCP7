@@ -12,7 +12,7 @@
         <simplebar class="simplebarContainer py-3" data-simplebar-auto-hide="true">
           <v-list class="pa-0">
             <v-list-item-group class="usersList__list__group" active-class="blue--text">
-              <v-list-item class="px-6" v-for="user in users" :key="user.id">
+              <v-list-item :to="'/user/'+user.id" class="px-6" v-for="user in users" :key="user.id">
                 <v-list-item-avatar class="rounded-lg" size="42">
                   <img
                     :src="user.imgUrl ? user.imgUrl : require('../assets/placeholder.png')"
@@ -62,7 +62,7 @@ export default {
     window.removeEventListener("scroll", this.UsersListdynamicHeight);
   },
   beforeMount() {
-    fetch("http://localhost:3000/api/user/", {
+    fetch(`${process.env.VUE_APP_ROOT_API}api/user/`, {
       method: "GET",
       credentials: "include",
     }).then((response) => {
