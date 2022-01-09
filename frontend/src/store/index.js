@@ -19,7 +19,7 @@ export default new Vuex.Store({
     },
     DELETE_POST(state, index) {
       state.posts.splice(index, 1)
-    }
+    },
   },
   actions: {
     logIn({ commit }, userInfo) {
@@ -85,7 +85,55 @@ export default new Vuex.Store({
           .catch((error) => {
             console.log("Erreur lors du fetch : " + error.message);
           });
-    }
+    },
+
+    likePost({ dispatch }, { postId }) {
+      fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}/like`, {
+          method: "POST",
+          credentials: "include",
+        })
+          .then((response) => {
+            if (response.ok) {
+              response.json().then((response) => { 
+                console.log(response)
+                dispatch('getPosts');
+                })
+            } else {
+              response.json().then((error) => {
+                console.log(error)
+              });
+            }
+          })
+          .catch((error) => {
+            console.log("Erreur lors du fetch : " + error.message);
+          });
+    },
+
+    sendComment({ dispatch }, { postId, content }) {
+      fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}/comment`, {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({content: content})
+        })
+          .then((response) => {
+            if (response.ok) {
+              response.json().then((response) => { 
+                console.log(response)
+                dispatch('getPosts');
+                })
+            } else {
+              response.json().then((error) => {
+                console.log(error)
+              });
+            }
+          })
+          .catch((error) => {
+            console.log("Erreur lors du fetch : " + error.message);
+          });
+    },
   },
   getters: {
   },

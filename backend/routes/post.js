@@ -11,8 +11,7 @@ router.get('/user/:id', auth, postCtrl.getUserPost);
 router.get('/mostlikedpics', auth, postCtrl.getMostLikedPics);
 router.put('/:id', auth, multer, postCtrl.updatePost);
 router.delete('/:id', auth, postCtrl.deletePost);
-//router.post('/:id/like', auth, postCtrl.likePost);
-
+router.post('/:id/like', auth, postCtrl.likePost);
 router.post('/:id/comment', auth, postCtrl.createComment);
 router.delete('/:id/comment/:commentId', auth, postCtrl.deleteComment);
 router.put('/:id/comment/:commentId', auth, postCtrl.updateComment);

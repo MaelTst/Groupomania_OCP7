@@ -19,7 +19,7 @@
     <v-card class="rounded-lg boxShadowed mt-6">
       <v-navigation-drawer floating width="auto" class="rounded-lg mt-6">
         <v-list class="pa-0">
-          <v-list-item color="blue" link to="/" class="pl-8">
+          <v-list-item color="primary" link to="/" class="pl-8">
             <v-list-item-icon>
               <v-icon>mdi-home-outline</v-icon>
             </v-list-item-icon>
@@ -28,7 +28,7 @@
             </v-list-item-content>
           </v-list-item>
 
-          <v-list-item color="blue" link to="/about" class="pl-8">
+          <v-list-item color="primary" link to="/about" class="pl-8">
             <v-list-item-icon>
               <v-icon>mdi-star-outline</v-icon>
             </v-list-item-icon>
@@ -37,7 +37,7 @@
             </v-list-item-content>
           </v-list-item>
 
-          <v-list-item color="blue" link to="/user/64" class="pl-8">
+          <v-list-item color="primary" link to="/user/64" class="pl-8">
             <v-list-item-icon>
               <v-icon>mdi-panorama-variant-outline</v-icon>
             </v-list-item-icon>
@@ -46,7 +46,7 @@
             </v-list-item-content>
           </v-list-item>
 
-          <v-list-item color="blue" link to="/user/65" class="pl-8">
+          <v-list-item color="primary" link to="/user/65" class="pl-8">
             <v-list-item-icon>
               <v-icon>mdi-account-outline</v-icon>
             </v-list-item-icon>
@@ -55,7 +55,7 @@
             </v-list-item-content>
           </v-list-item>
 
-          <v-list-item color="blue" link to="" class="pl-8">
+          <v-list-item color="primary" link to="" class="pl-8">
             <v-list-item-icon>
               <v-icon>mdi-cog-outline</v-icon>
             </v-list-item-icon>
@@ -64,7 +64,7 @@
             </v-list-item-content>
           </v-list-item>
 
-          <v-list-item color="blue" link class="pl-8" @click="logOut()">
+          <v-list-item color="primary" link class="pl-8" @click="logOut()">
             <v-list-item-icon>
               <v-icon>mdi-logout</v-icon>
             </v-list-item-icon>

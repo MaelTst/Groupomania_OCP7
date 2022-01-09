@@ -11,7 +11,7 @@
       <v-card class="usersList__list rounded-lg boxShadowed">
         <simplebar class="simplebarContainer py-3" data-simplebar-auto-hide="true">
           <v-list class="pa-0">
-            <v-list-item-group class="usersList__list__group" active-class="blue--text">
+            <v-list-item-group class="usersList__list__group" active-class="primary--text">
               <v-list-item :to="'/user/'+user.id" class="px-6" v-for="user in users" :key="user.id">
                 <v-list-item-avatar class="rounded-lg" size="42">
                   <img

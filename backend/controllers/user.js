@@ -108,6 +108,7 @@ exports.logout = (req, res, next) => {
 // Controlleur pour la route GET /api/user/ - Affichage de tous les utilisateurs
 exports.getAll = (req, res, next) => {
     db.users.findAll({
+        order: [['nickname', 'ASC']],
         attributes: ['nickname', 'imgUrl', 'id', 'loggedIn', 'isAdmin']
     })
         .then(users => res.status(200).json(users))

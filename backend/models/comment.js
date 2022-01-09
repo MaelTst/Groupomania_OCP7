@@ -4,8 +4,7 @@ module.exports = (sequelize, Sequelize) => {
             type: Sequelize.TEXT,
             allowNull: false,
             validate: {
-                isAlphanumeric: true,
-                len: [6,30],
+                len: [6,300],
                 notEmpty: true
             }
         }

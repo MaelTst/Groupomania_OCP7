@@ -23,7 +23,7 @@ exports.createPost = (req, res, next) => {
 // Controlleur pour la route GET /api/posts/ - Affichage de tous les posts et commentaires associés
 exports.getAll = (req, res, next) => {
     db.posts.findAll({
-        order: [['createdAt', 'DESC']],
+        order: [['createdAt', 'DESC'], [db.comments, 'createdAt', 'ASC']],
         include: [
             {
                 model: db.users,
@@ -32,6 +32,11 @@ exports.getAll = (req, res, next) => {
             {
                 model: db.comments,
                 include: [{ model: db.users, attributes: ["id", "nickname", "imgUrl", "isAdmin", "loggedIn"] }]
+            },
+            {
+                model: db.likes,
+                attributes: ["userId"],
+                include: [{ model: db.users, attributes: ["nickname"] }]
             }]
     })
         .then(posts => res.status(200).json(posts))
@@ -42,6 +47,7 @@ exports.getAll = (req, res, next) => {
 exports.getUserPost = (req, res, next) => {
     db.posts.findAll({
         where: { userId: req.params.id },
+        order: [['createdAt', 'DESC'], [db.comments, 'createdAt', 'ASC']],
         include: [
             {
                 model: db.users,
@@ -50,6 +56,11 @@ exports.getUserPost = (req, res, next) => {
             {
                 model: db.comments,
                 include: [{ model: db.users, attributes: ["id", "nickname", "imgUrl", "isAdmin", "loggedIn"] }]
+            },
+            {
+                model: db.likes,
+                attributes: ["userId"],
+                include: [{ model: db.users, attributes: ["nickname"] }]
             }]
     })
         .then(posts => res.status(200).json(posts))
@@ -59,22 +70,34 @@ exports.getUserPost = (req, res, next) => {
 // Controlleur pour la route GET /api/posts/mostlikedpics - Affichage des 5 images postées les plus likées => manque systeme like pour l'instant, à finir plus tard
 exports.getMostLikedPics = (req, res, next) => {
     db.posts.findAll({
-        limit: 5,
-        //order: ['','ASC'],
         where: {
             imgUrl: {
                 [Op.not]: null
             }
         },
+        attributes: [
+            "imgUrl",
+            [
+                db.sequelize.literal(
+                    '(SELECT COUNT(*) FROM likes WHERE "postId" = post.id)'
+                ),
+                "count",
+            ],
+        ],
+        order: [[db.sequelize.literal("count"), "DESC"]],
+        limit: 5,
         include: [
             {
-                model: db.users, attributes: ["id", "nickname", "imgUrl", "isAdmin", "loggedIn"]
-            }
+                model: db.users,
+                attributes: ["nickname", "imgUrl"],
+            },
         ]
     })
         .then(posts => res.status(200).json(posts))
         .catch(error => res.status(400).json({ error }));
 }
+
+
 
 // Controlleur pour la route PUT /api/posts/:id - Modification d'un post
 exports.updatePost = (req, res, next) => {
@@ -205,54 +228,33 @@ exports.updateComment = (req, res, next) => {
 
 
 
-
-
-
-
-
-// Controlleur pour la route POST /api/sauces/:id/like - Like/Dislike d'une sauce
-// Récupère les informations de la sauce correspondante au paramètre id de la requête
-// Initialise des flags liked/disliked afin de déterminer si l'utilisateur a déjà liké/disliké la sauce
-// Gère les trois cas possibles (1,0,-1) via une instruction switch en fonction des flags préalablement créés
-exports.likeSauce = (req, res, next) => {
-    Sauce.findOne({ _id: req.params.id })
-        .then(sauce => {
-            let liked = sauce.usersLiked.find(id => id === req.token.userId)
-            let disliked = sauce.usersDisliked.find(id => id === req.token.userId)
-            switch (req.body.like) {
-                case 1:
-                    if (!liked && !disliked) {
-                        Sauce.updateOne({ _id: sauce.id }, { $push: { usersLiked: req.token.userId }, $inc: { likes: 1 } })
-                            .then(() => res.status(200).json({ message: `Avis ajouté` }))
-                            .catch(error => res.status(400).json({ error }));
-                    } else {
-                        res.status(400).json({ error: "Vous avez déjà un avis actif pour cette sauce" })
+exports.likePost = (req, res, next) => {
+    db.users.findOne({
+        attributes: ["id"],
+        where: { userId: req.token.userId }
+    })
+        .then(user => {
+            db.likes.findOne({
+                where: { userId: user.id, postId: req.params.id }
+            })
+                .then(isLiked => {
+                    if (isLiked) {
+                        db.likes.destroy({
+                            where: { userId: user.id, postId: req.params.id }
+                        })
+                            .then(() => res.status(200).json({ message: "Like retiré" }))
+                            .catch(error => res.status(500).json({ message: error }));
                     }
-                    break;
-                case 0:
-                    if (liked) {
-                        Sauce.updateOne({ _id: sauce.id }, { $pull: { usersLiked: req.token.userId }, $inc: { likes: -1 } })
-                            .then(() => res.status(200).json({ message: `Avis modifié` }))
-                            .catch(error => res.status(400).json({ error }));
+                    else {
+                        db.likes.create({
+                            userId: user.id,
+                            postId: req.params.id
+                        })
+                            .then(() => res.status(200).json({ message: "Like ajouté" }))
+                            .catch(error => res.status(500).json({ message: error }));
                     }
-                    if (disliked) {
-                        Sauce.updateOne({ _id: sauce.id }, { $pull: { usersDisliked: req.token.userId }, $inc: { dislikes: -1 } })
-                            .then(() => res.status(200).json({ message: `Avis modifié` }))
-                            .catch(error => res.status(400).json({ error }));
-                    }
-                    break;
-                case -1:
-                    if (!liked && !disliked) {
-                        Sauce.updateOne({ _id: sauce.id }, { $push: { usersDisliked: req.token.userId }, $inc: { dislikes: 1 } })
-                            .then(() => res.status(200).json({ message: `Avis ajouté` }))
-                            .catch(error => res.status(400).json({ error }));
-                    } else {
-                        res.status(400).json({ error: "Vous avez déjà un avis actif pour cette sauce" })
-                    }
-                    break;
-                default:
-                    break;
-            }
+                })
+                .catch(error => res.status(500).json({ error }));
         })
-        .catch(error => res.status(500).json({ error }));
+        .catch(error => res.status(404).json({ error }));
 }
