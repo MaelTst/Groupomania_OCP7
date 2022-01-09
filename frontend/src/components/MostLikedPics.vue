@@ -1,7 +1,7 @@
 <template>
   <div class="picContainer">
     <v-img
-      class="picContainer__picture rounded-lg boxShadowed"
+      class="picContainer__picture rounded-lg boxShadowed secondary lighten-2"
       gradient="to top, rgba(0,0,0,.5), rgba(0,0,0,.0)"
       v-for="image in images"
       :key="image.id"

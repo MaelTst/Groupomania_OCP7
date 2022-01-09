@@ -1,25 +1,31 @@
-// Middleware de validation pour le endpoint /api/auth/signup
-// Vérifie que les entrées mail et password de l'utilisateur respectent les contraintes imposées par les RegEx suivantes :
-// mailValidation : [*] + [@] + [*] +[.] + [*]
-// passwordValidation : un chiffre, une minuscule, une majuscule et 8 caractères minimum
-exports.signup = (req, res, next) => {
-    const passwordValidation = new RegExp(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/);
-    const mailValidation = new RegExp(/\S+@\S+\.\S+/);
-    const nicknameValidation = new RegExp(/^.{6,30}$/);
-    let validationCode = "";
-    if (!mailValidation.test(req.body.email) || !passwordValidation.test(req.body.password) || !nicknameValidation.test(req.body.nickname)) {
-        if (!mailValidation.test(req.body.email)) {
-            validationCode += "1";
+const { check, validationResult } = require('express-validator');
+
+// Middleware de validation pour les routes de création et de modification d'utilisateurs
+exports.user = [
+    check('email').isEmail(),
+    check('password').isStrongPassword({ minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 0 }),
+    check('nickname').isLength({ min: 6, max: 30 }).isAlphanumeric('fr-FR', { ignore: ' ' }),
+    (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(401).json({ errors: errors.array() });
         }
-        if (!passwordValidation.test(req.body.password)) {
-            validationCode += "2";
+        else {
+            next();
         }
-        if (!nicknameValidation.test(req.body.nickname)) {
-            validationCode += "3";
+    },
+];
+
+// Middleware de validation pour les routes de création de posts et commentaires
+exports.post = [
+    check('content').isLength({ min: 6, max: 300 }),
+    (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(401).json({ errors: errors.array() });
         }
-        res.status(400).json({ code: validationCode });
-    }
-    else {
-        next();
-    }
-};
+        else {
+            next();
+        }
+    },
+];

@@ -28,7 +28,7 @@
             offset-y
           >
             <template v-slot:activator="{ on, attrs }">
-              <v-btn icon v-bind="attrs" v-on="on">
+              <v-btn aria-label="Options du post" icon v-bind="attrs" v-on="on">
                 <v-icon>mdi-dots-horizontal</v-icon>
               </v-btn>
             </template>
@@ -86,7 +86,7 @@
             class="usersPosts__subContent__heading pa-2 d-flex justify-space-between align-center"
           >
             <div class="d-flex">
-              <v-btn :class="post.likes.map(like => like.userId).includes($store.state.userInfo.id) ? 'primary--text' : ''" depressed @click="likePost(post.id)">
+              <v-btn :class="post.likes.map(like => like.userId).includes($store.state.userInfo.id) ? 'primary--text' : 'secondary--text'" depressed @click="likePost(post.id)">
                 {{post.likes.length}}
                 <v-icon size="20">mdi-thumb-up</v-icon>
               </v-btn>

@@ -28,6 +28,7 @@
 
     <div class="justify-end d-flex ml-3 mt-4 mt-sm-0">
       <v-file-input
+       aria-label="Joindre un fichier"
       v-model="postFile"
         accept="image/*"
         icon="mdi-paperclip"

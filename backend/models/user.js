@@ -1,3 +1,4 @@
+// Définition du modèle user
 module.exports = (sequelize, Sequelize) => {
     const User = sequelize.define("user", {
         nickname: {
@@ -5,7 +6,7 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false,
             unique: true,
             validate: {
-                len: [6,30],
+                len: [6, 30],
                 notEmpty: true
             }
         },
@@ -39,6 +40,5 @@ module.exports = (sequelize, Sequelize) => {
             defaultValue: false
         }
     });
-  
     return User;
-  };
+};

@@ -39,6 +39,7 @@ const errorHandler = error => {
   }
 };
 
+// Synchronisation des models/tables & Création du compte administrateur si non détécté
 const server = http.createServer(app);
 server.on('error', errorHandler);
 server.on('listening', () => {
@@ -72,4 +73,5 @@ server.on('listening', () => {
     })
     .catch(error => console.log(error.message));
 });
+
 server.listen(port);

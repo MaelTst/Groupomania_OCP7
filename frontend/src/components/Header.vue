@@ -1,7 +1,7 @@
 <template>
   <div class="py-4 header">
       <div class="header__content px-4">
-          <router-link to="/"><div class="header__content__leftSide">
+          <router-link to="/" aria-label="Retour à l'accueil"><div class="header__content__leftSide">
     <v-img
       alt="Logo Groupomania"
       class="flex-grow-0 d-flex me-2"
