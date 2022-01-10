@@ -2,7 +2,7 @@
   <v-col lg="6" md="9" cols="12" class="mt-4">
     <MostLikedPics />
     <WritePost />
-    <Post :posts="homePost" />
+    <Post :posts="picsPost" />
   </v-col>
 </template>
 
@@ -12,7 +12,7 @@ import WritePost from "../components/WritePost";
 import Post from "../components/Post";
 
 export default {
-  name: "HomeView",
+  name: "PicturesView",
 
   components: {
     MostLikedPics,
@@ -21,13 +21,13 @@ export default {
   },
 
   computed: {
-    homePost() {
+    picsPost() {
       return this.$store.state.posts
     }
   },
 
   beforeMount() {
-    this.$store.dispatch("getPosts");
+    this.$store.dispatch("getPicsPosts");
   }
 };
 </script>

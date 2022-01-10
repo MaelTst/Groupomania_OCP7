@@ -1,68 +1,52 @@
 <template>
   <v-app>
-    <v-main class="mainContainer">
-      <Header v-if="this.$getCookie('isLoggedIn')"/>
+    <v-main class="grey lighten-5">
+      <Header />
       <v-container fluid class="pa-0">
-        <v-row class="content">
-          <LeftSidebar v-if="this.$getCookie('isLoggedIn')"/>
+        <v-row class="content ma-auto">
+          <LeftSidebar v-if="isLoggedIn()" />
           <router-view />
-          <UsersList v-if="this.$getCookie('isLoggedIn')"/>
+          <UsersList v-if="isLoggedIn()" />
         </v-row>
       </v-container>
+      <Footer v-if="!isLoggedIn()" />
     </v-main>
   </v-app>
 </template>
 
 <script>
-import Header from './components/Header'
-import LeftSidebar from './components/LeftSidebar'
-import UsersList from './components/UsersList'
+import Header from "./components/Header";
+import LeftSidebar from "./components/LeftSidebar";
+import UsersList from "./components/UsersList";
+import Footer from "./components/Footer";
 
 export default {
   name: "App",
   components: {
-      Header,
-      LeftSidebar,
-      UsersList
-    },
-  data: () => ({
-  }),
+    Header,
+    LeftSidebar,
+    UsersList,
+    Footer,
+  },
   methods: {
+    isLoggedIn() {
+      return this.$getCookie("isLoggedIn");
+    },
   },
   beforeCreate() {
-    if (this.$getCookie('isLoggedIn')) {
-      fetch(`${process.env.VUE_APP_ROOT_API}api/user/${this.$getCookie('ID')}`, {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          }
-        })
-          .then((response) => {
-            if (response.ok) {
-              response.json().then((response) => { 
-                this.$store.dispatch('logIn', response);
-                })
-            } 
-          })
-          .catch((error) => {
-            console.log("Erreur lors du fetch : " + error.message);
-          });
+    if (this.$getCookie("isLoggedIn")) {
+      this.$store.dispatch("refreshUserInfo", this.$getCookie("ID"));
     }
   },
 };
 </script>
 
 <style lang="scss">
-.mainContainer {
-  background-color: #fafbfc;
-}
 .boxShadowed {
   box-shadow: 0px 0px 10px 5px rgb(0 0 0 / 2%) !important;
 }
 .content {
   max-width: 1400px;
-  margin: auto;
 }
 .simplebar-scrollbar:before {
   background-color: #aebec4 !important;

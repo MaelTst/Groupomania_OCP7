@@ -3,7 +3,7 @@
     <v-img
       class="picContainer__picture rounded-lg boxShadowed secondary lighten-2"
       gradient="to top, rgba(0,0,0,.5), rgba(0,0,0,.0)"
-      v-for="image in images"
+      v-for="image in this.$store.state.mostLikedPics"
       :key="image.id"
       :src="image.imgUrl"
       content-class="picContainer__picture__bg"
@@ -14,8 +14,9 @@
           alt="Photo de profil"
         />
       </v-avatar>
-      <p class="picContainer__author text-subtitle-2 white--text text-center">
-      {{ image.user.nickname }}</p>
+      <p
+        class="picContainer__author text-subtitle-2 white--text text-center"
+      >{{ image.user.nickname }}</p>
     </v-img>
   </div>
 </template>
@@ -27,16 +28,7 @@ export default {
   }),
   methods: {},
   beforeMount() {
-    fetch(`${process.env.VUE_APP_ROOT_API}api/posts/mostlikedpics`, {
-      method: "GET",
-      credentials: "include",
-    }).then((response) => {
-      if (response.ok) {
-        response.json().then((response) => {
-          this.images = response;
-        });
-      }
-    });
+    this.$store.dispatch("getMostLikedPics");
   },
 };
 </script>
@@ -51,10 +43,10 @@ export default {
     overflow: hidden;
   }
   &__avatar {
-      border: 2px solid #ffffff;
+    border: 2px solid #ffffff;
   }
   &__author {
-      margin-top: 120px;
+    margin-top: 120px;
   }
 }
 </style>

@@ -76,6 +76,65 @@ exports.getMostLikedPics = (req, res, next) => {
         .catch(error => res.status(400).json({ error }));
 }
 
+// Controlleur pour la route GET /api/posts/liked/:id - Affichage des posts likés par l'utilisateur
+exports.getUserFavoritesPost = (req, res, next) => {
+    db.likes.findAll({
+        attributes: [],
+        where: { userId: req.params.id },
+        order: [[db.posts, 'createdAt', 'DESC'],[db.posts, db.comments, 'createdAt', 'ASC']],
+        include: [
+            {
+                model: db.posts,
+                include: [
+                    {
+                        model: db.users, 
+                        attributes: ["id", "nickname", "imgUrl", "isAdmin", "loggedIn"]
+                    },
+                    {
+                        model: db.comments,
+                        include: [{ model: db.users, attributes: ["id", "nickname", "imgUrl", "isAdmin", "loggedIn"]}]
+                    },
+                    {
+                        model: db.likes, attributes: ["userId"],
+                        include: [{ model: db.users, attributes: ["nickname"] }],
+                    }
+                ],
+            },
+        ]
+    })
+        .then(posts => { 
+            let data = [] 
+            posts.forEach(post => {
+                data.push(post.post)
+            })
+            res.status(200).json(data)
+        })
+        .catch(error => res.status(400).json({ error }));
+}
+
+// Controlleur pour la route GET /api/posts/pics - Affichage des posts qui contiennent une image
+exports.getPicsPost = (req, res, next) => {
+    db.posts.findAll({
+        where: { imgUrl: { [Op.not]: null } },
+        order: [['createdAt', 'DESC'], [db.comments, 'createdAt', 'ASC']],
+        include: [
+            {
+                model: db.users,
+                attributes: ["id", "nickname", "imgUrl", "isAdmin", "loggedIn"]
+            },
+            {
+                model: db.comments,
+                include: [{ model: db.users, attributes: ["id", "nickname", "imgUrl", "isAdmin", "loggedIn"] }]
+            },
+            {
+                model: db.likes, attributes: ["userId"],
+                include: [{ model: db.users, attributes: ["nickname"] }],
+            }]
+    })
+        .then(posts => res.status(200).json(posts))
+        .catch(error => res.status(400).json({ error }));
+}
+
 // Controlleur pour la route PUT /api/posts/:id - Modification d'un post
 exports.updatePost = (req, res, next) => {
     db.users.findOne({ where: { userId: req.token.userId } })

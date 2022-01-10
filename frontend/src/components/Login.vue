@@ -28,15 +28,13 @@
               required
             ></v-text-field>
             <v-btn
-            :loading="loadingLogin"
+              :loading="loadingLogin"
               block
               :disabled="!validLoginForm || loadingLogin"
               color="primary"
               class="mr-4 mt-5"
               @click="login();"
-            >
-              Connexion
-            </v-btn>
+            >Connexion</v-btn>
           </v-form>
         </v-card>
       </v-tab-item>
@@ -81,7 +79,8 @@
       </v-tab-item>
     </v-tabs-items>
 
-    <v-snackbar v-model="snackbar" :timeout="4000" color="red darken-3">Erreur : 
+    <v-snackbar v-model="snackbar" :timeout="4000" color="red darken-3">
+      Erreur :
       {{ snackbarMsg }}
       <template v-slot:action="{ attrs }">
         <v-btn color="white" text v-bind="attrs" @click="snackbar = false">Fermer</v-btn>
@@ -143,10 +142,10 @@ export default {
         })
           .then((response) => {
             if (response.ok) {
-              response.json().then((response) => { 
-                this.$store.dispatch('logIn', response);
+              response.json().then((response) => {
+                this.$store.dispatch("logIn", response);
                 this.$router.push({ name: "Home" });
-                })
+              });
             } else {
               response.json().then((error) => {
                 switch (error.code) {
@@ -198,19 +197,24 @@ export default {
         })
           .then((response) => {
             if (response.ok) {
-              response.json().then((response) => { 
-                this.$store.dispatch('logIn', response);
+              response.json().then((response) => {
+                this.$store.dispatch("logIn", response);
                 this.$router.push({ name: "Home" });
-                })
+              });
             } else {
               response.json().then((error) => {
                 if (error.code) {
-                  if (error.code.includes("1")) { console.log("code 1") }
-                  if (error.code.includes("2")) { console.log("code 2") }
-                  if (error.code.includes("3")) { console.log("code 3") }
+                  if (error.code.includes("1")) {
+                    console.log("code 1");
+                  }
+                  if (error.code.includes("2")) {
+                    console.log("code 2");
+                  }
+                  if (error.code.includes("3")) {
+                    console.log("code 3");
+                  }
                 }
-                console.log(error) // GESTION ERREURS A TERMINER
-                
+                console.log(error); // GESTION ERREURS A TERMINER
               });
             }
             this.loadingSignup = false;

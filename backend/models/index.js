@@ -30,6 +30,6 @@ db.posts.hasMany(db.likes, {
 db.comments.belongsTo(db.posts)
 db.comments.belongsTo(db.users)
 db.likes.belongsTo(db.users)
-db.likes.belongsTo(db.users)
+db.likes.belongsTo(db.posts)
 
 module.exports = db;

@@ -3,12 +3,17 @@
     <v-card class="rounded-lg boxShadowed">
       <div class="leftSidebar__userCard px-6">
         <router-link :to="'/user/'+this.$store.state.userInfo.id">
-        <v-avatar class="rounded-lg" size="42">
-          <img
-            :src="this.$store.state.userInfo.imgUrl ? this.$store.state.userInfo.imgUrl : require('../assets/placeholder.png')"
-            alt="Photo de profil"
-          />
-        </v-avatar></router-link>
+          <v-avatar
+            v-if="this.$store.state.userInfo.id ? true : false"
+            class="rounded-lg"
+            size="42"
+          >
+            <img
+              :src="this.$store.state.userInfo.imgUrl ? this.$store.state.userInfo.imgUrl : require('../assets/placeholder.png')"
+              alt="Photo de profil"
+            />
+          </v-avatar>
+        </router-link>
         <div class="leftSidebar__userCard__text">
           <v-card-title>{{ this.$store.state.userInfo.nickname }}</v-card-title>
           <v-card-subtitle>{{ this.$store.state.userInfo.nickname }}</v-card-subtitle>
@@ -28,7 +33,7 @@
             </v-list-item-content>
           </v-list-item>
 
-          <v-list-item color="primary" link to="/about" class="pl-8">
+          <v-list-item color="primary" link to="/favorites" class="pl-8">
             <v-list-item-icon>
               <v-icon>mdi-star-outline</v-icon>
             </v-list-item-icon>
@@ -37,7 +42,7 @@
             </v-list-item-content>
           </v-list-item>
 
-          <v-list-item color="primary" link to="/user/64" class="pl-8">
+          <v-list-item color="primary" link to="/pictures" class="pl-8">
             <v-list-item-icon>
               <v-icon>mdi-panorama-variant-outline</v-icon>
             </v-list-item-icon>
@@ -55,7 +60,7 @@
             </v-list-item-content>
           </v-list-item>
 
-          <v-list-item color="primary" link to="" class="pl-8">
+          <v-list-item color="primary" link to class="pl-8">
             <v-list-item-icon>
               <v-icon>mdi-cog-outline</v-icon>
             </v-list-item-icon>
@@ -92,19 +97,7 @@ export default {
       }
     },
     logOut() {
-      fetch(`${process.env.VUE_APP_ROOT_API}api/user/auth/logout`, {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then(() => {
-          this.$router.push({ name: "Login" });
-        })
-        .catch((error) => {
-          console.log("Erreur lors du fetch : " + error.message);
-        });
+      this.$store.dispatch("logOut");
     },
   },
   created() {

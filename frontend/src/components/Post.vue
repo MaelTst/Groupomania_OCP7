@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="usersPosts mt-6" v-for="(post, index) in $store.state.posts" :key="post.id">
+    <div class="usersPosts mt-6" v-for="(post, index) in posts" :key="post.id">
       <v-card class="rounded-lg boxShadowed pa-6 pt-2">
         <div class="usersPosts__heading">
           <router-link :to="'/user/'+post.user.id">
@@ -86,9 +86,14 @@
             class="usersPosts__subContent__heading pa-2 d-flex justify-space-between align-center"
           >
             <div class="d-flex">
-              <v-btn :class="post.likes.map(like => like.userId).includes($store.state.userInfo.id) ? 'primary--text' : 'secondary--text'" depressed @click="likePost(post.id)">
-                {{post.likes.length}}
+              <v-btn
+                block
+                :class="post.likes.map(like => like.userId).includes($store.state.userInfo.id) ? 'primary--text' : 'secondary--text'"
+                depressed
+                @click="likePost(post.id)"
+              >
                 <v-icon size="20">mdi-thumb-up</v-icon>
+                {{post.likes.length}} J'aime
               </v-btn>
             </div>
             <div class="d-flex">
@@ -148,12 +153,14 @@ export default {
     fullScreenImgUrl: null,
     commentContent: "",
   }),
-  computed: {
+  props: {
+    posts: {},
   },
+  computed: {},
   components: {},
   methods: {
-    deletePost(postId) {
-      this.$store.dispatch("deletePost", { postId });
+    deletePost(postId, index) {
+      this.$store.dispatch("deletePost", { postId, index });
     },
 
     toggleFullscreen(on, imgUrl) {
@@ -165,19 +172,17 @@ export default {
     },
 
     likePost(postId) {
-        this.$store.dispatch("likePost", { postId });
+      let currentPage = this.$route.name;
+      let ID = this.$getCookie("ID");
+      this.$store.dispatch("likePost", { postId, currentPage, ID });
     },
 
     sendComment(postId) {
-        if (this.commentContent) {
-            let content = this.commentContent;
-            this.$store.dispatch("sendComment", { postId, content });
-        }
-    }
-  },
-
-  beforeMount() {
-    this.$store.dispatch("getPosts");
+      if (this.commentContent) {
+        let content = this.commentContent;
+        this.$store.dispatch("sendComment", { postId, content });
+      }
+    },
   },
 };
 </script>

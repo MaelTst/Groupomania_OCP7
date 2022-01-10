@@ -1,28 +1,51 @@
 <template>
-<v-card height="200px">
-  <v-footer absolute padless>
-    <v-card flat tile width="100%" class="red lighten-1 text-center">
-      <v-card-text>
-        <v-btn v-for="icon in icons" :key="icon" class="mx-4" icon>
-          <v-icon size="24px">{{ icon }}</v-icon>
-        </v-btn>
-      </v-card-text>
-
-      <v-divider></v-divider>
-
-      <v-card-text class="white--text">
-        {{ new Date().getFullYear() }} —
-        <strong>Groupomania</strong>
-      </v-card-text>
-    </v-card>
-  </v-footer>
-</v-card>
+  <footer class="footer py-6">
+    <div class="footer__content px-4 d-flex justify-space-between align-center">
+      <ul class="d-flex d-sm-inline-flex flex-wrap footer__content__list pa-0">
+        <li>
+          <a href="#">À propos</a>
+        </li>
+        <li>
+          <a href="#">Mentions légales</a>
+        </li>
+        <li>
+          <a href="#">Aide</a>
+        </li>
+        <li>
+          <a href="#">Contact</a>
+        </li>
+      </ul>
+      <span class="d-none d-sm-block">Groupomania © {{ new Date().getFullYear() }}</span>
+    </div>
+  </footer>
 </template>
 
 <script>
 export default {
-  data: () => ({
-    icons: ["mdi-home", "mdi-email", "mdi-calendar", "mdi-delete"]
-  })
+  data: () => ({}),
 };
 </script>
+
+<style lang="scss" scoped>
+.footer {
+  background-color: #ffffff !important;
+  border-top: 1px solid #f2f3f7 !important;
+  &__content {
+    max-width: 1400px;
+    margin: auto;
+    &__list {
+      list-style: none;
+      li {
+        padding-right: 20px;
+        a {
+          text-decoration: none;
+          color: rgba(0, 0, 0, 0.87);
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+}
+</style>
