@@ -20,9 +20,11 @@
         </div>
       </div>
     </v-card>
-
-    <v-card class="rounded-lg boxShadowed mt-6">
-      <v-navigation-drawer floating width="auto" class="rounded-lg mt-6">
+<div class="usersList__heading blue-grey--text px-3 pb-3 mt-4">
+        <h1 class="overline">Navigation</h1>
+      </div>
+    <v-card class="rounded-lg boxShadowed">
+      <v-navigation-drawer floating width="auto" class="rounded-lg">
         <v-list class="pa-0">
           <v-list-item color="primary" link to="/" class="pl-8">
             <v-list-item-icon>
@@ -51,7 +53,7 @@
             </v-list-item-content>
           </v-list-item>
 
-          <v-list-item color="primary" link to="/user/65" class="pl-8">
+          <v-list-item color="primary" link :to="'/user/'+this.$store.state.userInfo.id" class="pl-8">
             <v-list-item-icon>
               <v-icon>mdi-account-outline</v-icon>
             </v-list-item-icon>
