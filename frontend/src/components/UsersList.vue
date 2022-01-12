@@ -7,7 +7,6 @@
           class="rounded-pill white--text blue-grey lighten-3 px-3 py-1 text-subtitle-2"
         >{{ users.length }}</span>
       </div>
-
       <v-card class="usersList__list rounded-lg boxShadowed">
         <simplebar class="simplebarContainer py-3" data-simplebar-auto-hide="true">
           <v-list class="pa-0">
@@ -15,7 +14,7 @@
               <v-list-item :to="'/user/'+user.id" class="px-6" v-for="user in users" :key="user.id">
                 <v-list-item-avatar class="rounded-lg" size="42">
                   <img
-                    :src="user.imgUrl ? user.imgUrl : require('../assets/placeholder.png')"
+                    :src="user.imgUrl || require('../assets/placeholder.png')"
                     alt="Photo de profil"
                   />
                 </v-list-item-avatar>
@@ -23,7 +22,7 @@
                   class="blue-grey--text text--darken-3 text-subtitle-2"
                 >{{ user.nickname }}</v-list-item-content>
                 <v-list-item-icon>
-                  <v-icon :color="user.isLoggedIn ? 'green' : 'grey'">mdi-dots-horizontal</v-icon>
+                  <v-icon>mdi-dots-horizontal</v-icon>
                 </v-list-item-icon>
               </v-list-item>
             </v-list-item-group>
@@ -41,9 +40,14 @@ export default {
   components: {
     simplebar,
   },
-  data: () => ({
-    users: [],
-  }),
+  data: () => ({}),
+
+  computed: {
+    users() {
+      return this.$store.state.users;
+    },
+  },
+
   methods: {
     UsersListdynamicHeight() {
       let scrollPos = document.documentElement.scrollTop - 91;
@@ -55,23 +59,17 @@ export default {
       }
     },
   },
+
   created() {
     window.addEventListener("scroll", this.UsersListdynamicHeight);
   },
+
   destroyed() {
     window.removeEventListener("scroll", this.UsersListdynamicHeight);
   },
+
   beforeMount() {
-    fetch(`${process.env.VUE_APP_ROOT_API}api/user/`, {
-      method: "GET",
-      credentials: "include",
-    }).then((response) => {
-      if (response.ok) {
-        response.json().then((response) => {
-          this.users = response;
-        });
-      }
-    });
+    this.$store.dispatch("getUsers");
   },
 };
 </script>

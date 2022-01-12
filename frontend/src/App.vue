@@ -45,6 +45,9 @@ export default {
 .boxShadowed {
   box-shadow: 0px 0px 10px 5px rgb(0 0 0 / 2%) !important;
 }
+.bg-light-grey {
+  background-color: #f4f5f8 !important;
+}
 .content {
   max-width: 1400px;
 }

@@ -4,6 +4,7 @@ const { Op } = require("sequelize");
 
 // Controlleur pour la route POST /api/posts/ - Création d'un post
 exports.createPost = (req, res, next) => {
+    if (req.fileError) { return res.status(400).json({ message: req.fileError }) }
     db.users.findOne({ attributes: ["id"], where: { userId: req.token.userId } })
         .then(user => {
             db.posts.create({
@@ -145,7 +146,7 @@ exports.updatePost = (req, res, next) => {
             })
                 .then(post => {
                     if (post.user.userId === req.token.userId || userFrom.isAdmin === true) {
-                        let imgUrl = req.file ? req.file.filename : post.imgUrl
+                        let imgUrl = req.file ? `${process.env.API_URL}/images/${req.file.filename}` : post.imgUrl
                         db.posts.update({
                             content: req.body.content,
                             imgUrl: imgUrl

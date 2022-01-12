@@ -2,7 +2,7 @@
   <v-col lg="6" md="9" cols="12" class="mt-4">
     <MostLikedPics />
     <WritePost />
-    <Post :posts="favoritesPost" />
+    <Post v-for="(post, index) in favoritesPost" :key="post.id"  :post="post" :index="index" />
   </v-col>
 </template>
 
