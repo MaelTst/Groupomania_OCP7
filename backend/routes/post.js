@@ -9,6 +9,7 @@ const rateLimit = require('../middleware/rate-limit');
 // Router indiquant les middlewares et controllers à utiliser pour les differents endpoints de la route /api/posts
 router.post('/', rateLimit.post, auth, multer, validation.post, postCtrl.createPost);
 router.get('/', auth, postCtrl.getAll);
+router.get('/unique/:id', auth, postCtrl.getOnePost);
 router.get('/user/:id', auth, postCtrl.getUserPost);
 router.get('/mostlikedpics', auth, postCtrl.getMostLikedPics);
 router.get('/liked/:id', auth, postCtrl.getUserFavoritesPost);

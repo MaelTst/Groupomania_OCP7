@@ -5,6 +5,7 @@ const { Op } = require("sequelize");
 // Controlleur pour la route POST /api/posts/ - Création d'un post
 exports.createPost = (req, res, next) => {
     if (req.fileError) { return res.status(400).json({ message: req.fileError }) }
+    if (req.fileSizeError) { return res.status(400).json({ message: "Fichier trop volumineux (10Mo maximum)" }) }
     db.users.findOne({ attributes: ["id"], where: { userId: req.token.userId } })
         .then(user => {
             db.posts.create({
@@ -64,11 +65,35 @@ exports.getUserPost = (req, res, next) => {
         .catch(error => res.status(400).json({ error }))
 }
 
+// Controlleur pour la route GET /api/posts/unique/:id - Affichage d'un post spécifique
+exports.getOnePost = (req, res, next) => {
+    db.posts.findOne({
+        where: { id: req.params.id },
+        order: [['createdAt', 'DESC'], [db.comments, 'createdAt', 'ASC']],
+        include: [
+            {
+                model: db.users,
+                attributes: ["id", "nickname", "imgUrl", "isAdmin", "loggedIn"]
+            },
+            {
+                model: db.comments,
+                include: [{ model: db.users, attributes: ["id", "nickname", "imgUrl", "isAdmin", "loggedIn"] }]
+            },
+            {
+                model: db.likes,
+                attributes: ["userId"],
+                include: [{ model: db.users, attributes: ["nickname"] }]
+            }]
+    })
+        .then(posts => res.status(200).json([posts]))
+        .catch(error => res.status(400).json({ error }))
+}
+
 // Controlleur pour la route GET /api/posts/mostlikedpics - Affichage des 5 images postées les plus likées
 exports.getMostLikedPics = (req, res, next) => {
     db.posts.findAll({
         where: { imgUrl: { [Op.not]: null } },
-        attributes: ["imgUrl", [db.sequelize.literal('(SELECT COUNT(*) FROM likes WHERE "postId" = post.id)'), "count",]],
+        attributes: ["id","imgUrl", [db.sequelize.literal('(SELECT COUNT(*) FROM likes WHERE "postId" = post.id)'), "count",]],
         order: [[db.sequelize.literal("count"), "DESC"]],
         limit: 5,
         include: [{ model: db.users, attributes: ["nickname", "imgUrl"] }]
@@ -138,6 +163,8 @@ exports.getPicsPost = (req, res, next) => {
 
 // Controlleur pour la route PUT /api/posts/:id - Modification d'un post
 exports.updatePost = (req, res, next) => {
+    if (req.fileError) { return res.status(400).json({ message: req.fileError }) }
+    if (req.fileSizeError) { return res.status(400).json({ message: "Fichier trop volumineux (10Mo maximum)" }) }
     db.users.findOne({ where: { userId: req.token.userId } })
         .then(userFrom => {
             db.posts.findOne({

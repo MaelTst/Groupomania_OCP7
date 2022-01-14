@@ -8,7 +8,6 @@ const MIME_TYPES = {
   'image/jpeg': 'jpg',
   'image/png': 'png',
   'image/webp': 'webp',
-
 };
 
 // Configuration du Middleware Multer indiquant sous quel nom (filename) et dans quel dossier enregistrer les fichiers reçus (destination)
@@ -26,10 +25,10 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage: storage,
   limits: {
-      fileSize: 10000000
+    fileSize: 10000000
   },
   fileFilter: function (req, file, callback) {
-    if(MIME_TYPES[file.mimetype]) {
+    if (MIME_TYPES[file.mimetype]) {
       callback(null, true);
     } else {
       req.fileError = "Seuls les fichiers image sont acceptés (.bmp .gif .jpg .jpeg .png .webp)"
@@ -38,4 +37,12 @@ const upload = multer({
   }
 })
 
-module.exports = upload.single('image');
+const multerConfig = upload.single('image')
+
+module.exports = function (req, res, next) {
+  multerConfig(req, res, function (err) {
+    if (err instanceof multer.MulterError) {
+      req.fileSizeError = true }
+    next()
+  })
+}

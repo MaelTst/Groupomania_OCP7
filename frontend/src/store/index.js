@@ -87,16 +87,16 @@ export default new Vuex.Store({
         method: "GET",
         credentials: "include",
       })
-      .then((response) => {
-        if (response.ok) {
-          response.json().then((response) => {
-            commit('GET_USERS', response)
-          });
-        }
-      })
-      .catch((error) => {
-        console.log("Erreur lors du fetch : " + error.message);
-      });
+        .then((response) => {
+          if (response.ok) {
+            response.json().then((response) => {
+              commit('GET_USERS', response)
+            });
+          }
+        })
+        .catch((error) => {
+          console.log("Erreur lors du fetch : " + error.message);
+        });
     },
 
     getPosts({ commit }) {
@@ -138,6 +138,26 @@ export default new Vuex.Store({
       });
     },
 
+    getUniquePost({ commit }, ID) {
+      fetch(`${process.env.VUE_APP_ROOT_API}api/posts/unique/${ID}`, {
+        method: "GET",
+        credentials: "include",
+      }).then((response) => {
+        if (response.ok) {
+          response.json().then((response) => {
+            commit('GET_POSTS', response)
+          });
+        }
+      });
+    },
+
+    refreshPosts({ dispatch }, { currentRoute, ID, postId }) {
+      if (currentRoute === "Home") { dispatch('getPosts'); }
+      if (currentRoute === "Favorites") { dispatch("getFavoritesPosts", ID); }
+      if (currentRoute === "Pictures") { dispatch("getPicsPosts"); }
+      if (currentRoute === "Post") { dispatch("getUniquePost", postId); }
+    },
+
     deletePost({ dispatch, commit, state }, { postId, index }) {
       fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}`, {
         method: "DELETE",
@@ -161,7 +181,7 @@ export default new Vuex.Store({
         });
     },
 
-    likePost({ dispatch }, { postId, currentPage, ID }) {
+    likePost({ dispatch }, { postId, currentRoute, ID }) {
       fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}/like`, {
         method: "POST",
         credentials: "include",
@@ -171,9 +191,7 @@ export default new Vuex.Store({
             response.json().then((response) => {
               console.log(response)
               dispatch('getMostLikedPics');
-              if (currentPage === "Pictures") { dispatch('getPicsPosts'); }
-              if (currentPage === "Home") { dispatch('getPosts'); }
-              if (currentPage === "Favorites") { dispatch('getFavoritesPosts', ID); }
+              dispatch('refreshPosts', { currentRoute, ID, postId });
             })
           } else {
             response.json().then((error) => {
@@ -186,7 +204,7 @@ export default new Vuex.Store({
         });
     },
 
-    sendComment({ dispatch }, { postId, content }) {
+    sendComment({ dispatch }, { postId, content, currentRoute, ID }) {
       fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}/comment`, {
         method: "POST",
         credentials: "include",
@@ -199,7 +217,7 @@ export default new Vuex.Store({
           if (response.ok) {
             response.json().then((response) => {
               console.log(response)
-              dispatch('getPosts');
+              dispatch('refreshPosts', { currentRoute, ID, postId });
             })
           } else {
             response.json().then((error) => {

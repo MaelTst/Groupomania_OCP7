@@ -117,7 +117,7 @@ exports.getOne = (req, res, next) => {
         attributes: ['userId', 'id', 'nickname', 'email', 'imgUrl', 'isAdmin', 'loggedIn', 'createdAt', 'updatedAt']
     })
         .then(user => {
-            if (user.userId === req.token.userId) { res.status(200).json(user) }
+            if (user.userId === req.token.userId) { res.status(200).json({ id: user.id, nickname: user.nickname, email: user.email, imgUrl: user.imgUrl, isAdmin: user.isAdmin, loggedIn: user.loggedIn, createdAt: user.createdAt, updatedAt: user.updatedAt }) }
             else { res.status(200).json({ nickname: user.nickname, imgUrl: user.imgUrl, id: user.id, loggedIn: user.loggedIn, isAdmin: user.isAdmin }) }
         })
         .catch(error => res.status(404).json({ error }))

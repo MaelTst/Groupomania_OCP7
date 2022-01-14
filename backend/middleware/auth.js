@@ -24,6 +24,6 @@ module.exports = (req, res, next) => {
                 domain: process.env.SITE_DOMAIN,
                 expires: new Date(Date.now() - 1)
             })
-            .json({ error: "Requete non authentifiée !" })
+            .json({ message: "Votre session n'est plus valide, veuillez vous reconnecter" })
     }
 };

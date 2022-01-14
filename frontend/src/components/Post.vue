@@ -17,7 +17,7 @@
             >{{ post.user.nickname }}</v-card-title>
             <v-card-subtitle
               :title="$moment(post.createdAt).calendar()"
-            >{{ $moment(post.createdAt).fromNow() }}</v-card-subtitle>
+            >{{ $moment(post.createdAt).subtract(30,'s').fromNow() }}</v-card-subtitle>
           </div>
           <v-menu
             content-class="elevation-2 rounded-lg"
@@ -248,20 +248,10 @@ export default {
               if (response.ok) {
                 response.json().then((response) => {
                   console.log(response);
-                  if (this.$route.name === "Home") {
-                    this.$store.dispatch("getPosts");
-                  }
-                  if (this.$route.name === "Favorites") {
-                    this.$store.dispatch(
-                      "getFavoritesPosts",
-                      this.$getCookie("ID")
-                    );
-                  }
-                  if (this.$route.name === "Pictures") {
-                    this.$store.dispatch("getPicsPosts");
-                  }
-                  //if (this.$route.name === "User") { this.$store.dispatch("getPicsPosts"); }
-                  //if (this.$route.name === "Post") { this.$store.dispatch("getPicsPosts"); }
+                  let currentRoute = this.$route.name;
+                  let ID = this.$getCookie('ID')
+                  let postId = this.post.id
+                  this.$store.dispatch("refreshPosts", { currentRoute, ID, postId });
                   this.isEditing = false;
                   this.postFile = null;
                   this.loading = false;
@@ -287,7 +277,7 @@ export default {
 
     reportPost() {
       this.snackbar = true;
-      this.snackbarMsg = "Post signalé (ou pas)";
+      this.snackbarMsg = "Post signalé";
     },
 
     deletePost() {
@@ -305,17 +295,19 @@ export default {
     },
 
     likePost() {
-      let currentPage = this.$route.name;
+      let currentRoute = this.$route.name;
       let postId = this.post.id;
-      let ID = this.$getCookie("ID");
-      this.$store.dispatch("likePost", { postId, currentPage, ID });
+      let ID = this.$getCookie('ID')
+      this.$store.dispatch("likePost", { postId, currentRoute, ID });
     },
 
     sendComment() {
       if (this.commentContent) {
         let content = this.commentContent;
         let postId = this.post.id;
-        this.$store.dispatch("sendComment", { postId, content });
+        let ID = this.$getCookie('ID')
+        let currentRoute = this.$route.name;
+        this.$store.dispatch("sendComment", { postId, content, currentRoute, ID });
         this.commentContent = "";
       }
     },

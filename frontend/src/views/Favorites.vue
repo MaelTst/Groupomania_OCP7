@@ -26,7 +26,7 @@ export default {
     }
   },
 
-  beforeMount() {
+  beforeCreate() {
     this.$store.dispatch("getFavoritesPosts", this.$getCookie("ID"));
   }
 };

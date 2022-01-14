@@ -25,8 +25,8 @@ export default {
       return this.$store.state.posts
     }
   },
-
-  beforeMount() {
+  
+  beforeCreate() {
     this.$store.dispatch("getPosts");
   }
 };

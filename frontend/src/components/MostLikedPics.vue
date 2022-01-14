@@ -7,7 +7,7 @@
       :key="image.id"
       :src="image.imgUrl"
       content-class="picContainer__picture__bg"
-    >
+    ><router-link :to="'/post/'+image.id">
       <v-avatar class="picContainer__avatar rounded-lg mt-4 ml-4" size="32">
         <img
           :src="image.user.imgUrl ? image.user.imgUrl : require('../assets/placeholder.png')"
@@ -17,6 +17,7 @@
       <p
         class="picContainer__author text-subtitle-2 white--text text-center"
       >{{ image.user.nickname }}</p>
+      </router-link>
     </v-img>
   </div>
 </template>

@@ -2,7 +2,7 @@
   <v-col lg="6" md="9" cols="12" class="mt-4">
     <MostLikedPics />
     <WritePost />
-    <Post v-for="(post, index) in picsPost" :key="post.id"  :post="post" :index="index" />
+    <Post v-for="(post, index) in uniquePost" :key="post.id" :post="post" :index="index" />
   </v-col>
 </template>
 
@@ -12,7 +12,7 @@ import WritePost from "../components/WritePost";
 import Post from "../components/Post";
 
 export default {
-  name: "PicturesView",
+  name: "PostView",
 
   components: {
     MostLikedPics,
@@ -21,13 +21,19 @@ export default {
   },
 
   computed: {
-    picsPost() {
-      return this.$store.state.posts
-    }
+    uniquePost() {
+      return this.$store.state.posts;
+    },
+  },
+
+  watch: {
+    "$route.params.id": function () {
+      this.$store.dispatch("getUniquePost", this.$route.params.id);
+    },
   },
 
   beforeCreate() {
-    this.$store.dispatch("getPicsPosts");
-  }
+    this.$store.dispatch("getUniquePost", this.$route.params.id);
+  },
 };
 </script>

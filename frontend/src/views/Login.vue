@@ -20,6 +20,7 @@ export default {
   components: {
     Login,
   },
+
   beforeCreate() {
     if (this.$getCookie("isLoggedIn")) {
       this.$router.push({ name: "Home" });

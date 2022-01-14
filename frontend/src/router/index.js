@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import Favorites from '../views/Favorites.vue'
 import Pictures from '../views/Pictures.vue'
+import Post from '../views/Post.vue'
 
 Vue.use(VueRouter)
 
@@ -13,7 +14,8 @@ const routes = [
     name: 'Home',
     component: Home,
     meta: {
-      requiresAuth: true
+      requiresAuth: true,
+      title: "Groupomania"
     }
   },
   {
@@ -21,7 +23,7 @@ const routes = [
     name: 'Login',
     component: Login,
     meta: {
-
+      title: "Connexion - Groupomania"
     }
   },
   {
@@ -29,7 +31,8 @@ const routes = [
     name: 'Favorites',
     component: Favorites,
     meta: {
-      requiresAuth: true
+      requiresAuth: true,
+      title: "Favoris - Groupomania"
     }
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route
@@ -41,7 +44,17 @@ const routes = [
     name: 'Pictures',
     component: Pictures,
     meta: {
-      requiresAuth: true
+      requiresAuth: true,
+      title: "Photos - Groupomania"
+    }
+  },
+  {
+    path: '/post/:id',
+    name: 'Post',
+    component: Post,
+    meta: {
+      requiresAuth: true,
+      title: "Groupomania"
     }
   },
 ]
@@ -68,7 +81,8 @@ function getCookie() {
 }
 
 router.beforeEach((to, from, next) => {
-  if (to.matched.some(record => record.meta.requiresAuth)) {
+  document.title = to.meta.title || "Groupomania"
+  if (to.meta.requiresAuth) {
     if (!getCookie()) {
       next({ name: 'Login' })
     } else {
