@@ -28,7 +28,7 @@ export default {
     images: [],
   }),
   methods: {},
-  beforeMount() {
+  beforeCreate() {
     this.$store.dispatch("getMostLikedPics");
   },
 };

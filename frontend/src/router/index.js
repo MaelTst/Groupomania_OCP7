@@ -2,9 +2,6 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
-import Favorites from '../views/Favorites.vue'
-import Pictures from '../views/Pictures.vue'
-import Post from '../views/Post.vue'
 
 Vue.use(VueRouter)
 
@@ -29,7 +26,7 @@ const routes = [
   {
     path: '/favorites',
     name: 'Favorites',
-    component: Favorites,
+    component: Home,
     meta: {
       requiresAuth: true,
       title: "Favoris - Groupomania"
@@ -42,7 +39,7 @@ const routes = [
   {
     path: '/pictures',
     name: 'Pictures',
-    component: Pictures,
+    component: Home,
     meta: {
       requiresAuth: true,
       title: "Photos - Groupomania"
@@ -51,7 +48,7 @@ const routes = [
   {
     path: '/post/:id',
     name: 'Post',
-    component: Post,
+    component: Home,
     meta: {
       requiresAuth: true,
       title: "Groupomania"

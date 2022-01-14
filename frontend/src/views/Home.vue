@@ -2,7 +2,7 @@
   <v-col lg="6" md="9" cols="12" class="mt-4">
     <MostLikedPics />
     <WritePost />
-    <Post v-for="(post, index) in homePost" :key="post.id"  :post="post" :index="index" />
+    <Post v-for="(post, index) in Posts" :key="post.id" :post="post" :index="index" />
   </v-col>
 </template>
 
@@ -21,13 +21,31 @@ export default {
   },
 
   computed: {
-    homePost() {
-      return this.$store.state.posts
-    }
+    Posts() {
+      return this.$store.state.posts;
+    },
   },
-  
+
+  watch: {
+    "$route.name": function () {
+      let currentRoute = this.$route.name;
+      let ID = this.$getCookie("ID");
+      let postId = this.$route.params.id;
+      this.$store.dispatch("refreshPosts", { currentRoute, ID, postId });
+    },
+    
+    "$route.params.id": function () {
+      let currentRoute = this.$route.name;
+      let postId = this.$route.params.id;
+      this.$store.dispatch("refreshPosts", { currentRoute, postId });
+    },
+  },
+
   beforeCreate() {
-    this.$store.dispatch("getPosts");
-  }
+    let currentRoute = this.$route.name;
+    let ID = this.$getCookie("ID");
+    let postId = this.$route.params.id;
+    this.$store.dispatch("refreshPosts", { currentRoute, ID, postId });
+  },
 };
 </script>
