@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="usersPosts mt-6">
+    <div class="usersPosts mb-6">
       <v-card class="rounded-lg boxShadowed pa-6 pt-2">
         <div class="usersPosts__heading">
           <router-link :to="'/user/'+post.user.id">

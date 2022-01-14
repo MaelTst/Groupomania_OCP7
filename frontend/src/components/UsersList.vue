@@ -1,5 +1,5 @@
 <template>
-  <v-col cols="3" class="mt-4 d-none d-md-block" id="rightSidebar">
+  <v-col cols="3" class="mt-4 d-none d-lg-block" id="rightSidebar">
     <div class="usersList">
       <div class="usersList__heading blue-grey--text px-3 pb-3">
         <h1 class="overline">Contacts</h1>
@@ -8,10 +8,10 @@
         >{{ users.length }}</span>
       </div>
       <v-card class="usersList__list rounded-lg boxShadowed">
-        <simplebar class="simplebarContainer py-3" data-simplebar-auto-hide="true">
-          <v-list class="pa-0">
-            <v-list-item-group class="usersList__list__group" active-class="primary--text">
-              <v-list-item :to="'/user/'+user.id" class="px-6" v-for="user in users" :key="user.id">
+        <simplebar class="simplebarContainer" data-simplebar-auto-hide="true">
+          <v-list nav dense>
+            <v-list-item-group active-class="primary--text">
+              <v-list-item :to="'/user/'+user.id" class="px-2" v-for="user in users" :key="user.id">
                 <v-list-item-avatar class="rounded-lg" size="42">
                   <img
                     :src="user.imgUrl || require('../assets/placeholder.png')"
@@ -21,7 +21,7 @@
                 <v-list-item-content
                   class="blue-grey--text text--darken-3 text-subtitle-2"
                 >{{ user.nickname }}</v-list-item-content>
-                <v-list-item-icon>
+                <v-list-item-icon class="align-self-center pr-3">
                   <v-icon>mdi-dots-horizontal</v-icon>
                 </v-list-item-icon>
               </v-list-item>
@@ -68,7 +68,7 @@ export default {
     window.removeEventListener("scroll", this.UsersListdynamicHeight);
   },
 
-  beforeMount() {
+  beforeCreate() {
     this.$store.dispatch("getUsers");
   },
 };
@@ -84,16 +84,13 @@ export default {
   &__list {
     height: calc(100% - 43px);
     overflow: hidden;
-    &__group {
-      margin-right: 25px;
-    }
   }
 }
 #rightSidebar {
   overflow: hidden;
   position: sticky;
   top: 0px;
-  height: calc(100vh + -91px);
+  height: calc(100vh - 91px);
 }
 .simplebarContainer {
   height: 100%;

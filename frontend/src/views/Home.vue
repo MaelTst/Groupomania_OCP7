@@ -36,8 +36,9 @@ export default {
     
     "$route.params.id": function () {
       let currentRoute = this.$route.name;
+      let ID = this.$getCookie("ID");
       let postId = this.$route.params.id;
-      this.$store.dispatch("refreshPosts", { currentRoute, postId });
+      this.$store.dispatch("refreshPosts", { currentRoute, ID, postId });
     },
   },
 

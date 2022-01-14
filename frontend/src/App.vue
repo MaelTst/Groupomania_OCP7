@@ -2,7 +2,7 @@
   <v-app>
     <v-main class="grey lighten-5">
       <Header />
-      <v-container fluid class="pa-0">
+      <v-container fluid class="mainContainer pa-0">
         <v-row class="content ma-auto">
           <LeftSidebar v-if="isLoggedIn()" />
           <router-view />
@@ -58,5 +58,10 @@ export default {
   margin-right: 8px;
   margin-top: 12px;
   margin-bottom: 12px;
+}
+@media screen and (max-width: 959px) {
+  .mainContainer {
+    margin-top: 75px;
+  }
 }
 </style>

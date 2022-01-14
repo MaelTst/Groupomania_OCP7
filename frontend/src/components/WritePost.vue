@@ -1,6 +1,6 @@
 <template>
   <v-form>
-    <v-card class="boxShadowed rounded-lg mt-6 d-flex flex-column flex-sm-row pa-4">
+    <v-card class="boxShadowed rounded-lg d-flex flex-column flex-sm-row pa-4 mb-6">
       <div class="d-flex flex-grow-1">
         <router-link :to="'/user/'+userInfo.id">
           <v-avatar
