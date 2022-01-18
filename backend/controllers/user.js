@@ -1,6 +1,8 @@
 const db = require("../models");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
+const { Op } = require("sequelize");
 
 // Controlleur pour la route POST /api/user/auth/signup - Création d'un utilisateur
 exports.signup = (req, res, next) => {
@@ -53,6 +55,7 @@ exports.login = (req, res, next) => {
                     if (!valid) {
                         return res.status(401).json({ code: 2, message: "Le mot de passe est incorrect" });
                     }
+                    if (user.banned === true) { return res.status(401).json({ code: 3, message: "Votre compte a été banni" }); }
                     let token = jwt.sign(
                         { userId: user.userId },
                         process.env.JWT,
@@ -105,7 +108,8 @@ exports.logout = (req, res, next) => {
 exports.getAll = (req, res, next) => {
     db.users.findAll({
         order: [['nickname', 'ASC']],
-        attributes: ['nickname', 'imgUrl', 'id', 'loggedIn', 'isAdmin']
+        attributes: ['nickname', 'imgUrl', 'id', 'loggedIn', 'isAdmin'],
+        where: { userId: { [Op.not]: req.token.userId } }
     })
         .then(users => res.status(200).json(users))
         .catch(error => res.status(400).json({ error }));
@@ -118,7 +122,7 @@ exports.getOne = (req, res, next) => {
     })
         .then(user => {
             if (user.userId === req.token.userId) { res.status(200).json({ id: user.id, nickname: user.nickname, email: user.email, imgUrl: user.imgUrl, isAdmin: user.isAdmin, loggedIn: user.loggedIn, createdAt: user.createdAt, updatedAt: user.updatedAt }) }
-            else { res.status(200).json({ nickname: user.nickname, imgUrl: user.imgUrl, id: user.id, loggedIn: user.loggedIn, isAdmin: user.isAdmin }) }
+            else { res.status(200).json({ nickname: user.nickname, imgUrl: user.imgUrl, id: user.id, loggedIn: user.loggedIn, isAdmin: user.isAdmin, createdAt: user.createdAt }) }
         })
         .catch(error => res.status(404).json({ error }))
 }
@@ -130,18 +134,31 @@ exports.updateUser = (req, res, next) => {
             db.users.findByPk(req.params.id)
                 .then(user => {
                     if (user.userId === req.token.userId || userFrom.isAdmin === true) {
-                        let imgUrl = req.file ? req.file.filename : user.imgUrl
-                        db.users.update({
-                            nickname: req.body.nickname,
-                            email: req.body.email,
-                            imgUrl: imgUrl
-                        }, {
-                            where: {
-                                userId: user.userId
-                            }
-                        })
-                            .then(res.status(200).json({ message: "Utilisateur modifié" }))
-                            .catch(error => res.status(500).json({ error }));
+                        if (req.body.password) {
+                            bcrypt.hash(req.body.password, 10)
+                                .then(hash => {
+                                    db.users.update({ password: hash }, { where: { userId: user.userId } })
+                                        .then(res.status(200).json({ message: "Mot de passe modifié" }))
+                                        .catch(error => res.status(500).json({ error }));
+                                })
+                                .catch(error => res.status(500).json({ error }));
+                        } else {
+                            let imgUrl = req.file ? req.file.filename : user.imgUrl
+                            let nickname = req.body.nickname ? req.body.nickname : user.nickname
+                            let banned = 0
+                            if (userFrom.isAdmin === true) { banned = req.body.banned ? req.body.banned : 0 }
+                            db.users.update({
+                                nickname: nickname,
+                                imgUrl: imgUrl,
+                                banned: banned
+                            }, {
+                                where: {
+                                    userId: user.userId
+                                }
+                            })
+                                .then(res.status(200).json({ message: "Utilisateur modifié" }))
+                                .catch(error => res.status(500).json({ error }));
+                        }
                     } else {
                         res.status(401).json({ error: `Vous n'êtes pas autorisé à modifier cet utilisateur` })
                     }

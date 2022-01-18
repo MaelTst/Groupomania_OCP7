@@ -36,11 +36,11 @@
           prepend-inner-icon="mdi-magnify"
         ></v-text-field>
         <router-link :to="'/user/'+user.id">
-          <v-avatar class="rounded-lg d-none d-lg-flex" size="42">
+          <v-avatar class="rounded-lg d-none d-md-flex" size="42">
             <img :src="user.imgUrl || require('../assets/placeholder.png')" alt="Photo de profil" />
           </v-avatar>
         </router-link>
-        <v-app-bar-nav-icon class="d-flex d-lg-none" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+        <v-app-bar-nav-icon class="d-flex d-md-none" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
         <v-navigation-drawer v-model="drawer" fixed temporary>
           <v-list nav>
             <v-list-item-group>

@@ -10,6 +10,7 @@ export default new Vuex.Store({
     posts: {},
     mostLikedPics: {},
     users: {},
+    userProfile: {}
   },
 
 
@@ -20,6 +21,10 @@ export default new Vuex.Store({
 
     USER_LOGOUT(state) {
       state.userInfo = {}
+    },
+
+    GET_USER(state, response) {
+      state.userProfile = response
     },
 
     GET_USERS(state, response) {
@@ -49,9 +54,7 @@ export default new Vuex.Store({
       fetch(`${process.env.VUE_APP_ROOT_API}api/user/auth/logout`, {
         method: "GET",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       })
         .then(() => {
           commit('USER_LOGOUT')
@@ -62,20 +65,35 @@ export default new Vuex.Store({
         });
     },
 
-    refreshUserInfo({ commit }, ID) {
+    refreshUserInfo({ commit, dispatch }, ID) {
       fetch(`${process.env.VUE_APP_ROOT_API}api/user/${ID}`, {
         method: "GET",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        }
+        headers: { "Content-Type": "application/json" }
       })
         .then((response) => {
           if (response.ok) {
             response.json().then((userInfo) => {
               commit('USER_LOGIN', userInfo)
             })
-          }
+          } else { dispatch("logOut"); }
+        })
+        .catch((error) => {
+          console.log("Erreur lors du fetch : " + error.message);
+        });
+    },
+
+    getUser({ commit }, userId) {
+      fetch(`${process.env.VUE_APP_ROOT_API}api/user/${userId}`, {
+        method: "GET",
+        credentials: "include"
+      })
+        .then((response) => {
+          if (response.ok) {
+            response.json().then((response) => {
+              commit('GET_USER', response)
+            });
+          } else { router.push({ name: "NotFound" }); }
         })
         .catch((error) => {
           console.log("Erreur lors du fetch : " + error.message);
@@ -85,7 +103,7 @@ export default new Vuex.Store({
     getUsers({ commit }) {
       fetch(`${process.env.VUE_APP_ROOT_API}api/user/`, {
         method: "GET",
-        credentials: "include",
+        credentials: "include"
       })
         .then((response) => {
           if (response.ok) {
@@ -97,6 +115,71 @@ export default new Vuex.Store({
         .catch((error) => {
           console.log("Erreur lors du fetch : " + error.message);
         });
+    },
+
+    deleteUser({ dispatch }, { ID, isAdminBan }) {
+      return new Promise((resolve, reject) => {
+        fetch(`${process.env.VUE_APP_ROOT_API}api/user/${ID}`, {
+          method: "DELETE",
+          credentials: "include"
+        }).then((response) => {
+          if (response.ok) {
+            response.json().then((response) => {
+              resolve(response)
+              if (isAdminBan) { dispatch("getUsers"); }
+            });
+          } else {
+            response.json().then((error) => {
+              reject(error)
+            });
+          }
+        })
+          .catch((error) => {
+            reject(error.message)
+          });
+      })
+    },
+
+    updateUser({ dispatch }, { ID, imgUrl, email, nickname, password, banned }) {
+      return new Promise((resolve, reject) => {
+        fetch(`${process.env.VUE_APP_ROOT_API}api/user/${ID}`, {
+          method: "PUT",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ imgUrl: imgUrl, email: email, nickname: nickname, password: password, banned: banned })
+        }).then((response) => {
+          if (response.ok) {
+            response.json().then((response) => {
+              if (!banned) { dispatch("refreshUserInfo", ID); }
+              resolve(response)
+            });
+          } else {
+            response.json().then((error) => {
+              reject(error)
+            });
+          }
+        })
+          .catch((error) => {
+            reject(error.message)
+          });
+      })
+    },
+
+    sendPost({ dispatch }, formData) {
+      return new Promise((resolve, reject) => {
+        fetch(`${process.env.VUE_APP_ROOT_API}api/posts/`, {
+          method: "POST",
+          credentials: "include",
+          body: formData
+        })
+          .then((response) => {
+            if (response.ok) {
+              resolve()
+              dispatch("getPosts");
+            } else { response.json().then((error) => { reject(error) }); }
+          })
+          .catch((error) => { reject(error) });
+      })
     },
 
     getPosts({ commit }) {
@@ -145,17 +228,32 @@ export default new Vuex.Store({
       }).then((response) => {
         if (response.ok) {
           response.json().then((response) => {
+            if (response[0] === null) { router.push({ name: "NotFound" }); }
             commit('GET_POSTS', response)
           });
         }
       });
     },
 
-    refreshPosts({ dispatch }, { currentRoute, ID, postId }) {
+    getUserPost({ commit }, userId) {
+      fetch(`${process.env.VUE_APP_ROOT_API}api/posts/user/${userId}`, {
+        method: "GET",
+        credentials: "include",
+      }).then((response) => {
+        if (response.ok) {
+          response.json().then((response) => {
+            commit('GET_POSTS', response)
+          });
+        }
+      });
+    },
+
+    refreshPosts({ dispatch }, { currentRoute, ID, postId, userId }) {
       if (currentRoute === "Home") { dispatch('getPosts'); }
       if (currentRoute === "Favorites") { dispatch("getFavoritesPosts", ID); }
       if (currentRoute === "Pictures") { dispatch("getPicsPosts"); }
       if (currentRoute === "Post") { dispatch("getUniquePost", postId); }
+      if (currentRoute === "User") { dispatch("getUserPost", userId); }
     },
 
     deletePost({ dispatch, commit, state }, { postId, index }) {
@@ -181,7 +279,7 @@ export default new Vuex.Store({
         });
     },
 
-    likePost({ dispatch }, { postId, currentRoute, ID }) {
+    likePost({ dispatch }, { postId, currentRoute, ID, userId }) {
       fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}/like`, {
         method: "POST",
         credentials: "include",
@@ -191,7 +289,7 @@ export default new Vuex.Store({
             response.json().then((response) => {
               console.log(response)
               dispatch('getMostLikedPics');
-              dispatch('refreshPosts', { currentRoute, ID, postId });
+              dispatch('refreshPosts', { currentRoute, ID, postId, userId });
             })
           } else {
             response.json().then((error) => {
@@ -204,7 +302,7 @@ export default new Vuex.Store({
         });
     },
 
-    sendComment({ dispatch }, { postId, content, currentRoute, ID }) {
+    sendComment({ dispatch }, { postId, content, currentRoute, ID, userId }) {
       fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}/comment`, {
         method: "POST",
         credentials: "include",
@@ -217,7 +315,7 @@ export default new Vuex.Store({
           if (response.ok) {
             response.json().then((response) => {
               console.log(response)
-              dispatch('refreshPosts', { currentRoute, ID, postId });
+              dispatch('refreshPosts', { currentRoute, ID, postId, userId });
             })
           } else {
             response.json().then((error) => {
@@ -245,12 +343,5 @@ export default new Vuex.Store({
           console.log("Erreur lors du fetch : " + error.message);
         });
     }
-
   },
-
-  getters: {
-  },
-
-  modules: {
-  }
 })

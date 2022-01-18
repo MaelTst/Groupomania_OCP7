@@ -38,6 +38,18 @@ module.exports = (sequelize, Sequelize) => {
         loggedIn: {
             type: Sequelize.BOOLEAN,
             defaultValue: false
+        },
+        banned: {
+            type: Sequelize.BOOLEAN,
+            defaultValue: false
+        },
+        bannerUrl: {
+            type: Sequelize.STRING,
+            defaultValue: null
+        },
+        job: {
+            type: Sequelize.STRING,
+            defaultValue: null
         }
     });
     return User;

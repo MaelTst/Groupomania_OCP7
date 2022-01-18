@@ -31,7 +31,7 @@
                 <v-icon>mdi-dots-horizontal</v-icon>
               </v-btn>
             </template>
-            <v-list dense>
+            <v-list nav dense>
               <v-list-item link @click="reportPost">
                 <v-list-item-icon class="mr-3">
                   <v-icon>mdi-alert</v-icon>
@@ -130,6 +130,7 @@
           >
             <div class="d-flex">
               <v-btn
+              text
                 block
                 :class="post.likes.map(like => like.userId).includes(userInfo.id) ? 'primary--text' : 'secondary--text'"
                 depressed
@@ -251,7 +252,8 @@ export default {
                   let currentRoute = this.$route.name;
                   let ID = this.$getCookie('ID')
                   let postId = this.post.id
-                  this.$store.dispatch("refreshPosts", { currentRoute, ID, postId });
+                  let userId = this.post.userId;
+                  this.$store.dispatch("refreshPosts", { currentRoute, ID, postId, userId });
                   this.isEditing = false;
                   this.postFile = null;
                   this.loading = false;
@@ -277,7 +279,7 @@ export default {
 
     reportPost() {
       this.snackbar = true;
-      this.snackbarMsg = "Post signalé";
+      this.snackbarMsg = "Post signalé (placeholder)";
     },
 
     deletePost() {
@@ -298,7 +300,8 @@ export default {
       let currentRoute = this.$route.name;
       let postId = this.post.id;
       let ID = this.$getCookie('ID')
-      this.$store.dispatch("likePost", { postId, currentRoute, ID });
+      let userId = this.post.userId;
+      this.$store.dispatch("likePost", { postId, currentRoute, ID, userId });
     },
 
     sendComment() {
@@ -307,7 +310,8 @@ export default {
         let postId = this.post.id;
         let ID = this.$getCookie('ID')
         let currentRoute = this.$route.name;
-        this.$store.dispatch("sendComment", { postId, content, currentRoute, ID });
+        let userId = this.post.userId;
+        this.$store.dispatch("sendComment", { postId, content, currentRoute, ID, userId });
         this.commentContent = "";
       }
     },

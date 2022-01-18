@@ -12,7 +12,7 @@ router.post('/auth/login', rateLimit.login, userCtrl.login);
 router.get('/auth/logout', userCtrl.logout);
 router.get('/', auth, userCtrl.getAll);
 router.get('/:id', auth, userCtrl.getOne);
-//router.put('/:id', auth, multer, validation.updateUser, userCtrl.updateUser);
+router.put('/:id', auth, multer, validation.updateUser, userCtrl.updateUser);
 router.delete('/:id', auth, userCtrl.deleteUser);
 
 module.exports = router;

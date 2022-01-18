@@ -2,6 +2,9 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
+import User from '../views/User.vue'
+import Settings from '../views/Settings.vue'
+import NotFound from '../views/NotFound.vue'
 
 Vue.use(VueRouter)
 
@@ -52,6 +55,34 @@ const routes = [
     meta: {
       requiresAuth: true,
       title: "Groupomania"
+    }
+  },
+  {
+    path: '/user/:id',
+    name: 'User',
+    component: User,
+    meta: {
+      requiresAuth: true,
+      title: "Profil utilisateur - Groupomania"
+    }
+  },
+  {
+    path: '/settings',
+    name: 'Settings',
+    component: Settings,
+    meta: {
+      requiresAuth: true,
+      title: "Paramètres - Groupomania"
+    }
+  },
+  {
+    path: '/404NotFound',
+    alias: '*',
+    name: 'NotFound',
+    component: NotFound,
+    meta: {
+      requiresAuth: true,
+      title: "404 Not Found - Groupomania"
     }
   },
 ]

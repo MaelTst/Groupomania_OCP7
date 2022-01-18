@@ -1,13 +1,9 @@
 <template>
   <v-form>
-    <v-card class="boxShadowed rounded-lg d-flex flex-column flex-sm-row pa-4 mb-6">
+    <v-card class="boxShadowed rounded-lg d-flex flex-column flex-sm-row pa-4 mb-3">
       <div class="d-flex flex-grow-1">
         <router-link :to="'/user/'+userInfo.id">
-          <v-avatar
-            v-if="userInfo.id ? true : false"
-            class="rounded-lg"
-            size="42"
-          >
+          <v-avatar v-if="userInfo.id ? true : false" class="rounded-lg" size="42">
             <img
               :src="userInfo.imgUrl || require('../assets/placeholder.png')"
               alt="Photo de profil"
@@ -57,7 +53,7 @@
     <v-snackbar v-model="snackbar" :timeout="4000" color="red darken-3">
       {{ snackbarMsg }}
       <template v-slot:action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" @click="snackbar = false">Fermer</v-btn>
+        <v-btn text v-bind="attrs" @click="snackbar = false">Fermer</v-btn>
       </template>
     </v-snackbar>
   </v-form>
@@ -91,38 +87,21 @@ export default {
         if (this.postFile) {
           formData.append("image", this.postFile);
         }
-        fetch(`${process.env.VUE_APP_ROOT_API}api/posts/`, {
-          method: "POST",
-          credentials: "include",
-          body: formData,
-        })
-          .then((response) => {
-            if (response.ok) {
-              response.json().then((response) => {
-                console.log(response);
-                this.$store.dispatch("getPosts");
-                this.postContent = "";
-                this.postFile = null;
-                this.loading = false;
-                if (this.$route.name != "Home") {
-                  this.$router.push({ name: "Home" });
-                }
-              });
-            } else {
-              response.json().then((error) => {
-                console.log(error);
-                this.loading = false;
-                this.snackbarMsg = error.message;
-                this.snackbar = true;
-              });
-            }
-          })
-          .catch((error) => {
-            console.log("Erreur lors du fetch : " + error.message);
+        this.$store.dispatch("sendPost", formData).then(
+          () => {
+            this.postContent = "";
+            this.postFile = null;
             this.loading = false;
-            this.snackbarMsg = "Une erreur serveur est survenue";
+            if (this.$route.name != "Home") {
+              this.$router.push({ name: "Home" });
+            }
+          },
+          (error) => {
+            this.loading = false;
+            this.snackbarMsg = error.message;
             this.snackbar = true;
-          });
+          }
+        );
       }
     },
   },

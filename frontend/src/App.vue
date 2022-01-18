@@ -48,6 +48,14 @@ export default {
 .bg-light-grey {
   background-color: #f4f5f8 !important;
 }
+.w100 {
+  width: 100%;
+}
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .content {
   max-width: 1400px;
 }
