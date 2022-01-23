@@ -37,8 +37,8 @@ export default {
   max-width: 500px;
   margin: auto;
   h1 {
-   font-weight: 300 !important;
-   line-height: 60px !important;
+    font-weight: 300 !important;
+    line-height: 60px !important;
   }
 }
 </style>

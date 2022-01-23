@@ -1,5 +1,5 @@
 <template>
-  <div class="loginForm">
+  <v-card class="loginForm rounded-lg pa-6 boxShadowed">
     <v-tabs background-color="transparent" v-model="tabs" fixed-tabs>
       <v-tab>Connexion</v-tab>
       <v-tab>Inscription</v-tab>
@@ -19,7 +19,7 @@
             <v-text-field
               id="passwordLogin"
               v-model="passwordLogin"
-              :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+              :append-icon="showPassword ? 'visibility' : 'visibility_off'"
               :type="showPassword ? 'text' : 'password'"
               @click:append="showPassword = !showPassword"
               :rules="passwordRules"
@@ -52,7 +52,7 @@
             <v-text-field
               id="passwordSignup"
               v-model="passwordSignup"
-              :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+              :append-icon="showPassword ? 'visibility' : 'visibility_off'"
               :type="showPassword ? 'text' : 'password'"
               @click:append="showPassword = !showPassword"
               :rules="passwordRules"
@@ -80,13 +80,12 @@
     </v-tabs-items>
 
     <v-snackbar v-model="snackbar" :timeout="4000" color="red darken-3">
-      Erreur :
       {{ snackbarMsg }}
       <template v-slot:action="{ attrs }">
         <v-btn color="white" text v-bind="attrs" @click="snackbar = false">Fermer</v-btn>
       </template>
     </v-snackbar>
-  </div>
+  </v-card>
 </template>
 
 <script>

@@ -1,77 +1,78 @@
 <template>
   <v-col cols="3" class="mt-4 d-none d-lg-block" id="rightSidebar">
     <div class="usersList">
-      <div class="usersList__heading blue-grey--text px-3 pb-3">
-        <h1 class="overline">Contacts</h1>
-        <span
-          class="rounded-pill white--text blue-grey lighten-3 px-3 py-1 text-subtitle-2"
-        >{{ users.length }}</span>
-      </div>
+      <h1 class="usersList__heading blue-grey--text text--darken-3 px-3 pb-3 overline">Contacts</h1>
       <v-card class="usersList__list rounded-lg boxShadowed">
         <simplebar class="simplebarContainer" data-simplebar-auto-hide="true">
           <v-list nav dense>
-            <v-list-item-group active-class="primary--text">
-              <div class="usersList__list__link" v-for="user in users" :key="user.id">
-                <v-list-item :to="'/user/'+user.id" class="px-2" :id="'userMenu'+user.id">
-                  <v-list-item-avatar class="rounded-lg" size="42">
-                    <img
-                      :src="user.imgUrl || require('../assets/placeholder.png')"
-                      alt="Photo de profil"
-                    />
-                  </v-list-item-avatar>
-                  <v-list-item-content
-                    class="blue-grey--text text--darken-3 text-subtitle-2"
-                  >{{ user.nickname }}</v-list-item-content>
-                </v-list-item>
-                <v-menu
-                  :attach="'#userMenu'+user.id"
-                  content-class="elevation-2 rounded-lg"
-                  transition="slide-y-transition"
-                  bottom
-                  left
-                  offset-y
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                      aria-label="Options du contact"
-                      absolute
-                      icon
-                      class="align-self-center usersList__list__btn"
-                      v-bind="attrs"
-                      v-on="on"
-                    >
-                      <v-icon>mdi-dots-horizontal</v-icon>
-                    </v-btn>
-                  </template>
-                  <v-list nav dense>
-                    <v-list-item @click.prevent="placeholder">
-                      <v-list-item-icon class="mr-3">
-                        <v-icon>mdi-email-fast</v-icon>
-                      </v-list-item-icon>
-                      <v-list-item-content>
-                        <v-list-item-title>Envoyer un message</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item @click.prevent="placeholder">
-                      <v-list-item-icon class="mr-3">
-                        <v-icon>mdi-rss</v-icon>
-                      </v-list-item-icon>
-                      <v-list-item-content>
-                        <v-list-item-title>Suivre</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item v-if="userInfo.isAdmin === true" @click.prevent="banUserDialog = true, banUserInfo = user">
-                      <v-list-item-icon class="mr-3">
-                        <v-icon>mdi-cancel</v-icon>
-                      </v-list-item-icon>
-                      <v-list-item-content>
-                        <v-list-item-title>Bannir</v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-              </div>
-            </v-list-item-group>
+            <div class="usersList__list__link" v-for="user in users" :key="user.id">
+              <v-list-item
+                active-class="primary--text"
+                :to="'/user/'+user.id"
+                class="px-2"
+                :id="'userMenu'+user.id"
+              >
+                <v-list-item-avatar class="rounded-lg" size="42">
+                  <v-img
+                    :src="user.imgUrl || require('../assets/placeholder.png')"
+                    alt="Photo de profil"
+                  />
+                </v-list-item-avatar>
+                <v-list-item-content
+                  class="blue-grey--text text--darken-3 text-subtitle-2"
+                >{{ user.nickname }}</v-list-item-content>
+              </v-list-item>
+              <v-menu
+                :attach="'#userMenu'+user.id"
+                content-class="elevation-2 rounded-lg"
+                transition="slide-y-transition"
+                bottom
+                left
+                offset-y
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    aria-label="Options du contact"
+                    absolute
+                    icon
+                    class="align-self-center usersList__list__btn"
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    <v-icon>more_horiz</v-icon>
+                  </v-btn>
+                </template>
+                <v-list nav dense>
+                  <v-list-item @click.prevent="placeholder">
+                    <v-list-item-icon class="mr-3">
+                      <v-icon>textsms</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-title>Envoyer un message</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-list-item @click.prevent="placeholder">
+                    <v-list-item-icon class="mr-3">
+                      <v-icon>rss_feed</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-title>Suivre</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-list-item
+                    v-if="userInfo.isAdmin === true"
+                    @click.prevent="banUserDialog = true, banUserInfo = user, banMode = null"
+                  >
+                    <v-list-item-icon class="mr-3">
+                      <v-icon>block</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-title>Bannir</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </div>
           </v-list>
         </simplebar>
       </v-card>
@@ -79,29 +80,28 @@
     <v-dialog v-model="banUserDialog" width="500">
       <v-card>
         <v-card-title class="grey lighten-2">Bannissement d'un utilisateur</v-card-title>
-        <v-card-text
-          class="pt-6"
-        >Veuillez choisir le type de bannissement à appliquer pour l'utilisateur <strong>{{ banUserInfo.nickname }}</strong></v-card-text>
+        <v-card-text class="pt-6">
+          Veuillez choisir le type de bannissement à appliquer pour l'utilisateur
+          <strong>{{ banUserInfo.nickname }}</strong>
+        </v-card-text>
+        <v-divider></v-divider>
         <v-card-actions>
-          <v-form
-            v-model="banUserForm"
-            class="d-flex w100 ma-auto flex-column align-center py-2"
-          >
-            <v-radio-group v-model="banMode"
-      column
-    >
-      <v-radio
-        label="L'utilisateur sera banni et ne pourra plus se connecter au réseau social, ses publications, photos et commentaires seront conservé(e)s"
-        value="ban"
-      ></v-radio>
-      <v-radio
-        label="Le compte de l'utilisateur sera supprimé ainsi que tous contenus y étant associés (publications, photos, commentaires)"
-        value="delete"
-      ></v-radio>
-    </v-radio-group>
-    <v-divider></v-divider>
+          <v-form class="d-flex w100 ma-auto flex-column align-center py-2">
+            <v-radio-group label="Type de bannissement :" v-model="banMode" column>
+              <v-radio
+                class="py-2"
+                label="L'utilisateur sera banni et ne pourra plus se connecter au réseau social. Son profil restera visible et ses publications, photos et commentaires seront conservés"
+                value="ban"
+              ></v-radio>
+              <v-radio
+                class="py-2"
+                label="Le compte de l'utilisateur sera supprimé ainsi que tout contenu y étant associé (publications, photos, commentaires)"
+                value="delete"
+              ></v-radio>
+            </v-radio-group>
             <v-btn
-              :disabled="!banUserForm"
+              :disabled="!banMode || loading"
+              :loading="loading"
               depressed
               color="primary"
               @click="banUser()"
@@ -127,15 +127,14 @@ export default {
     simplebar,
   },
 
-  data: () => ({ 
+  data: () => ({
     snackbar: false,
     snackbarMsg: "",
     snackbarColor: "",
     banUserDialog: false,
-    banUserForm: false,
     banUserInfo: {},
-    banMode: null
-
+    banMode: null,
+    loading: false,
   }),
 
   computed: {
@@ -159,47 +158,59 @@ export default {
     },
 
     placeholder() {
-      console.log("placeholder");
+      this.snackbarColor = "primary";
+      this.snackbar = true;
+      this.snackbarMsg = "Placeholder";
     },
 
     banUser() {
-      let ID = this.banUserInfo.id
+      let ID = this.banUserInfo.id;
       let isAdminBan = true;
       let banned = 1;
-      if (this.banMode === "ban") { 
-        this.$store.dispatch("updateUser", { ID, banned })
-        .then(
-        (response) => {
-          this.snackbarColor = "primary";
-          this.snackbar = true;
-          this.snackbarMsg = response.message;
-          this.banUserDialog = false;
-          this.banUserInfo = {};
-        },
-        (error) => {
-          console.log(error);
-          this.snackbarColor = "error";
-          this.snackbar = true;
-          this.snackbarMsg = "Une erreur est survenue";
-          this.editPasswordValue = undefined;
-        })}
-      if (this.banMode === "delete") { this.$store.dispatch("deleteUser", { ID, isAdminBan })
-      .then(
-        (response) => {
-          this.snackbarColor = "primary";
-          this.snackbar = true;
-          this.snackbarMsg = response.message;
-          this.banUserDialog = false;
-          this.banUserInfo = {};
-        },
-        (error) => {
-          console.log(error);
-          this.snackbarColor = "error";
-          this.snackbar = true;
-          this.snackbarMsg = "Une erreur est survenue";
-          this.editPasswordValue = undefined;
-        })}
-    }
+      this.loading = true;
+      if (this.banMode === "ban") {
+        this.$store.dispatch("updateUser", { ID, banned }).then(
+          (response) => {
+            this.snackbarColor = "primary";
+            this.snackbar = true;
+            this.snackbarMsg = response.message;
+            this.banUserDialog = false;
+            this.banUserInfo = {};
+            this.loading = false;
+          },
+          (error) => {
+            console.log(error);
+            this.snackbarColor = "red darken-3";
+            this.snackbar = true;
+            this.snackbarMsg = "Une erreur est survenue";
+            this.banUserDialog = false;
+            this.banUserInfo = {};
+            this.loading = false;
+          }
+        );
+      }
+      if (this.banMode === "delete") {
+        this.$store.dispatch("deleteUser", { ID, isAdminBan }).then(
+          (response) => {
+            this.snackbarColor = "primary";
+            this.snackbar = true;
+            this.snackbarMsg = response.message;
+            this.banUserDialog = false;
+            this.banUserInfo = {};
+            this.loading = false;
+          },
+          (error) => {
+            console.log(error);
+            this.snackbarColor = "red darken-3";
+            this.snackbar = true;
+            this.snackbarMsg = "Une erreur est survenue";
+            this.banUserDialog = false;
+            this.banUserInfo = {};
+            this.loading = false;
+          }
+        );
+      }
+    },
   },
 
   created() {

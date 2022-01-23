@@ -24,53 +24,82 @@
         </div>
       </router-link>
       <div v-if="user.id ? true : false" class="header__content__rightSide">
-        <v-text-field
+        <v-autocomplete
+          :items="items"
+          color="blue-grey lighten-2"
+          placeholder="Chercher un utilisateur"
           hide-details
+          hide-selected
+          :search-input.sync="search"
+          @click="items = []"
+          :menu-props="{ closeOnContentClick: true, transition: 'slide-y-transition', rounded: true}"
           class="rounded-lg mr-6"
-          height="20"
           dense
           flat
           solo
+          append-icon
+          hide-no-data
+          no-data-text="Aucun résultat"
           background-color="bg-light-grey"
-          label="Rechercher"
-          prepend-inner-icon="mdi-magnify"
-        ></v-text-field>
-        <router-link :to="'/user/'+user.id">
+          label="Chercher un utilisateur"
+          item-text="nickname"
+          prepend-inner-icon="search"
+        >
+          <template v-slot:item="data">
+            <v-list-item active-class="primary--text" :to="'/user/'+data.item.id">
+              <v-list-item-avatar class="rounded-lg">
+                <v-img :src="data.item.imgUrl || require('../assets/placeholder.png')"></v-img>
+              </v-list-item-avatar>
+              <v-list-item-content
+                class="blue-grey--text text--darken-3 text-subtitle-2"
+              >{{ data.item.nickname }}</v-list-item-content>
+            </v-list-item>
+          </template>
+          <template v-slot:selection></template>
+        </v-autocomplete>
+        <router-link aria-label="Profil utilisateur" :to="'/user/'+user.id">
           <v-avatar class="rounded-lg d-none d-md-flex" size="42">
-            <img :src="user.imgUrl || require('../assets/placeholder.png')" alt="Photo de profil" />
+            <v-img
+              :src="user.imgUrl || require('../assets/placeholder.png')"
+              alt="Photo de profil"
+            />
           </v-avatar>
         </router-link>
-        <v-app-bar-nav-icon class="d-flex d-md-none" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+        <v-app-bar-nav-icon
+          aria-label="Navigation"
+          class="d-flex d-md-none"
+          @click.stop="drawer = !drawer"
+        ></v-app-bar-nav-icon>
         <v-navigation-drawer v-model="drawer" fixed temporary>
           <v-list nav>
             <v-list-item-group>
               <v-list-item color="primary" to="/" class="pl-8 pa-1">
                 <v-list-item-icon>
-                  <v-icon>mdi-home</v-icon>
+                  <v-icon>home</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content class="blue-grey--text text--darken-3 text-subtitle-2">Accueil</v-list-item-content>
               </v-list-item>
               <v-list-item color="primary" to="/favorites" class="pl-8 pa-1">
                 <v-list-item-icon>
-                  <v-icon>mdi-star</v-icon>
+                  <v-icon>star</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content class="blue-grey--text text--darken-3 text-subtitle-2">Favoris</v-list-item-content>
               </v-list-item>
               <v-list-item color="primary" to="/pictures" class="pl-8 pa-1">
                 <v-list-item-icon>
-                  <v-icon>mdi-panorama-variant</v-icon>
+                  <v-icon>panorama</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content class="blue-grey--text text--darken-3 text-subtitle-2">Photos</v-list-item-content>
               </v-list-item>
               <v-list-item color="primary" :to="'/user/'+user.id" class="pl-8 pa-1">
                 <v-list-item-icon>
-                  <v-icon>mdi-account</v-icon>
+                  <v-icon>person</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content class="blue-grey--text text--darken-3 text-subtitle-2">Profil</v-list-item-content>
               </v-list-item>
               <v-list-item color="primary" to="/settings" class="pl-8 pa-1">
                 <v-list-item-icon>
-                  <v-icon>mdi-cog</v-icon>
+                  <v-icon>settings</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content
                   class="blue-grey--text text--darken-3 text-subtitle-2"
@@ -78,7 +107,7 @@
               </v-list-item>
               <v-list-item color="primary" class="pl-8 pa-1" @click="logOut()">
                 <v-list-item-icon>
-                  <v-icon>mdi-logout</v-icon>
+                  <v-icon>logout</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content
                   class="blue-grey--text text--darken-3 text-subtitle-2"
@@ -96,6 +125,8 @@
 export default {
   data: () => ({
     drawer: false,
+    search: null,
+    items: [],
   }),
 
   methods: {
@@ -103,11 +134,28 @@ export default {
       this.drawer = false;
       this.$store.dispatch("logOut");
     },
+
+    searchBarFilter(val) {
+      this.items = this.users
+        .filter(function (item) {
+          return item.nickname.toLowerCase().includes(val.toLowerCase());
+        })
+        .slice(0, 5);
+    },
   },
 
   computed: {
     user() {
       return this.$store.state.userInfo;
+    },
+    users() {
+      return this.$store.state.users;
+    },
+  },
+
+  watch: {
+    search(val) {
+      this.searchBarFilter(val);
     },
   },
 };
@@ -125,6 +173,9 @@ export default {
     justify-content: space-between;
     display: flex;
     max-width: 1400px;
+    &__rightSide {
+      min-width: 30%;
+    }
     &__rightSide,
     &__leftSide {
       align-items: center;

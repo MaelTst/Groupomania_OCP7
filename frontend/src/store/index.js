@@ -39,6 +39,10 @@ export default new Vuex.Store({
       state.posts.splice(index, 1)
     },
 
+    DELETE_COMMENT(state, { postIndex, commentIndex }) {
+      state.posts[postIndex].comments.splice(commentIndex, 1)
+    },
+
     GET_MOST_LIKED_PICS(state, response) {
       state.mostLikedPics = response
     }
@@ -140,17 +144,18 @@ export default new Vuex.Store({
       })
     },
 
-    updateUser({ dispatch }, { ID, imgUrl, email, nickname, password, banned }) {
+    updateUser({ dispatch }, { ID, userId, imgUrl, email, nickname, password, job, banned }) {
       return new Promise((resolve, reject) => {
         fetch(`${process.env.VUE_APP_ROOT_API}api/user/${ID}`, {
           method: "PUT",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ imgUrl: imgUrl, email: email, nickname: nickname, password: password, banned: banned })
+          body: JSON.stringify({ imgUrl: imgUrl, email: email, nickname: nickname, password: password, job: job, banned: banned })
         }).then((response) => {
           if (response.ok) {
             response.json().then((response) => {
               if (!banned) { dispatch("refreshUserInfo", ID); }
+              if (job) { dispatch("getUser", userId); }
               resolve(response)
             });
           } else {
@@ -161,6 +166,56 @@ export default new Vuex.Store({
         })
           .catch((error) => {
             reject(error.message)
+          });
+      })
+    },
+
+    updateUserAvatar({ dispatch }, { ID, formData }) {
+      return new Promise((resolve, reject) => {
+        fetch(`${process.env.VUE_APP_ROOT_API}api/user/${ID}`, {
+          method: "PUT",
+          credentials: "include",
+          body: formData
+        })
+          .then((response) => {
+            if (response.ok) {
+              dispatch("getUser", ID);
+              dispatch("refreshUserInfo", ID);
+              dispatch("getUserPost", ID);
+              resolve(response)
+
+            } else {
+              response.json().then((error) => {
+                reject(error)
+              });
+            }
+          })
+          .catch((error) => {
+            reject(error)
+          });
+      })
+    },
+
+    updateUserBanner({ dispatch }, { ID, formData }) {
+      return new Promise((resolve, reject) => {
+        fetch(`${process.env.VUE_APP_ROOT_API}api/user/${ID}/banner`, {
+          method: "PUT",
+          credentials: "include",
+          body: formData
+        })
+          .then((response) => {
+            if (response.ok) {
+              dispatch("getUser", ID);
+              resolve(response)
+
+            } else {
+              response.json().then((error) => {
+                reject(error)
+              });
+            }
+          })
+          .catch((error) => {
+            reject(error)
           });
       })
     },
@@ -176,6 +231,23 @@ export default new Vuex.Store({
             if (response.ok) {
               resolve()
               dispatch("getPosts");
+            } else { response.json().then((error) => { reject(error) }); }
+          })
+          .catch((error) => { reject(error) });
+      })
+    },
+
+    editPost({ dispatch }, { formData, currentRoute, ID, postId, userId }) {
+      return new Promise((resolve, reject) => {
+        fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}`, {
+          method: "PUT",
+          credentials: "include",
+          body: formData,
+        })
+          .then((response) => {
+            if (response.ok) {
+              resolve()
+              dispatch("refreshPosts", { currentRoute, ID, postId, userId })
             } else { response.json().then((error) => { reject(error) }); }
           })
           .catch((error) => { reject(error) });
@@ -257,52 +329,72 @@ export default new Vuex.Store({
     },
 
     deletePost({ dispatch, commit, state }, { postId, index }) {
-      fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}`, {
-        method: "DELETE",
-        credentials: "include",
-      })
-        .then((response) => {
-          if (response.ok) {
-            response.json().then((response) => {
-              console.log(response)
+      return new Promise((reject) => {
+        fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}`, {
+          method: "DELETE",
+          credentials: "include",
+        })
+          .then((response) => {
+            if (response.ok) {
               if (state.posts[index].imgUrl) { dispatch('getMostLikedPics'); }
               commit('DELETE_POST', index)
-            })
-          } else {
-            response.json().then((error) => {
-              console.log(error)
-            });
-          }
+            } else {
+              response.json().then((error) => {
+                reject(error)
+              });
+            }
+          })
+          .catch((error) => {
+            reject(error)
+          });
+      })
+    },
+
+    deleteComment({ commit }, { postId, postIndex, commentId, commentIndex }) {
+      return new Promise((reject) => {
+        fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}/comment/${commentId}`, {
+          method: "DELETE",
+          credentials: "include",
         })
-        .catch((error) => {
-          console.log("Erreur lors du fetch : " + error.message);
-        });
+          .then((response) => {
+            if (response.ok) {
+              commit('DELETE_COMMENT', { postIndex, commentIndex })
+            } else {
+              response.json().then((error) => {
+                reject(error)
+              });
+            }
+          })
+          .catch((error) => {
+            reject(error)
+          });
+      })
     },
 
     likePost({ dispatch }, { postId, currentRoute, ID, userId }) {
-      fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}/like`, {
-        method: "POST",
-        credentials: "include",
-      })
-        .then((response) => {
-          if (response.ok) {
-            response.json().then((response) => {
-              console.log(response)
+      return new Promise((reject) => {
+        fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}/like`, {
+          method: "POST",
+          credentials: "include",
+        })
+          .then((response) => {
+            if (response.ok) {
               dispatch('getMostLikedPics');
               dispatch('refreshPosts', { currentRoute, ID, postId, userId });
-            })
-          } else {
-            response.json().then((error) => {
-              console.log(error)
-            });
-          }
-        })
-        .catch((error) => {
-          console.log("Erreur lors du fetch : " + error.message);
-        });
+            } else {
+              response.json().then((error) => {
+                reject(error)
+              });
+            }
+          })
+          .catch((error) => {
+            reject(error)
+          });
+      })
     },
 
     sendComment({ dispatch }, { postId, content, currentRoute, ID, userId }) {
+      return new Promise((resolve, reject) => {
       fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}/comment`, {
         method: "POST",
         credentials: "include",
@@ -313,19 +405,44 @@ export default new Vuex.Store({
       })
         .then((response) => {
           if (response.ok) {
-            response.json().then((response) => {
-              console.log(response)
+            resolve()
               dispatch('refreshPosts', { currentRoute, ID, postId, userId });
-            })
           } else {
             response.json().then((error) => {
-              console.log(error)
+              reject(error)
             });
           }
         })
         .catch((error) => {
-          console.log("Erreur lors du fetch : " + error.message);
+          reject(error)
         });
+      })
+    },
+
+    updateComment({ dispatch }, { postId, commentId, commentContent, currentRoute, ID, userId }) {
+      return new Promise((resolve, reject) => {
+        fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}/comment/${commentId}`, {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ content: commentContent })
+        })
+          .then((response) => {
+            if (response.ok) {
+              dispatch("refreshPosts", { currentRoute, ID, postId, userId });
+              resolve()
+            } else {
+              response.json().then((error) => {
+                reject(error)
+              });
+            }
+          })
+          .catch((error) => {
+            console.log("Erreur lors du fetch : " + error.message);
+          });
+      })
     },
 
     getMostLikedPics({ commit }) {

@@ -3,9 +3,9 @@
     <div class="usersPosts mb-6">
       <v-card class="rounded-lg boxShadowed pa-6 pt-2">
         <div class="usersPosts__heading">
-          <router-link :to="'/user/'+post.user.id">
+          <router-link aria-label="Profil utilisateur" :to="'/user/'+post.user.id">
             <v-avatar class="rounded-lg" size="42">
-              <img
+              <v-img
                 :src="post.user.imgUrl || require('../assets/placeholder.png')"
                 alt="Photo de profil"
               />
@@ -28,13 +28,13 @@
           >
             <template v-slot:activator="{ on, attrs }">
               <v-btn aria-label="Options du post" icon v-bind="attrs" v-on="on">
-                <v-icon>mdi-dots-horizontal</v-icon>
+                <v-icon>more_horiz</v-icon>
               </v-btn>
             </template>
             <v-list nav dense>
               <v-list-item link @click="reportPost">
                 <v-list-item-icon class="mr-3">
-                  <v-icon>mdi-alert</v-icon>
+                  <v-icon>warning</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title>Signaler</v-list-item-title>
@@ -43,10 +43,10 @@
               <v-list-item
                 link
                 v-if="post.userId === userInfo.id || userInfo.isAdmin === true"
-                @click="editPost(1)"
+                @click="isEditing = true, editPostContent = post.content"
               >
                 <v-list-item-icon class="mr-3">
-                  <v-icon>mdi-pencil</v-icon>
+                  <v-icon>edit</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title>Modifier</v-list-item-title>
@@ -58,7 +58,7 @@
                 @click="deletePost"
               >
                 <v-list-item-icon class="mr-3">
-                  <v-icon>mdi-delete</v-icon>
+                  <v-icon>delete</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title>Supprimer</v-list-item-title>
@@ -83,35 +83,35 @@
               v-model="editPostContent"
               background-color="bg-light-grey"
             ></v-textarea>
-            <div class="d-flex mt-6 justify-end">
+            <div class="d-flex mt-6 justify-end align-center flex-wrap">
               <v-file-input
                 aria-label="Joindre un fichier"
                 v-model="postFile"
                 accept="image/*"
-                icon="mdi-paperclip"
+                prepend-icon="attach_file"
                 hide-details
                 :clearable="false"
                 small-chips
                 dense
                 flat
-                class="flex-grow-0 align-self-end mb-1"
+                class="flex-grow-0 mb-1"
               ></v-file-input>
               <v-btn
                 depressed
-                height="42"
+                small
                 dark
                 color="secondary"
-                class="ml-3 rounded-lg align-self-end"
-                @click="editPost(0)"
+                class="ml-3 mb-1"
+                @click="isEditing = false"
               >Annuler</v-btn>
               <v-btn
                 depressed
                 :loading="loading"
                 :disabled="loading"
-                height="42"
+                small
                 color="primary"
-                class="ml-3 rounded-lg align-self-end"
-                @click="editPost(2)"
+                class="ml-3 mb-1"
+                @click="editPost"
               >Confirmer</v-btn>
             </div>
           </div>
@@ -121,61 +121,72 @@
             v-if="post.imgUrl"
             :src="post.imgUrl"
             max-height="400"
-            @click="toggleFullscreen(true)"
+            @click="fullScreenImg = true"
           ></v-img>
         </div>
         <div class="usersPosts__subContent mt-6">
           <div
-            class="usersPosts__subContent__heading pa-2 d-flex justify-space-between align-center"
+            class="usersPosts__subContent__heading mb-4 pa-2 d-flex justify-space-between align-center"
           >
             <div class="d-flex">
               <v-btn
-              text
+                text
                 block
-                :class="post.likes.map(like => like.userId).includes(userInfo.id) ? 'primary--text' : 'secondary--text'"
+                :class="post.likes.map(like => like.userId).includes(userInfo.id) ? 'primary--text overline' : 'blue-grey--text text--darken-3 overline'"
                 depressed
-                @click="likePost()"
+                @click="likePost"
               >
-                <v-icon size="20">mdi-thumb-up</v-icon>
-                {{post.likes.length}} J'aime
+                <v-icon size="20" class="mr-1">thumb_up</v-icon>
+                <span>{{post.likes.length}}</span>
+                <span class="d-none d-sm-block ml-1">J'aime</span>
               </v-btn>
             </div>
             <div class="d-flex">
-              <span>{{ post.comments.length }} {{ post.comments.length > 1 ? "commentaires" : "commentaire" }}</span>
-              <v-icon size="20">mdi-comment</v-icon>
+              <v-btn
+                text
+                block
+                depressed
+                @click="focusComment(post.id)"
+                class="blue-grey--text text--darken-3 overline"
+              >
+                <v-icon size="20" class="mr-1">question_answer</v-icon>
+                <span>{{ post.comments.length }}</span>
+                <span
+                  class="d-none d-sm-block ml-1"
+                >{{ post.comments.length > 1 ? "commentaires" : "commentaire" }}</span>
+              </v-btn>
             </div>
           </div>
-          <div v-for="comment in post.comments" :key="comment.id">
-            <div class="usersPosts__subContent__comment d-flex">
-              <v-avatar class="rounded-lg" size="32">
-                <img
-                  :src="comment.user.imgUrl || require('../assets/placeholder.png')"
-                  alt="Photo de profil"
-                />
-              </v-avatar>
-              <div>{{ comment.content }}</div>
-            </div>
-          </div>
-
-          <div class="usersPosts__subContent__textfield d-flex align-center mt-6">
-            <router-link :to="'/user/'+userInfo.id">
-              <v-avatar class="rounded-lg d-none d-sm-flex mr-3" size="32">
-                <img
+          <Comment
+            v-for="(comment, commentIndex) in post.comments"
+            :key="comment.id"
+            :comment="comment"
+            :commentIndex="commentIndex"
+            :post="post"
+            :postIndex="index"
+          />
+          <div class="usersPosts__subContent__textfield d-flex align-center mt-4">
+            <router-link aria-label="Profil utilisateur" :to="'/user/'+userInfo.id">
+              <v-avatar class="rounded-lg d-none d-sm-flex" size="32">
+                <v-img
                   :src="userInfo.imgUrl || require('../assets/placeholder.png')"
                   alt="Photo de profil"
                 />
               </v-avatar>
             </router-link>
             <v-text-field
+              :id="'sendComment'+post.id"
               hide-details
-              append-outer-icon="mdi-send"
-              class="rounded-lg"
+              append-outer-icon="send"
+              class="rounded-lg ml-3"
               height="20"
               dense
               v-model="commentContent"
               flat
+              autocomplete="off"
               solo
               @click:append-outer="sendComment"
+              @keydown.enter="sendComment"
               background-color="bg-light-grey"
               label="Poster un commentaire..."
             ></v-text-field>
@@ -183,11 +194,10 @@
         </div>
       </v-card>
     </div>
-
-    <v-overlay :z-index="999" opacity="0.90" :value="fullScreenImg" @click="toggleFullscreen()">
+    <v-overlay :z-index="999" opacity="0.90" :value="fullScreenImg" @click="fullScreenImg = false">
       <v-img max-height="90vh" max-width="90vw" contain :src="this.post.imgUrl"></v-img>
     </v-overlay>
-    <v-snackbar v-model="snackbar" :timeout="4000" color="red darken-3">
+    <v-snackbar v-model="snackbar" :timeout="4000" :color="snackbarColor">
       {{ snackbarMsg }}
       <template v-slot:action="{ attrs }">
         <v-btn color="white" text v-bind="attrs" @click="snackbar = false">Fermer</v-btn>
@@ -197,6 +207,8 @@
 </template>
 
 <script>
+import Comment from "../components/Comment";
+
 export default {
   data: () => ({
     fullScreenImg: false,
@@ -205,115 +217,118 @@ export default {
     postFile: null,
     commentContent: "",
     snackbar: false,
+    snackbarColor: "red darken-3",
     snackbarMsg: "",
     loading: false,
   }),
+
   props: {
     post: {},
     index: null,
   },
+
   computed: {
     userInfo() {
       return this.$store.state.userInfo;
     },
   },
-  components: {},
+
+  components: {
+    Comment,
+  },
+
   methods: {
-    editPost(value) {
-      if (value === 0) {
-        this.isEditing = false;
-      }
-      if (value === 1) {
-        this.isEditing = true;
-        this.editPostContent = this.post.content;
-      }
-      if (value === 2) {
-        console.log(this.editPostContent);
-        if (!this.editPostContent.trim() || this.editPostContent.length < 6) {
-          this.snackbarMsg =
-            "Votre message doit comporter au moins 6 caractères";
-          this.snackbar = true;
-        } else {
-          this.loading = true;
-          var formData = new FormData();
-          formData.append("content", this.editPostContent);
-          if (this.postFile) {
-            formData.append("image", this.postFile);
+    editPost() {
+      if (!this.editPostContent.trim() || this.editPostContent.length < 6) {
+        this.snackbarMsg = "Votre message doit comporter au moins 6 caractères";
+        this.snackbar = true;
+      } else {
+        this.loading = true;
+        let currentRoute = this.$route.name;
+        let ID = this.$getCookie("ID");
+        let postId = this.post.id;
+        let userId = this.post.userId;
+        var formData = new FormData();
+        formData.append("content", this.editPostContent);
+        if (this.postFile) { formData.append("image", this.postFile); }
+        this.$store.dispatch("editPost", { formData, currentRoute, ID, postId, userId }).then(
+          () => {
+            this.isEditing = false;
+            this.postFile = null;
+            this.loading = false;
+            this.snackbarColor = "primary"
+            this.snackbarMsg = "Post modifié"
+            this.snackbar = true
+          },
+          (error) => {
+            console.log(error);
+            this.loading = false;
+            this.snackbarColor = "red darken-3"
+            this.snackbarMsg = error.message || "Une erreur est survenue";
+            this.snackbar = true;
           }
-          fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${this.post.id}`, {
-            method: "PUT",
-            credentials: "include",
-            body: formData,
-          })
-            .then((response) => {
-              if (response.ok) {
-                response.json().then((response) => {
-                  console.log(response);
-                  let currentRoute = this.$route.name;
-                  let ID = this.$getCookie('ID')
-                  let postId = this.post.id
-                  let userId = this.post.userId;
-                  this.$store.dispatch("refreshPosts", { currentRoute, ID, postId, userId });
-                  this.isEditing = false;
-                  this.postFile = null;
-                  this.loading = false;
-                });
-              } else {
-                response.json().then((error) => {
-                  console.log(error);
-                  this.loading = false;
-                  this.snackbarMsg = error.message;
-                  this.snackbar = true;
-                });
-              }
-            })
-            .catch((error) => {
-              console.log("Erreur lors du fetch : " + error.message);
-              this.loading = false;
-              this.snackbarMsg = "Une erreur serveur est survenue";
-              this.snackbar = true;
-            });
-        }
+        );
       }
     },
 
     reportPost() {
-      this.snackbar = true;
       this.snackbarMsg = "Post signalé (placeholder)";
+      this.snackbarColor = "primary";
+      this.snackbar = true;
     },
 
     deletePost() {
       let postId = this.post.id;
       let index = this.index;
-      this.$store.dispatch("deletePost", { postId, index });
-    },
-
-    toggleFullscreen(param) {
-      if (param) {
-        this.fullScreenImg = true;
-      } else {
-        this.fullScreenImg = false;
-      }
+      this.$store.dispatch("deletePost", { postId, index }).then(
+          (error) => {
+            console.log(error);
+            this.loading = false;
+            this.snackbarColor = "red darken-3"
+            this.snackbarMsg = error.message || "Une erreur est survenue";
+            this.snackbar = true;
+          }
+        );
     },
 
     likePost() {
       let currentRoute = this.$route.name;
       let postId = this.post.id;
-      let ID = this.$getCookie('ID')
+      let ID = this.$getCookie("ID");
       let userId = this.post.userId;
-      this.$store.dispatch("likePost", { postId, currentRoute, ID, userId });
+      this.$store.dispatch("likePost", { postId, currentRoute, ID, userId }).then(
+          (error) => {
+            console.log(error);
+            this.loading = false;
+            this.snackbarColor = "red darken-3"
+            this.snackbarMsg = error.message || "Une erreur est survenue";
+            this.snackbar = true;
+          }
+        );
     },
 
     sendComment() {
       if (this.commentContent) {
         let content = this.commentContent;
         let postId = this.post.id;
-        let ID = this.$getCookie('ID')
+        let ID = this.$getCookie("ID");
         let currentRoute = this.$route.name;
         let userId = this.post.userId;
-        this.$store.dispatch("sendComment", { postId, content, currentRoute, ID, userId });
-        this.commentContent = "";
+        this.$store.dispatch("sendComment", { postId, content, currentRoute, ID, userId }).then(
+          () => { this.commentContent = ""; },
+          (error) => {
+            console.log(error);
+            this.loading = false;
+            this.snackbarColor = "red darken-3"
+            this.snackbarMsg = error.message || "Une erreur est survenue";
+            this.snackbar = true;
+          }
+        );
       }
+    },
+
+    focusComment(postId) {
+      document.getElementById("sendComment" + postId).focus();
     },
   },
 };

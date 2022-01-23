@@ -20,12 +20,6 @@
   </footer>
 </template>
 
-<script>
-export default {
-  data: () => ({}),
-};
-</script>
-
 <style lang="scss" scoped>
 .footer {
   background-color: #ffffff !important;

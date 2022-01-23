@@ -2,9 +2,9 @@
   <v-form>
     <v-card class="boxShadowed rounded-lg d-flex flex-column flex-sm-row pa-4 mb-3">
       <div class="d-flex flex-grow-1">
-        <router-link :to="'/user/'+userInfo.id">
-          <v-avatar v-if="userInfo.id ? true : false" class="rounded-lg" size="42">
-            <img
+        <router-link aria-label="Profil utilisateur" :to="'/user/'+userInfo.id">
+          <v-avatar class="rounded-lg" size="42">
+            <v-img
               :src="userInfo.imgUrl || require('../assets/placeholder.png')"
               alt="Photo de profil"
             />
@@ -30,7 +30,7 @@
           aria-label="Joindre un fichier"
           v-model="postFile"
           accept="image/*"
-          icon="mdi-paperclip"
+          prepend-icon="attach_file"
           hide-details
           truncate-length="10"
           :clearable="false"
@@ -41,6 +41,7 @@
         ></v-file-input>
         <v-btn
           depressed
+          small
           :loading="loading"
           :disabled="loading"
           height="42"
@@ -90,13 +91,17 @@ export default {
         this.$store.dispatch("sendPost", formData).then(
           () => {
             this.postContent = "";
+            if (this.postFile) {
+            this.$store.dispatch("getMostLikedPics")
             this.postFile = null;
+            }
             this.loading = false;
             if (this.$route.name != "Home") {
               this.$router.push({ name: "Home" });
             }
           },
           (error) => {
+            console.log(error);
             this.loading = false;
             this.snackbarMsg = error.message;
             this.snackbar = true;

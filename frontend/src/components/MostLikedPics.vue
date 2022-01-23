@@ -13,7 +13,7 @@
         content-class="d-flex flex-column justify-space-between"
       >
         <v-avatar class="likedPicture__avatar rounded-lg mt-4 ml-4" size="32">
-          <img
+          <v-img
             :src="image.user.imgUrl || require('../assets/placeholder.png')"
             alt="Photo de profil"
           />
@@ -26,9 +26,7 @@
 
 <script>
 export default {
-  data: () => ({
-    images: [],
-  }),
+  data: () => ({}),
 
   computed: {
     Pics() {
@@ -45,15 +43,10 @@ export default {
 <style lang="scss">
 .likedPicture {
   max-width: 18%;
+  min-width: 18%;
   height: 200px;
   overflow: hidden;
   display: flex;
-  &:hover &__bg .v-image__image {
-    //transform: scale(120%);
-  }
-  &__bg .v-image__image {
-    transition: all 1s;
-  }
   &__avatar {
     border: 2px solid #ffffff;
   }

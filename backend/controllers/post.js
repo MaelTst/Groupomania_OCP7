@@ -93,7 +93,7 @@ exports.getOnePost = (req, res, next) => {
 exports.getMostLikedPics = (req, res, next) => {
     db.posts.findAll({
         where: { imgUrl: { [Op.not]: null } },
-        attributes: ["id","imgUrl", [db.sequelize.literal('(SELECT COUNT(*) FROM likes WHERE "postId" = post.id)'), "count",]],
+        attributes: ["id", "imgUrl", [db.sequelize.literal('(SELECT COUNT(*) FROM likes WHERE "postId" = post.id)'), "count",]],
         order: [[db.sequelize.literal("count"), "DESC"]],
         limit: 5,
         include: [{ model: db.users, attributes: ["nickname", "imgUrl"] }]
@@ -107,18 +107,18 @@ exports.getUserFavoritesPost = (req, res, next) => {
     db.likes.findAll({
         attributes: [],
         where: { userId: req.params.id },
-        order: [[db.posts, 'createdAt', 'DESC'],[db.posts, db.comments, 'createdAt', 'ASC']],
+        order: [[db.posts, 'createdAt', 'DESC'], [db.posts, db.comments, 'createdAt', 'ASC']],
         include: [
             {
                 model: db.posts,
                 include: [
                     {
-                        model: db.users, 
+                        model: db.users,
                         attributes: ["id", "nickname", "imgUrl", "isAdmin", "loggedIn"]
                     },
                     {
                         model: db.comments,
-                        include: [{ model: db.users, attributes: ["id", "nickname", "imgUrl", "isAdmin", "loggedIn"]}]
+                        include: [{ model: db.users, attributes: ["id", "nickname", "imgUrl", "isAdmin", "loggedIn"] }]
                     },
                     {
                         model: db.likes, attributes: ["userId"],
@@ -128,8 +128,8 @@ exports.getUserFavoritesPost = (req, res, next) => {
             },
         ]
     })
-        .then(posts => { 
-            let data = [] 
+        .then(posts => {
+            let data = []
             posts.forEach(post => {
                 data.push(post.post)
             })
@@ -173,7 +173,16 @@ exports.updatePost = (req, res, next) => {
             })
                 .then(post => {
                     if (post.user.userId === req.token.userId || userFrom.isAdmin === true) {
-                        let imgUrl = req.file ? `${process.env.API_URL}/images/${req.file.filename}` : post.imgUrl
+                        if (req.file) {
+                            var imgUrl = `${process.env.API_URL}/images/${req.file.filename}`
+                            if (post.imgUrl) {
+                                let file = post.imgUrl.split('/images/')[1]
+                                fs.unlink(`img/${file}`, (err) => {
+                                    if (err) { console.log(err) }
+                                    else { console.log(`Fichier ${file} supprimé`) }
+                                })
+                            }
+                        } else { var imgUrl = post.imgUrl }
                         db.posts.update({
                             content: req.body.content,
                             imgUrl: imgUrl

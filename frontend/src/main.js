@@ -7,9 +7,7 @@ import moment from 'moment'
 moment.locale('fr')
 
 Vue.config.productionTip = false
-
 Vue.prototype.$moment = moment
-
 Vue.prototype.$getCookie = function (cname) {
     let name = cname + "=";
     let ca = document.cookie.split(';');

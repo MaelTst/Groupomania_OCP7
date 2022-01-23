@@ -2,19 +2,19 @@
   <v-col lg="6" md="9" cols="12" class="mt-4">
     <MostLikedPics />
     <WritePost />
-    <div class="blue-grey--text px-3 pb-3">
+    <div class="blue-grey--text text--darken-3 px-3 pb-3">
       <h1 class="overline">{{ this[this.$route.name] }}</h1>
     </div>
     <Post v-for="(post, index) in Posts" :key="post.id" :post="post" :index="index" />
     <v-card v-if="Posts.length === 0" class="rounded-lg boxShadowed pa-7 pb-3 text-center">
-        <v-icon size="32" color="primary">mdi-alert-circle-outline</v-icon>
-        <v-card-title class="d-block pt-1">Oups</v-card-title>
-        <v-card-subtitle class="text-subtitle-2">il n'y a rien à voir ici pour le moment.</v-card-subtitle>
-      </v-card>
-        <v-card v-else class="rounded-lg boxShadowed pa-7 pb-3 text-center">
-        <v-icon size="32" color="primary">mdi-check-circle-outline</v-icon>
-        <v-card-title class="d-block pt-1">Félicitation</v-card-title>
-        <v-card-subtitle class="text-subtitle-2">il n'y a rien de plus à voir ici.</v-card-subtitle>
+      <v-icon size="32" color="primary">error_outline</v-icon>
+      <v-card-title class="d-block pt-1">Oups</v-card-title>
+      <v-card-subtitle class="text-subtitle-2">il n'y a rien à voir ici pour le moment.</v-card-subtitle>
+    </v-card>
+    <v-card v-else class="rounded-lg boxShadowed pa-7 pb-3 text-center">
+      <v-icon size="32" color="primary">task_alt</v-icon>
+      <v-card-title class="d-block pt-1">Félicitation</v-card-title>
+      <v-card-subtitle class="text-subtitle-2">il n'y a rien de plus à voir ici.</v-card-subtitle>
     </v-card>
   </v-col>
 </template>

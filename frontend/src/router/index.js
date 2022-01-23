@@ -1,10 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
-import Login from '../views/Login.vue'
-import User from '../views/User.vue'
-import Settings from '../views/Settings.vue'
-import NotFound from '../views/NotFound.vue'
+import store from '../store'
 
 Vue.use(VueRouter)
 
@@ -12,7 +8,7 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home,
+    component: () => import(/* webpackChunkName: "home" */ '../views/Home.vue'),
     meta: {
       requiresAuth: true,
       title: "Groupomania"
@@ -21,7 +17,7 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: Login,
+    component: () => import(/* webpackChunkName: "login" */ '../views/Login.vue'),
     meta: {
       title: "Connexion - Groupomania"
     }
@@ -29,20 +25,16 @@ const routes = [
   {
     path: '/favorites',
     name: 'Favorites',
-    component: Home,
+    component: () => import(/* webpackChunkName: "home" */ '../views/Home.vue'),
     meta: {
       requiresAuth: true,
       title: "Favoris - Groupomania"
     }
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    //component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   },
   {
     path: '/pictures',
     name: 'Pictures',
-    component: Home,
+    component: () => import(/* webpackChunkName: "home" */ '../views/Home.vue'),
     meta: {
       requiresAuth: true,
       title: "Photos - Groupomania"
@@ -51,7 +43,7 @@ const routes = [
   {
     path: '/post/:id',
     name: 'Post',
-    component: Home,
+    component: () => import(/* webpackChunkName: "home" */ '../views/Home.vue'),
     meta: {
       requiresAuth: true,
       title: "Groupomania"
@@ -60,7 +52,7 @@ const routes = [
   {
     path: '/user/:id',
     name: 'User',
-    component: User,
+    component: () => import(/* webpackChunkName: "user" */ '../views/User.vue'),
     meta: {
       requiresAuth: true,
       title: "Profil utilisateur - Groupomania"
@@ -69,7 +61,7 @@ const routes = [
   {
     path: '/settings',
     name: 'Settings',
-    component: Settings,
+    component: () => import(/* webpackChunkName: "settings" */ '../views/Settings.vue'),
     meta: {
       requiresAuth: true,
       title: "Paramètres - Groupomania"
@@ -79,7 +71,7 @@ const routes = [
     path: '/404NotFound',
     alias: '*',
     name: 'NotFound',
-    component: NotFound,
+    component: () => import(/* webpackChunkName: "notfound" */ '../views/NotFound.vue'),
     meta: {
       requiresAuth: true,
       title: "404 Not Found - Groupomania"
@@ -93,26 +85,11 @@ const router = new VueRouter({
   routes
 })
 
-function getCookie() {
-  let name = "isLoggedIn=";
-  let ca = document.cookie.split(';');
-  for (let i = 0; i < ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) == ' ') {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return "";
-}
-
 router.beforeEach((to, from, next) => {
   document.title = to.meta.title || "Groupomania"
   if (to.meta.requiresAuth) {
-    if (!getCookie()) {
-      next({ name: 'Login' })
+    if (!Vue.prototype.$getCookie('ID')) {
+      store.dispatch('logOut')
     } else {
       next()
     }

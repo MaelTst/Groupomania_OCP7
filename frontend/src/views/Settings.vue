@@ -1,28 +1,36 @@
 <template>
   <v-col lg="6" md="9" cols="12" class="mt-4">
     <v-card class="rounded-lg boxShadowed pa-6">
-      <v-card-title class="pa-0 pb-4">
-        <v-icon class="mr-3" size="32">mdi-cog</v-icon>Paramètres du compte
+      <v-card-title class="pa-0 pb-6">
+        <v-icon class="mr-3" size="32">settings</v-icon>Paramètres du compte
       </v-card-title>
-      <v-divider></v-divider>
       <div class="d-flex flex-row align-center">
-        <v-card-subtitle class="flex-grow-1">Email du compte</v-card-subtitle>
+        <v-card-subtitle class="flex-grow-1 py-3">Email du compte</v-card-subtitle>
         <span class="ellipsis">{{ userInfo.email }}</span>
       </div>
       <v-divider></v-divider>
       <div class="d-flex flex-row align-center">
-        <v-card-subtitle class="flex-grow-1">Mot de passe</v-card-subtitle>
+        <v-card-subtitle class="flex-grow-1 py-3">Mot de passe</v-card-subtitle>
         <div>
-          <v-btn depressed small color="primary" @click="editPasswordDialog = true">Modifier</v-btn>
+          <v-btn
+            depressed
+            min-width="100"
+            max-width="100"
+            small
+            color="primary"
+            @click="editPasswordDialog = true"
+          >Modifier</v-btn>
         </div>
       </div>
       <v-divider></v-divider>
       <div class="d-flex flex-row align-center">
-        <v-card-subtitle class="flex-grow-1">Suppression du compte</v-card-subtitle>
+        <v-card-subtitle class="flex-grow-1 py-3">Suppression du compte</v-card-subtitle>
         <v-btn
           aria-label="Supprimer mon compte"
           depressed
           small
+          min-width="100"
+          max-width="100"
           color="primary"
           @click="deleteAccountDialog = true"
         >Supprimer</v-btn>
@@ -45,6 +53,7 @@
               dense
               flat
               solo
+              label="Confirmer"
               background-color="bg-light-grey"
               :rules="[v => /Confirmer/.test(v)]"
               placeholder="Confirmer"
@@ -80,6 +89,9 @@
               flat
               solo
               background-color="bg-light-grey"
+              :append-icon="showPassword ? 'visibility' : 'visibility_off'"
+              :type="showPassword ? 'text' : 'password'"
+              @click:append="showPassword = !showPassword"
               :rules="passwordRules"
             ></v-text-field>
             <v-btn
@@ -114,6 +126,7 @@ export default {
     editPasswordDialog: false,
     validEditPasswordForm: false,
     editPasswordValue: undefined,
+    showPassword: false,
     passwordRules: [
       (v) => !!v || "Veuillez renseigner votre nouveau mot de passe",
       (v) =>
@@ -148,9 +161,9 @@ export default {
         },
         (error) => {
           console.log(error);
-          this.snackbarColor = "error";
+          this.snackbarColor = "red darken-3";
           this.snackbar = true;
-          this.snackbarMsg = "Une erreur est survenue";
+          this.snackbarMsg = error.message || "Une erreur est survenue";
           this.editPasswordValue = undefined;
         }
       );
