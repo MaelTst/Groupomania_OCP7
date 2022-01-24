@@ -135,10 +135,10 @@ export default {
       this.$store.dispatch("logOut");
     },
 
-    searchBarFilter(val) {
+    searchBarFilter(value) {
       this.items = this.users
         .filter(function (item) {
-          return item.nickname.toLowerCase().includes(val.toLowerCase());
+          return item.nickname.toLowerCase().includes(value.toLowerCase());
         })
         .slice(0, 5);
     },
@@ -155,7 +155,8 @@ export default {
 
   watch: {
     search(val) {
-      this.searchBarFilter(val);
+      let value = val || ""
+      this.searchBarFilter(value);
     },
   },
 };

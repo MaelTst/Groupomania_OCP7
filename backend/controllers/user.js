@@ -183,9 +183,9 @@ exports.updateUser = (req, res, next) => {
 
 // Controlleur pour la route PUT /api/user/:id/banner - Modification de la photo de couverture d'un utilisateur
 exports.updateUserBanner = (req, res, next) => {
-    if (!req.file) { return res.status(400).json({ message: "Aucun fichier reçu" }) }
     if (req.fileError) { return res.status(400).json({ message: req.fileError }) }
     if (req.fileSizeError) { return res.status(400).json({ message: "Fichier trop volumineux (10Mo maximum)" }) }
+    if (!req.file) { return res.status(400).json({ message: "Aucun fichier reçu" }) }
     db.users.findOne({ where: { userId: req.token.userId } })
         .then(userFrom => {
             db.users.findByPk(req.params.id)

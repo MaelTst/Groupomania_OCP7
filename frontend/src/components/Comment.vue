@@ -18,7 +18,7 @@
       </v-card-title>
       <v-card-subtitle class="pb-1 px-3">{{ comment.content }}</v-card-subtitle>
     </div>
-    <div class="flex-grow-1" v-show="isEditing">
+    <div class="flex-grow-1 w100" v-show="isEditing">
       <v-text-field
         hide-details
         class="rounded-lg"

@@ -21,7 +21,6 @@
     </div>
     <v-card class="rounded-lg boxShadowed">
       <v-list nav dense>
-        <v-list-item-group active-class="primary--text">
           <v-list-item color="primary" to="/" class="pl-8 pa-1">
             <v-list-item-icon>
               <v-icon>home</v-icon>
@@ -58,7 +57,6 @@
             </v-list-item-icon>
             <v-list-item-content class="blue-grey--text text--darken-3 text-subtitle-2">Deconnexion</v-list-item-content>
           </v-list-item>
-        </v-list-item-group>
       </v-list>
     </v-card>
   </v-col>

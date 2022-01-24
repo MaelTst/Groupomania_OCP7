@@ -146,7 +146,7 @@
           </v-col>
           <v-col cols="4" class="text-right text-sm-center flex-column">
             <v-card-title class="d-block px-0 pt-2">{{ this.$store.state.posts.length }}</v-card-title>
-            <v-card-subtitle class="d-block ellipsis px-0 pb-2">Publications</v-card-subtitle>
+            <v-card-subtitle class="d-block ellipsis px-0 pb-2">{{ this.$store.state.posts.length > 1 ? "Publications" : "Publication" }}</v-card-subtitle>
           </v-col>
           <v-col sm="4" class="d-none d-sm-flex text-right flex-column">
             <v-card-title class="d-block px-0 pt-2">Inscrit</v-card-title>
@@ -238,7 +238,6 @@ export default {
             this.snackbar = true;
           },
           (error) => {
-            console.log(error);
             this.snackbarColor = "red darken-3";
             this.snackbarMsg = error.message || "Une erreur est survenue";
             this.snackbar = true;
@@ -260,7 +259,6 @@ export default {
             this.snackbar = true;
           },
           (error) => {
-            console.log(error);
             this.snackbarColor = "red darken-3";
             this.snackbarMsg = error.message || "Une erreur est survenue";
             this.snackbar = true;
@@ -326,10 +324,9 @@ export default {
             this.loading = false;
           },
           (error) => {
-            console.log(error);
             this.snackbarColor = "red darken-3";
             this.snackbar = true;
-            this.snackbarMsg = "Une erreur est survenue";
+            this.snackbarMsg = error.message || "Une erreur est survenue";
             this.banUserDialog = false;
             this.loading = false;
           }
@@ -345,10 +342,9 @@ export default {
             this.loading = false;
           },
           (error) => {
-            console.log(error);
             this.snackbarColor = "red darken-3";
             this.snackbar = true;
-            this.snackbarMsg = "Une erreur est survenue";
+            this.snackbarMsg = error.message || "Une erreur est survenue";
             this.banUserDialog = false;
             this.loading = false;
           }

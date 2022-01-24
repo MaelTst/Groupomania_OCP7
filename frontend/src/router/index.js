@@ -1,6 +1,11 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from '../store'
+import Home from '../views/Home.vue'
+import Login from '../views/Login.vue'
+import NotFound from '../views/NotFound.vue'
+import Settings from '../views/Settings.vue'
+import User from '../views/User.vue'
 
 Vue.use(VueRouter)
 
@@ -8,7 +13,7 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: () => import(/* webpackChunkName: "home" */ '../views/Home.vue'),
+    component: Home,
     meta: {
       requiresAuth: true,
       title: "Groupomania"
@@ -17,7 +22,7 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import(/* webpackChunkName: "login" */ '../views/Login.vue'),
+    component: Login,
     meta: {
       title: "Connexion - Groupomania"
     }
@@ -25,7 +30,7 @@ const routes = [
   {
     path: '/favorites',
     name: 'Favorites',
-    component: () => import(/* webpackChunkName: "home" */ '../views/Home.vue'),
+    component: Home,
     meta: {
       requiresAuth: true,
       title: "Favoris - Groupomania"
@@ -34,7 +39,7 @@ const routes = [
   {
     path: '/pictures',
     name: 'Pictures',
-    component: () => import(/* webpackChunkName: "home" */ '../views/Home.vue'),
+    component: Home,
     meta: {
       requiresAuth: true,
       title: "Photos - Groupomania"
@@ -43,7 +48,7 @@ const routes = [
   {
     path: '/post/:id',
     name: 'Post',
-    component: () => import(/* webpackChunkName: "home" */ '../views/Home.vue'),
+    component: Home,
     meta: {
       requiresAuth: true,
       title: "Groupomania"
@@ -52,7 +57,7 @@ const routes = [
   {
     path: '/user/:id',
     name: 'User',
-    component: () => import(/* webpackChunkName: "user" */ '../views/User.vue'),
+    component: User,
     meta: {
       requiresAuth: true,
       title: "Profil utilisateur - Groupomania"
@@ -61,7 +66,7 @@ const routes = [
   {
     path: '/settings',
     name: 'Settings',
-    component: () => import(/* webpackChunkName: "settings" */ '../views/Settings.vue'),
+    component: Settings,
     meta: {
       requiresAuth: true,
       title: "Paramètres - Groupomania"
@@ -71,7 +76,7 @@ const routes = [
     path: '/404NotFound',
     alias: '*',
     name: 'NotFound',
-    component: () => import(/* webpackChunkName: "notfound" */ '../views/NotFound.vue'),
+    component: NotFound,
     meta: {
       requiresAuth: true,
       title: "404 Not Found - Groupomania"

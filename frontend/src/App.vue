@@ -42,10 +42,6 @@ export default {
 </script>
 
 <style lang="scss">
-* {
-  scroll-behavior: smooth;
-}
-
 .boxShadowed {
   box-shadow: 0px 0px 10px 5px rgb(0 0 0 / 2%) !important;
 }

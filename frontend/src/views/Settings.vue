@@ -160,7 +160,6 @@ export default {
           this.editPasswordValue = undefined;
         },
         (error) => {
-          console.log(error);
           this.snackbarColor = "red darken-3";
           this.snackbar = true;
           this.snackbarMsg = error.message || "Une erreur est survenue";

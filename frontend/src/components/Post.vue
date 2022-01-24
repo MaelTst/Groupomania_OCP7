@@ -75,6 +75,7 @@
               class="rounded-lg usersPosts__content__edit"
               rows="1"
               row-height="36"
+              maxlength="300"
               auto-grow
               dense
               flat
@@ -181,6 +182,7 @@
               class="rounded-lg ml-3"
               height="20"
               dense
+              maxlength="300"
               v-model="commentContent"
               flat
               autocomplete="off"
@@ -261,7 +263,6 @@ export default {
             this.snackbar = true
           },
           (error) => {
-            console.log(error);
             this.loading = false;
             this.snackbarColor = "red darken-3"
             this.snackbarMsg = error.message || "Une erreur est survenue";
@@ -282,7 +283,6 @@ export default {
       let index = this.index;
       this.$store.dispatch("deletePost", { postId, index }).then(
           (error) => {
-            console.log(error);
             this.loading = false;
             this.snackbarColor = "red darken-3"
             this.snackbarMsg = error.message || "Une erreur est survenue";
@@ -298,7 +298,6 @@ export default {
       let userId = this.post.userId;
       this.$store.dispatch("likePost", { postId, currentRoute, ID, userId }).then(
           (error) => {
-            console.log(error);
             this.loading = false;
             this.snackbarColor = "red darken-3"
             this.snackbarMsg = error.message || "Une erreur est survenue";
@@ -317,7 +316,6 @@ export default {
         this.$store.dispatch("sendComment", { postId, content, currentRoute, ID, userId }).then(
           () => { this.commentContent = ""; },
           (error) => {
-            console.log(error);
             this.loading = false;
             this.snackbarColor = "red darken-3"
             this.snackbarMsg = error.message || "Une erreur est survenue";

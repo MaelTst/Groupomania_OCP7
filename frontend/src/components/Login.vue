@@ -1,5 +1,5 @@
 <template>
-  <v-card class="loginForm rounded-lg pa-6 boxShadowed">
+  <div class="loginForm rounded-lg">
     <v-tabs background-color="transparent" v-model="tabs" fixed-tabs>
       <v-tab>Connexion</v-tab>
       <v-tab>Inscription</v-tab>
@@ -85,7 +85,7 @@
         <v-btn color="white" text v-bind="attrs" @click="snackbar = false">Fermer</v-btn>
       </template>
     </v-snackbar>
-  </v-card>
+  </div>
 </template>
 
 <script>
@@ -169,7 +169,6 @@ export default {
             this.loadingLogin = false;
           })
           .catch((error) => {
-            console.log("Erreur lors du fetch : " + error.message);
             this.snackbarMsg = error.message;
             this.snackbar = true;
             this.loadingLogin = false;

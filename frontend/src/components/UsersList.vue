@@ -179,10 +179,9 @@ export default {
             this.loading = false;
           },
           (error) => {
-            console.log(error);
             this.snackbarColor = "red darken-3";
             this.snackbar = true;
-            this.snackbarMsg = "Une erreur est survenue";
+            this.snackbarMsg = error.message || "Une erreur est survenue";
             this.banUserDialog = false;
             this.banUserInfo = {};
             this.loading = false;
@@ -200,10 +199,9 @@ export default {
             this.loading = false;
           },
           (error) => {
-            console.log(error);
             this.snackbarColor = "red darken-3";
             this.snackbar = true;
-            this.snackbarMsg = "Une erreur est survenue";
+            this.snackbarMsg = error.message || "Une erreur est survenue";
             this.banUserDialog = false;
             this.banUserInfo = {};
             this.loading = false;
