@@ -1,71 +1,91 @@
-<h1><img width="200px" alt="Logo Groupomania" src="https://raw.githubusercontent.com/MaelTst/MaelTissot_7_08122021/main/frontend/src/assets/logo_blue_rounded.png" /><img width="200px" alt="Groupomania" src="https://raw.githubusercontent.com/MaelTst/MaelTissot_7_08122021/main/frontend/src/assets/logo_blue_text.png" /></h1>
+<br /><br />
 
-# Objectif
-L'objectif de ce projet est de concevoir un réseau social d'entreprise pour la compagnie fictive Groupomania.
+<p align="center"><img width="75px" alt="Logo Groupomania" src="https://raw.githubusercontent.com/MaelTst/MaelTissot_7_08122021/main/frontend/src/assets/logo_blue_rounded.png" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img width="300px" alt="Groupomania" src="https://raw.githubusercontent.com/MaelTst/MaelTissot_7_08122021/main/frontend/src/assets/logo_blue_text.png" /></p>
 
-# Ressources et indications fournies
-* Logo du site
-* Utilisation d'un framework Frontend au choix
+<br /><br />
 
+> ## Présentation
 
-# Environnement et langages
+<br />
 
-## Front
-* VueJS
-* Vuetify
-* Vuex
-* Vue Router
+Projet 7 du parcours Développpeur Web OpenClassrooms dont l'objectif est de concevoir un réseau social d'entreprise pour la compagnie fictive Groupomania. L'application doit permettre à l'utilisateur de s'inscrire et se connecter au réseau social afin de pouvoir partager des images et publications avec les autres membres. Les données doivent être stockées à l'aide d'une base de données relationnelle et le développement de l'application doit être effectué à l'aide d'un framework Frontend au choix.
 
-## Back
-* NodeJS
-* ExpressJS
-* Sequelize
-* PostgreSQL
+<br /><br />
 
+> ## Environnement et Frameworks
 
-<h2><img alt="Mock-up Groupomania" src="https://i.imgur.com/Xbc4s3c.jpg" /></h2>
+<br />
 
-# Fonctionnalités
+| Frontend  | Backend |
+| :---: | :---: |
+| VueJS  | NodeJS  |
+| Vuetify  | ExpressJS  |
+| Vuex  | Sequelize  |
+| Vue Router  | PostgreSQL  |
 
+<br /><br />
+
+> ## Aperçu
+
+<br />
+
+<img alt="Mock-up Groupomania" src="https://i.imgur.com/Xbc4s3c.jpg" />
+
+<br /><br />
+
+> ## Fonctionnalités de l'application
+
+<br />
+
+#### Général
 * Création de compte et connexion
-* Consulter les dernières publications
-* Consulter les publications contenant des images
-* Consulter ses publications favorites
-* Consulter les publications les plus likés
+* Consultation des dernières publications
+* Consultation des publications contenant des images
+* Consultation de ses publications favorites
+* Consultation des publications les plus likés
 * Création, modification et suppression de publications avec ou sans images
 * Création, modification et suppression de commentaires
 * Interaction avec les publications existantes (like)
 
-## Profil utilisateur
-* Consulter les publications d'un utilisateur
+
+#### Profil utilisateur
+* Consultation des publications d'un utilisateur
 * Personnalisation d'avatar
 * Personnalisation de photo de couverture
 * Personnalisation de poste
 * Modification du mot de passe
 * Suppression du compte
 
-## Droits administrateur
+
+#### Droits administrateur
 * Bannissement d'utilisateur
 * Suppression d'utilisateur
 * Suppression et modification de publications et commentaires
 
+<br /><br />
 
+> ## Installation
 
-# Installation
+<br />
 
-Clonez ce repository
+```
+git clone https://github.com/MaelTst/MaelTissot_7_08122021.git
+```
 
-## Front
+#### Prérequis : 
+  * Installation de PostgreSQL
+  * Création d'une base de données et d'un utilisateur possédant les droits sur celle-ci
 
+<br />
+
+#### Front
 * Depuis la racine du dossier `frontend` executez la commande `npm install`
 * Vérifiez et adaptez si besoin les variables d'environnements du fichier `.env`
 * Lancez l'application en executant la commande `npm run serve` depuis la racine du dossier `frontend`
 
+<br />
 
-## Back
-
-- Prérequis : 
-* Installation de PostgreSQL et création d'une base de données (lien)
+#### Back
 * Depuis la racine du dossier `backend` executez la commande `npm install`
-* Vérifiez et adaptez si besoin les variables d'environnements du fichier `.env`
+* Adaptez les variables d'environnements du fichier `.env`
 * Lancez le serveur en executant la commande `npm run start` ou `nodemon` depuis la racine du dossier `backend`
