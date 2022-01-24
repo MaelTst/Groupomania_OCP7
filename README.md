@@ -8,7 +8,7 @@
 
 <br />
 
-Projet 7 du parcours Développpeur Web OpenClassrooms dont l'objectif est de concevoir un réseau social d'entreprise pour la compagnie fictive Groupomania. L'application doit permettre à l'utilisateur de s'inscrire et se connecter au réseau social afin de pouvoir partager des images et publications avec les autres membres. Les données doivent être stockées à l'aide d'une base de données relationnelle et le développement de l'application doit être effectué à l'aide d'un framework Frontend au choix.
+Projet 7 du parcours Développeur Web OpenClassrooms dont l'objectif est de concevoir un réseau social d'entreprise pour la compagnie fictive Groupomania. L'application doit permettre à l'utilisateur de s'inscrire et se connecter au réseau social afin de pouvoir partager des images et publications avec les autres membres. Les données doivent être stockées à l'aide d'une base de données relationnelle et le développement de l'application doit être effectué à l'aide d'un framework Frontend au choix.
 
 <br /><br />
 

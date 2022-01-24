@@ -152,17 +152,13 @@ export default {
         let postId = this.post.id;
         let commentId = this.comment.id;
         let commentContent = this.editCommentContent;
-        let currentRoute = this.$route.name;
-        let ID = this.$getCookie("ID");
-        let userId = this.post.userId;
+        let postIndex = this.postIndex;
         this.$store
           .dispatch("updateComment", {
             postId,
+            postIndex,
             commentId,
-            commentContent,
-            currentRoute,
-            ID,
-            userId,
+            commentContent
           })
           .then(
             () => {

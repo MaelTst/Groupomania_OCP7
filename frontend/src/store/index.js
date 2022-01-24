@@ -35,6 +35,10 @@ export default new Vuex.Store({
       state.posts = response
     },
 
+    REFRESH_ONE_POST(state, { response, postIndex }) {
+      state.posts.splice(postIndex, 1, response[0])
+    },
+
     DELETE_POST(state, index) {
       state.posts.splice(index, 1)
     },
@@ -237,7 +241,7 @@ export default new Vuex.Store({
       })
     },
 
-    editPost({ dispatch }, { formData, currentRoute, ID, postId, userId }) {
+    editPost({ dispatch }, { formData, postId, postIndex }) {
       return new Promise((resolve, reject) => {
         fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}`, {
           method: "PUT",
@@ -247,7 +251,7 @@ export default new Vuex.Store({
           .then((response) => {
             if (response.ok) {
               resolve()
-              dispatch("refreshPosts", { currentRoute, ID, postId, userId })
+              dispatch("refreshOnePost", { postId, postIndex })
             } else { response.json().then((error) => { reject(error) }); }
           })
           .catch((error) => { reject(error) });
@@ -371,7 +375,7 @@ export default new Vuex.Store({
       })
     },
 
-    likePost({ dispatch }, { postId, currentRoute, ID, userId }) {
+    likePost({ dispatch }, { postId, postIndex, currentRoute, ID }) {
       return new Promise((reject) => {
         fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}/like`, {
           method: "POST",
@@ -380,7 +384,8 @@ export default new Vuex.Store({
           .then((response) => {
             if (response.ok) {
               dispatch('getMostLikedPics');
-              dispatch('refreshPosts', { currentRoute, ID, postId, userId });
+              if (currentRoute === "Favorites") { dispatch('getFavoritesPosts', ID) } else {
+              dispatch('refreshOnePost', { postId, postIndex }) }
             } else {
               response.json().then((error) => {
                 reject(error)
@@ -393,7 +398,28 @@ export default new Vuex.Store({
       })
     },
 
-    sendComment({ dispatch }, { postId, content, currentRoute, ID, userId }) {
+    refreshOnePost({ commit }, { postId, postIndex }) {
+      fetch(`${process.env.VUE_APP_ROOT_API}api/posts/unique/${postId}`, {
+        method: "GET",
+        credentials: "include",
+      })
+        .then((response) => {
+          if (response.ok) {
+            response.json().then((response) => {
+            commit('REFRESH_ONE_POST', { response, postIndex })
+            })
+          } else {
+            response.json().then((error) => {
+              console.log(error)
+            });
+          }
+        })
+        .catch((error) => {
+          console.log(error)
+        });
+    },
+
+    sendComment({ dispatch }, { postId, postIndex, content }) {
       return new Promise((resolve, reject) => {
       fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}/comment`, {
         method: "POST",
@@ -405,8 +431,8 @@ export default new Vuex.Store({
       })
         .then((response) => {
           if (response.ok) {
+            dispatch('refreshOnePost', { postId, postIndex })
             resolve()
-              dispatch('refreshPosts', { currentRoute, ID, postId, userId });
           } else {
             response.json().then((error) => {
               reject(error)
@@ -419,7 +445,7 @@ export default new Vuex.Store({
       })
     },
 
-    updateComment({ dispatch }, { postId, commentId, commentContent, currentRoute, ID, userId }) {
+    updateComment({ dispatch }, { postId, postIndex, commentId, commentContent }) {
       return new Promise((resolve, reject) => {
         fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}/comment/${commentId}`, {
           method: "PUT",
@@ -431,7 +457,7 @@ export default new Vuex.Store({
         })
           .then((response) => {
             if (response.ok) {
-              dispatch("refreshPosts", { currentRoute, ID, postId, userId });
+              dispatch('refreshOnePost', { postId, postIndex })
               resolve()
             } else {
               response.json().then((error) => {

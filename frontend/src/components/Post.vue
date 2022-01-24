@@ -246,14 +246,12 @@ export default {
         this.snackbar = true;
       } else {
         this.loading = true;
-        let currentRoute = this.$route.name;
-        let ID = this.$getCookie("ID");
         let postId = this.post.id;
-        let userId = this.post.userId;
+        let postIndex = this.index
         var formData = new FormData();
         formData.append("content", this.editPostContent);
         if (this.postFile) { formData.append("image", this.postFile); }
-        this.$store.dispatch("editPost", { formData, currentRoute, ID, postId, userId }).then(
+        this.$store.dispatch("editPost", { formData, postId, postIndex }).then(
           () => {
             this.isEditing = false;
             this.postFile = null;
@@ -292,11 +290,11 @@ export default {
     },
 
     likePost() {
-      let currentRoute = this.$route.name;
       let postId = this.post.id;
+      let postIndex = this.index;
+      let currentRoute = this.$route.name;
       let ID = this.$getCookie("ID");
-      let userId = this.post.userId;
-      this.$store.dispatch("likePost", { postId, currentRoute, ID, userId }).then(
+      this.$store.dispatch("likePost", { postId, postIndex, currentRoute, ID }).then(
           (error) => {
             this.loading = false;
             this.snackbarColor = "red darken-3"
@@ -307,13 +305,14 @@ export default {
     },
 
     sendComment() {
-      if (this.commentContent) {
+      if (!this.commentContent.trim() || this.commentContent.length < 6) {
+        this.snackbarMsg = "Votre commentaire doit comporter au moins 6 caractères";
+        this.snackbar = true;
+      } else {
         let content = this.commentContent;
         let postId = this.post.id;
-        let ID = this.$getCookie("ID");
-        let currentRoute = this.$route.name;
-        let userId = this.post.userId;
-        this.$store.dispatch("sendComment", { postId, content, currentRoute, ID, userId }).then(
+        let postIndex = this.index;
+        this.$store.dispatch("sendComment", { postId, postIndex, content }).then(
           () => { this.commentContent = ""; },
           (error) => {
             this.loading = false;
