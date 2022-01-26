@@ -2,7 +2,7 @@
   <v-col lg="6" md="9" cols="12" class="mt-4">
     <MostLikedPics />
     <WritePost />
-    <div class="blue-grey--text text--darken-3 px-3 pb-3">
+    <div class="px-3 pb-3">
       <h1 class="overline">{{ this[this.$route.name] }}</h1>
     </div>
     <Post v-for="(post, index) in Posts" :key="post.id" :post="post" :index="index" />

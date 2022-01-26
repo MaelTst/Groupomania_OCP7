@@ -73,19 +73,20 @@ git clone https://github.com/MaelTst/MaelTissot_7_08122021.git
 ```
 
 #### Prérequis : 
-  * Installation de PostgreSQL
+  * NodeJS v14.5+
+  * PostgreSQL
   * Création d'une base de données et d'un utilisateur possédant les droits sur celle-ci
 
 <br />
 
 #### Front
 * Depuis la racine du dossier `frontend` executez la commande `npm install`
-* Vérifiez et adaptez si besoin les variables d'environnements du fichier `.env`
+* Renommez le fichier `.env.example` en `.env` puis vérifiez les variables d'environnement qu'il contient
 * Lancez l'application en executant la commande `npm run serve` depuis la racine du dossier `frontend`
 
 <br />
 
 #### Back
 * Depuis la racine du dossier `backend` executez la commande `npm install`
-* Adaptez les variables d'environnements du fichier `.env`
+* Renommez le fichier `.env.example` en `.env` puis adaptez les variables d'environnement qu'il contient
 * Lancez le serveur en executant la commande `npm run start` ou `nodemon` depuis la racine du dossier `backend`

@@ -233,11 +233,13 @@ export default {
         formData.append("image", avatarFile);
         this.$store.dispatch("updateUserAvatar", { ID, formData }).then(
           () => {
+            this.avatarFile = null;
             this.snackbarColor = "primary";
             this.snackbarMsg = "Avatar modifié";
             this.snackbar = true;
           },
           (error) => {
+            this.avatarFile = null;
             this.snackbarColor = "red darken-3";
             this.snackbarMsg = error.message || "Une erreur est survenue";
             this.snackbar = true;
@@ -254,11 +256,13 @@ export default {
         formData.append("image", bannerFile);
         this.$store.dispatch("updateUserBanner", { ID, formData }).then(
           () => {
+            this.bannerFile = null;
             this.snackbarColor = "primary";
             this.snackbarMsg = "Photo de couverture modifiée";
             this.snackbar = true;
           },
           (error) => {
+            this.bannerFile = null;
             this.snackbarColor = "red darken-3";
             this.snackbarMsg = error.message || "Une erreur est survenue";
             this.snackbar = true;

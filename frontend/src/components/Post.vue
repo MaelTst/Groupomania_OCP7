@@ -6,6 +6,7 @@
           <router-link aria-label="Profil utilisateur" :to="'/user/'+post.user.id">
             <v-avatar class="rounded-lg" size="42">
               <v-img
+              v-ripple
                 :src="post.user.imgUrl || require('../assets/placeholder.png')"
                 alt="Photo de profil"
               />
@@ -13,7 +14,7 @@
           </router-link>
           <div class="usersPosts__heading__text">
             <v-card-title
-              class="blue-grey--text text--darken-3 text-subtitle-2"
+              class="text-subtitle-2"
             >{{ post.user.nickname }}</v-card-title>
             <v-card-subtitle
               :title="$moment(post.createdAt).calendar()"
@@ -117,6 +118,7 @@
             </div>
           </div>
           <v-img
+          v-ripple
             v-show="!isEditing"
             class="usersPosts__img rounded-lg mt-6"
             v-if="post.imgUrl"
@@ -170,6 +172,7 @@
             <router-link aria-label="Profil utilisateur" :to="'/user/'+userInfo.id">
               <v-avatar class="rounded-lg d-none d-sm-flex" size="32">
                 <v-img
+                v-ripple
                   :src="userInfo.imgUrl || require('../assets/placeholder.png')"
                   alt="Photo de profil"
                 />
@@ -196,7 +199,8 @@
         </div>
       </v-card>
     </div>
-    <v-overlay :z-index="999" opacity="0.90" :value="fullScreenImg" @click="fullScreenImg = false">
+    <v-overlay :z-index="999" opacity="0.90" :value="fullScreenImg">
+      <v-btn class="d-flex ml-auto overlayBtn mb-1" aria-label="Quitter le mode plein écran" icon @click="fullScreenImg = false"><v-icon>close</v-icon></v-btn>
       <v-img max-height="90vh" max-width="90vw" contain :src="this.post.imgUrl"></v-img>
     </v-overlay>
     <v-snackbar v-model="snackbar" :timeout="4000" :color="snackbarColor">
@@ -352,5 +356,8 @@ export default {
       border-bottom: 1px solid #f2f3f7;
     }
   }
+}
+.overlayBtn {
+  background-color: rgb(0,0,0,0.2)
 }
 </style>

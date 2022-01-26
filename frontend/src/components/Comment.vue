@@ -3,13 +3,14 @@
     <router-link aria-label="Profil utilisateur" :to="'/user/'+comment.user.id" class="d-none d-sm-block mr-3">
       <v-avatar class="rounded-lg" size="32">
         <v-img
+        v-ripple
           :src="comment.user.imgUrl || require('../assets/placeholder.png')"
           alt="Photo de profil"
         />
       </v-avatar>
     </router-link>
     <div v-show="!isEditing" class="rounded-lg bg-light-grey">
-      <v-card-title class="blue-grey--text text--darken-3 text-subtitle-2 pt-1 px-3">
+      <v-card-title class="text-subtitle-2 pt-1 px-3">
         {{ comment.user.nickname }}
         <span
           class="text-caption ml-1"
@@ -46,7 +47,7 @@
       offset-y
     >
       <template v-slot:activator="{ on, attrs }">
-        <v-btn class="ml-3" aria-label="Options du commentaire" icon v-bind="attrs" v-on="on">
+        <v-btn v-show="!isEditing" class="ml-3" aria-label="Options du commentaire" icon v-bind="attrs" v-on="on">
           <v-icon>more_horiz</v-icon>
         </v-btn>
       </template>

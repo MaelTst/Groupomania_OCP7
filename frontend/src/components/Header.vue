@@ -51,7 +51,7 @@
                 <v-img :src="data.item.imgUrl || require('../assets/placeholder.png')"></v-img>
               </v-list-item-avatar>
               <v-list-item-content
-                class="blue-grey--text text--darken-3 text-subtitle-2"
+                class="text-subtitle-2"
               >{{ data.item.nickname }}</v-list-item-content>
             </v-list-item>
           </template>
@@ -60,6 +60,7 @@
         <router-link aria-label="Profil utilisateur" :to="'/user/'+user.id">
           <v-avatar class="rounded-lg d-none d-md-flex" size="42">
             <v-img
+            v-ripple
               :src="user.imgUrl || require('../assets/placeholder.png')"
               alt="Photo de profil"
             />
@@ -77,32 +78,32 @@
                 <v-list-item-icon>
                   <v-icon>home</v-icon>
                 </v-list-item-icon>
-                <v-list-item-content class="blue-grey--text text--darken-3 text-subtitle-2">Accueil</v-list-item-content>
+                <v-list-item-content class="text-subtitle-2">Accueil</v-list-item-content>
               </v-list-item>
               <v-list-item color="primary" to="/favorites" class="pl-8 pa-1">
                 <v-list-item-icon>
                   <v-icon>star</v-icon>
                 </v-list-item-icon>
-                <v-list-item-content class="blue-grey--text text--darken-3 text-subtitle-2">Favoris</v-list-item-content>
+                <v-list-item-content class="text-subtitle-2">Favoris</v-list-item-content>
               </v-list-item>
               <v-list-item color="primary" to="/pictures" class="pl-8 pa-1">
                 <v-list-item-icon>
                   <v-icon>panorama</v-icon>
                 </v-list-item-icon>
-                <v-list-item-content class="blue-grey--text text--darken-3 text-subtitle-2">Photos</v-list-item-content>
+                <v-list-item-content class="text-subtitle-2">Photos</v-list-item-content>
               </v-list-item>
               <v-list-item color="primary" :to="'/user/'+user.id" class="pl-8 pa-1">
                 <v-list-item-icon>
                   <v-icon>person</v-icon>
                 </v-list-item-icon>
-                <v-list-item-content class="blue-grey--text text--darken-3 text-subtitle-2">Profil</v-list-item-content>
+                <v-list-item-content class="text-subtitle-2">Profil</v-list-item-content>
               </v-list-item>
               <v-list-item color="primary" to="/settings" class="pl-8 pa-1">
                 <v-list-item-icon>
                   <v-icon>settings</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content
-                  class="blue-grey--text text--darken-3 text-subtitle-2"
+                  class="text-subtitle-2"
                 >Paramètres</v-list-item-content>
               </v-list-item>
               <v-list-item color="primary" class="pl-8 pa-1" @click="logOut()">
@@ -110,7 +111,7 @@
                   <v-icon>logout</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content
-                  class="blue-grey--text text--darken-3 text-subtitle-2"
+                  class="text-subtitle-2"
                 >Deconnexion</v-list-item-content>
               </v-list-item>
             </v-list-item-group>

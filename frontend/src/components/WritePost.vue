@@ -5,6 +5,7 @@
         <router-link aria-label="Profil utilisateur" :to="'/user/'+userInfo.id">
           <v-avatar class="rounded-lg" size="42">
             <v-img
+            v-ripple
               :src="userInfo.imgUrl || require('../assets/placeholder.png')"
               alt="Photo de profil"
             />

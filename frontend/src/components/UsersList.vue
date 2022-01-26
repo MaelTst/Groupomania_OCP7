@@ -1,7 +1,7 @@
 <template>
   <v-col cols="3" class="mt-4 d-none d-lg-block" id="rightSidebar">
     <div class="usersList">
-      <h1 class="usersList__heading blue-grey--text text--darken-3 px-3 pb-3 overline">Contacts</h1>
+      <h1 class="usersList__heading px-3 pb-3 overline">Contacts</h1>
       <v-card class="usersList__list rounded-lg boxShadowed">
         <simplebar class="simplebarContainer" data-simplebar-auto-hide="true">
           <v-list nav dense>
@@ -19,7 +19,7 @@
                   />
                 </v-list-item-avatar>
                 <v-list-item-content
-                  class="blue-grey--text text--darken-3 text-subtitle-2"
+                  class="text-subtitle-2"
                 >{{ user.nickname }}</v-list-item-content>
               </v-list-item>
               <v-menu

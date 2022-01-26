@@ -385,7 +385,8 @@ export default new Vuex.Store({
             if (response.ok) {
               dispatch('getMostLikedPics');
               if (currentRoute === "Favorites") { dispatch('getFavoritesPosts', ID) } else {
-              dispatch('refreshOnePost', { postId, postIndex }) }
+                dispatch('refreshOnePost', { postId, postIndex })
+              }
             } else {
               response.json().then((error) => {
                 reject(error)
@@ -406,7 +407,7 @@ export default new Vuex.Store({
         .then((response) => {
           if (response.ok) {
             response.json().then((response) => {
-            commit('REFRESH_ONE_POST', { response, postIndex })
+              commit('REFRESH_ONE_POST', { response, postIndex })
             })
           } else {
             response.json().then((error) => {
@@ -421,27 +422,27 @@ export default new Vuex.Store({
 
     sendComment({ dispatch }, { postId, postIndex, content }) {
       return new Promise((resolve, reject) => {
-      fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}/comment`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ content: content })
-      })
-        .then((response) => {
-          if (response.ok) {
-            dispatch('refreshOnePost', { postId, postIndex })
-            resolve()
-          } else {
-            response.json().then((error) => {
-              reject(error)
-            });
-          }
+        fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}/comment`, {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ content: content })
         })
-        .catch((error) => {
-          reject(error)
-        });
+          .then((response) => {
+            if (response.ok) {
+              dispatch('refreshOnePost', { postId, postIndex })
+              resolve()
+            } else {
+              response.json().then((error) => {
+                reject(error)
+              });
+            }
+          })
+          .catch((error) => {
+            reject(error)
+          });
       })
     },
 

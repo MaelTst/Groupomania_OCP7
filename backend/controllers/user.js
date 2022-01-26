@@ -155,12 +155,10 @@ exports.updateUser = (req, res, next) => {
                                     })
                                 }
                             } else { var imgUrl = user.imgUrl }
-                            let nickname = req.body.nickname ? req.body.nickname : user.nickname
                             let job = req.body.job ? req.body.job : user.job
                             let banned = user.banned
                             if (userFrom.isAdmin === true) { banned = req.body.banned ? req.body.banned : user.banned }
                             db.users.update({
-                                nickname: nickname,
                                 imgUrl: imgUrl,
                                 job: job,
                                 banned: banned
