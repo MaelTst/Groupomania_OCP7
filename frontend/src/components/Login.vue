@@ -145,12 +145,12 @@ export default {
         ) || "Les caractères spéciaux ne sont pas autorisés",
     ],
     emailSignup: "",
-    emailLogin: "demo@groupomania.fr",
+    emailLogin: "",
     emailRules: [
       (v) => /.+@.+\..+/.test(v) || "L'adresse email doit être valide",
     ],
     passwordSignup: "",
-    passwordLogin: "DemoAccount1",
+    passwordLogin: "",
     passwordRules: [
       (v) =>
         /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/.test(v) ||
