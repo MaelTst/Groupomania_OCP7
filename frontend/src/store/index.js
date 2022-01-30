@@ -52,8 +52,10 @@ export default new Vuex.Store({
   },
 
   actions: {
+    // Affecte au state "userInfo" les informations de l'utilisateur suite à sa connexion
     logIn({ commit }, userInfo) { commit('USER_LOGIN', userInfo) },
 
+    // Détruit les cookies de l'utilisateur, retire ses informations du state et le redirige vers la vue Login
     logOut({ commit }) {
       fetch(`${process.env.VUE_APP_ROOT_API}api/user/auth/logout`, { method: "GET", credentials: "include" })
         .then(() => {
@@ -63,7 +65,7 @@ export default new Vuex.Store({
         .catch((error) => { console.log(error.message) })
     },
 
-    // Récupère les informations de l'utilisateur connecté
+    // Rafraichit les informations de l'utilisateur connecté et les affecte au state "userInfo"
     refreshUserInfo({ commit, dispatch }, ID) {
       fetch(`${process.env.VUE_APP_ROOT_API}api/user/${ID}`, { method: "GET", credentials: "include" })
         .then((response) => {
@@ -74,7 +76,7 @@ export default new Vuex.Store({
         .catch((error) => { console.log(error.message) })
     },
 
-    // Récupère les informations de l'utilisateur [userId]
+    // Récupère les informations de l'utilisateur [userId] et les affecte au state "userProfile"
     getUser({ commit }, userId) {
       fetch(`${process.env.VUE_APP_ROOT_API}api/user/${userId}`, { method: "GET", credentials: "include" })
         .then((response) => {
@@ -85,7 +87,7 @@ export default new Vuex.Store({
         .catch((error) => { console.log(error.message) })
     },
 
-    // Récupère la liste des tous utilisateurs
+    // Récupère la liste des tous utilisateurs et l'affecte au state "users"
     getUsers({ commit }) {
       fetch(`${process.env.VUE_APP_ROOT_API}api/user/`, { method: "GET", credentials: "include" })
         .then((response) => {
@@ -166,7 +168,7 @@ export default new Vuex.Store({
       })
     },
 
-    // Récupère la liste de toutes les publications
+    // Récupère la liste de toutes les publications et les affecte au state "posts"
     getPosts({ commit }) {
       fetch(`${process.env.VUE_APP_ROOT_API}api/posts/`, { method: "GET", credentials: "include" })
         .then((response) => {
@@ -175,7 +177,7 @@ export default new Vuex.Store({
         .catch((error) => { console.log(error.message) })
     },
 
-    // Récupère les 5 publications contenant des images les plus likées
+    // Récupère les 5 publications contenant des images les plus likées et les affecte au state "mostLikedPics"
     getMostLikedPics({ commit }) {
       fetch(`${process.env.VUE_APP_ROOT_API}api/posts/mostlikedpics`, { method: "GET", credentials: "include" })
         .then((response) => {
@@ -186,7 +188,7 @@ export default new Vuex.Store({
         .catch((error) => { console.log(error.message) })
     },
 
-    // Récupère la liste de toutes les publications contenant des images
+    // Récupère la liste de toutes les publications contenant des images et les affecte au state "posts"
     getPicsPosts({ commit }) {
       fetch(`${process.env.VUE_APP_ROOT_API}api/posts/pics`, { method: "GET", credentials: "include" })
         .then((response) => {
@@ -195,7 +197,7 @@ export default new Vuex.Store({
         .catch((error) => { console.log(error.message) })
     },
 
-    // Récupère la liste de toutes les publications likées par l'utilisateur [ID]
+    // Récupère la liste de toutes les publications likées par l'utilisateur [ID] et les affecte au state "posts"
     getFavoritesPosts({ commit }, ID) {
       fetch(`${process.env.VUE_APP_ROOT_API}api/posts/liked/${ID}`, { method: "GET", credentials: "include" })
         .then((response) => {
@@ -204,7 +206,7 @@ export default new Vuex.Store({
         .catch((error) => { console.log(error.message) })
     },
 
-    // Récupère la publication [ID]
+    // Récupère la publication [ID] et l'affecte au state "posts"
     getUniquePost({ commit }, ID) {
       fetch(`${process.env.VUE_APP_ROOT_API}api/posts/unique/${ID}`, { method: "GET", credentials: "include" })
         .then((response) => {
@@ -218,7 +220,7 @@ export default new Vuex.Store({
         .catch((error) => { console.log(error.message) })
     },
 
-    // Récupère la liste des publications postées par l'utilisateur [userId]
+    // Récupère la liste des publications postées par l'utilisateur [userId] et les affecte au state "posts"
     getUserPost({ commit }, userId) {
       fetch(`${process.env.VUE_APP_ROOT_API}api/posts/user/${userId}`, { method: "GET", credentials: "include" })
         .then((response) => {
@@ -236,7 +238,7 @@ export default new Vuex.Store({
       if (currentRoute === "User") { dispatch("getUserPost", userId) }
     },
 
-    // Récupère la publication [postId] et la met à jour dans le store
+    // Récupère la publication [postId] et la met à jour dans le state "posts"
     refreshOnePost({ commit }, { postId, postIndex }) {
       fetch(`${process.env.VUE_APP_ROOT_API}api/posts/unique/${postId}`, { method: "GET", credentials: "include" })
         .then((response) => {

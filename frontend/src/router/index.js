@@ -94,7 +94,7 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   document.title = to.meta.title || "Groupomania"
   if (to.meta.requiresAuth) {
-    if (!Vue.prototype.$getCookie('ID')) {
+    if (!Vue.prototype.$getCookie('isLoggedIn')) {
       store.dispatch('logOut')
     } else {
       next()
