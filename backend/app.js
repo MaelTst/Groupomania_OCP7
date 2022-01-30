@@ -18,8 +18,8 @@ app.use((req, res, next) => {
 });
 
 // Parse le body des requetes entrantes et transforme le contenu JSON en objet JS
-// Utilisation du middleware Helmet afin de renforcer la sécurité de l'application via l'ajout de plusieurs headers
 // Utilisation du middleware CookieParser afin de parser les cookies des requêtes entrantes
+// Utilisation du middleware Helmet afin de renforcer la sécurité de l'application via l'ajout de plusieurs headers
 // Indique à Express qu'il doit se servir du répertoire statique "img" lors des requêtes sur la route /images/
 // Définition des routers à utiliser pour les routes /api/posts et /api/user
 app.use(express.json());

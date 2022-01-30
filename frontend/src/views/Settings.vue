@@ -1,3 +1,4 @@
+<!-- Vue Paramètres du compte --> 
 <template>
   <v-col lg="6" md="9" cols="12" class="mt-4">
     <v-card class="rounded-lg boxShadowed pa-6">
@@ -140,7 +141,9 @@ export default {
       return this.$store.state.userInfo;
     },
   },
+
   methods: {
+    // Supprime le compte et la session de l'utilisateur
     deleteAccount() {
       let ID = this.$getCookie("ID");
       let isAdminBan = false;
@@ -148,6 +151,7 @@ export default {
       this.$store.dispatch("logOut");
     },
 
+    // Modifie le mot de passe de l'utilisateur
     editAccount() {
       let ID = this.$getCookie("ID");
       let password = this.editPasswordValue;

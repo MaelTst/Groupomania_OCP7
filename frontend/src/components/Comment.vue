@@ -1,9 +1,14 @@
+<!-- Composant Commentaire -->
 <template>
   <div class="usersPosts__subContent__comment d-flex flex-column flex-sm-row align-center py-2">
-    <router-link aria-label="Profil utilisateur" :to="'/user/'+comment.user.id" class="d-none d-sm-block mr-3">
+    <router-link
+      aria-label="Profil utilisateur"
+      :to="'/user/'+comment.user.id"
+      class="d-none d-sm-block mr-3"
+    >
       <v-avatar class="rounded-lg" size="32">
         <v-img
-        v-ripple
+          v-ripple
           :src="comment.user.imgUrl || require('../assets/placeholder.png')"
           alt="Photo de profil"
         />
@@ -47,7 +52,14 @@
       offset-y
     >
       <template v-slot:activator="{ on, attrs }">
-        <v-btn v-show="!isEditing" class="ml-3" aria-label="Options du commentaire" icon v-bind="attrs" v-on="on">
+        <v-btn
+          v-show="!isEditing"
+          class="ml-3"
+          aria-label="Options du commentaire"
+          icon
+          v-bind="attrs"
+          v-on="on"
+        >
           <v-icon>more_horiz</v-icon>
         </v-btn>
       </template>
@@ -104,12 +116,14 @@ export default {
     snackbarMsg: "",
     snackbarColor: "red darken-3",
   }),
+
   props: {
     comment: {},
     commentIndex: null,
     post: null,
     postIndex: null,
   },
+
   computed: {
     userInfo() {
       return this.$store.state.userInfo;
@@ -123,6 +137,7 @@ export default {
       this.snackbar = true;
     },
 
+    // Déclenche l'action "deleteComment" du store
     deleteComment(commentId, commentIndex) {
       let postId = this.post.id;
       let postIndex = this.postIndex;
@@ -140,11 +155,9 @@ export default {
         });
     },
 
+    // Vérifie la validité de [editCommentContent] et déclenche l'action "updateComment" du store
     updateComment() {
-      if (
-        !this.editCommentContent.trim() ||
-        this.editCommentContent.length < 6
-      ) {
+      if (this.editCommentContent.trim().length < 6) {
         this.snackbarColor = "red darken-3";
         this.snackbarMsg =
           "Votre commentaire doit comporter au moins 6 caractères";
@@ -159,7 +172,7 @@ export default {
             postId,
             postIndex,
             commentId,
-            commentContent
+            commentContent,
           })
           .then(
             () => {

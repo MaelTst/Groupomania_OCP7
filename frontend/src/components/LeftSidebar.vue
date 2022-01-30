@@ -1,3 +1,4 @@
+<!-- Composant Menu - Barre latérale gauche -->
 <template>
   <v-col cols="3" class="mt-4 d-none d-md-block leftSidebar" id="leftSidebar">
     <v-card class="rounded-lg boxShadowed">
@@ -5,7 +6,7 @@
         <router-link aria-label="Profil utilisateur" :to="'/user/'+user.id">
           <v-avatar class="rounded-lg" size="42">
             <v-img
-            v-ripple
+              v-ripple
               :src="user.imgUrl || require('../assets/placeholder.png')"
               alt="Photo de profil"
             />
@@ -22,42 +23,42 @@
     </div>
     <v-card class="rounded-lg boxShadowed">
       <v-list nav dense>
-          <v-list-item color="primary" to="/" class="pl-8 pa-1">
-            <v-list-item-icon>
-              <v-icon>home</v-icon>
-            </v-list-item-icon>
-            <v-list-item-content class="text-subtitle-2">Accueil</v-list-item-content>
-          </v-list-item>
-          <v-list-item color="primary" to="/favorites" class="pl-8 pa-1">
-            <v-list-item-icon>
-              <v-icon>star</v-icon>
-            </v-list-item-icon>
-            <v-list-item-content class="text-subtitle-2">Favoris</v-list-item-content>
-          </v-list-item>
-          <v-list-item color="primary" to="/pictures" class="pl-8 pa-1">
-            <v-list-item-icon>
-              <v-icon>panorama</v-icon>
-            </v-list-item-icon>
-            <v-list-item-content class="text-subtitle-2">Photos</v-list-item-content>
-          </v-list-item>
-          <v-list-item color="primary" :to="'/user/'+user.id" class="pl-8 pa-1">
-            <v-list-item-icon>
-              <v-icon>person</v-icon>
-            </v-list-item-icon>
-            <v-list-item-content class="text-subtitle-2">Profil</v-list-item-content>
-          </v-list-item>
-          <v-list-item color="primary" to="/settings" class="pl-8 pa-1">
-            <v-list-item-icon>
-              <v-icon>settings</v-icon>
-            </v-list-item-icon>
-            <v-list-item-content class="text-subtitle-2">Paramètres</v-list-item-content>
-          </v-list-item>
-          <v-list-item color="primary" class="pl-8 pa-1" @click="logOut">
-            <v-list-item-icon>
-              <v-icon>logout</v-icon>
-            </v-list-item-icon>
-            <v-list-item-content class="text-subtitle-2">Deconnexion</v-list-item-content>
-          </v-list-item>
+        <v-list-item color="primary" to="/" class="pl-8 pa-1">
+          <v-list-item-icon>
+            <v-icon>home</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content class="text-subtitle-2">Accueil</v-list-item-content>
+        </v-list-item>
+        <v-list-item color="primary" to="/favorites" class="pl-8 pa-1">
+          <v-list-item-icon>
+            <v-icon>star</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content class="text-subtitle-2">Favoris</v-list-item-content>
+        </v-list-item>
+        <v-list-item color="primary" to="/pictures" class="pl-8 pa-1">
+          <v-list-item-icon>
+            <v-icon>panorama</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content class="text-subtitle-2">Photos</v-list-item-content>
+        </v-list-item>
+        <v-list-item active-class="primary--text" :to="'/user/'+user.id" class="pl-8 pa-1">
+          <v-list-item-icon>
+            <v-icon>person</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content class="text-subtitle-2">Profil</v-list-item-content>
+        </v-list-item>
+        <v-list-item color="primary" to="/settings" class="pl-8 pa-1">
+          <v-list-item-icon>
+            <v-icon>settings</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content class="text-subtitle-2">Paramètres</v-list-item-content>
+        </v-list-item>
+        <v-list-item color="primary" class="pl-8 pa-1" @click="logOut">
+          <v-list-item-icon>
+            <v-icon>logout</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content class="text-subtitle-2">Deconnexion</v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-card>
   </v-col>

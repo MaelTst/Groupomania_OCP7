@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 // Middleware d'authentification présent sur chaque endpoints nécessitant une authentification
-// Vérifie le token présent dans le cookie envoyé par le front
+// Vérifie la validité du token présent dans le cookie envoyé par le front
 module.exports = (req, res, next) => {
     try {
         const token = req.cookies.access_token;

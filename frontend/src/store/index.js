@@ -13,7 +13,6 @@ export default new Vuex.Store({
     userProfile: {}
   },
 
-
   mutations: {
     USER_LOGIN(state, userInfo) {
       state.userInfo = userInfo
@@ -35,6 +34,10 @@ export default new Vuex.Store({
       state.posts = response
     },
 
+    GET_MOST_LIKED_PICS(state, response) {
+      state.mostLikedPics = response
+    },
+
     REFRESH_ONE_POST(state, { response, postIndex }) {
       state.posts.splice(postIndex, 1, response[0])
     },
@@ -45,447 +48,313 @@ export default new Vuex.Store({
 
     DELETE_COMMENT(state, { postIndex, commentIndex }) {
       state.posts[postIndex].comments.splice(commentIndex, 1)
-    },
-
-    GET_MOST_LIKED_PICS(state, response) {
-      state.mostLikedPics = response
     }
   },
 
-
   actions: {
-    logIn({ commit }, userInfo) {
-      commit('USER_LOGIN', userInfo)
-    },
+    logIn({ commit }, userInfo) { commit('USER_LOGIN', userInfo) },
 
     logOut({ commit }) {
-      fetch(`${process.env.VUE_APP_ROOT_API}api/user/auth/logout`, {
-        method: "GET",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-      })
+      fetch(`${process.env.VUE_APP_ROOT_API}api/user/auth/logout`, { method: "GET", credentials: "include" })
         .then(() => {
           commit('USER_LOGOUT')
-          router.push({ name: "Login" });
+          router.push({ name: "Login" })
         })
-        .catch((error) => {
-          console.log("Erreur lors du fetch : " + error.message);
-        });
+        .catch((error) => { console.log(error.message) })
     },
 
+    // Récupère les informations de l'utilisateur connecté
     refreshUserInfo({ commit, dispatch }, ID) {
-      fetch(`${process.env.VUE_APP_ROOT_API}api/user/${ID}`, {
-        method: "GET",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" }
-      })
+      fetch(`${process.env.VUE_APP_ROOT_API}api/user/${ID}`, { method: "GET", credentials: "include" })
         .then((response) => {
           if (response.ok) {
-            response.json().then((userInfo) => {
-              commit('USER_LOGIN', userInfo)
-            })
+            response.json().then((userInfo) => { commit('USER_LOGIN', userInfo) })
           } else { dispatch("logOut"); }
         })
-        .catch((error) => {
-          console.log("Erreur lors du fetch : " + error.message);
-        });
+        .catch((error) => { console.log(error.message) })
     },
 
+    // Récupère les informations de l'utilisateur [userId]
     getUser({ commit }, userId) {
-      fetch(`${process.env.VUE_APP_ROOT_API}api/user/${userId}`, {
-        method: "GET",
-        credentials: "include"
-      })
+      fetch(`${process.env.VUE_APP_ROOT_API}api/user/${userId}`, { method: "GET", credentials: "include" })
         .then((response) => {
           if (response.ok) {
-            response.json().then((response) => {
-              commit('GET_USER', response)
-            });
-          } else { router.push({ name: "NotFound" }); }
+            response.json().then((response) => { commit('GET_USER', response) })
+          } else { router.push({ name: "NotFound" }) }
         })
-        .catch((error) => {
-          console.log("Erreur lors du fetch : " + error.message);
-        });
+        .catch((error) => { console.log(error.message) })
     },
 
+    // Récupère la liste des tous utilisateurs
     getUsers({ commit }) {
-      fetch(`${process.env.VUE_APP_ROOT_API}api/user/`, {
-        method: "GET",
-        credentials: "include"
-      })
+      fetch(`${process.env.VUE_APP_ROOT_API}api/user/`, { method: "GET", credentials: "include" })
         .then((response) => {
           if (response.ok) {
-            response.json().then((response) => {
-              commit('GET_USERS', response)
-            });
+            response.json().then((response) => { commit('GET_USERS', response) })
           }
         })
-        .catch((error) => {
-          console.log("Erreur lors du fetch : " + error.message);
-        });
+        .catch((error) => { console.log(error.message) })
     },
 
+    // Supprime l'utilisateur [ID] et met à jour la liste des utilisateurs
     deleteUser({ dispatch }, { ID, isAdminBan }) {
       return new Promise((resolve, reject) => {
-        fetch(`${process.env.VUE_APP_ROOT_API}api/user/${ID}`, {
-          method: "DELETE",
-          credentials: "include"
-        }).then((response) => {
-          if (response.ok) {
-            response.json().then((response) => {
-              resolve(response)
-              if (isAdminBan) { dispatch("getUsers"); }
-            });
-          } else {
-            response.json().then((error) => {
-              reject(error)
-            });
-          }
-        })
-          .catch((error) => {
-            reject(error.message)
-          });
+        fetch(`${process.env.VUE_APP_ROOT_API}api/user/${ID}`, { method: "DELETE", credentials: "include" })
+          .then((response) => {
+            if (response.ok) {
+              response.json().then((response) => {
+                resolve(response)
+                if (isAdminBan) { dispatch("getUsers") }
+              })
+            } else { response.json().then((error) => { reject(error) }) }
+          })
+          .catch((error) => { reject(error.message) })
       })
     },
 
-    updateUser({ dispatch }, { ID, userId, imgUrl, email, nickname, password, job, banned }) {
+    // Modifie les informations de l'utilisateur [ID]
+    updateUser({ dispatch }, { ID, userId, password, job, banned }) {
       return new Promise((resolve, reject) => {
         fetch(`${process.env.VUE_APP_ROOT_API}api/user/${ID}`, {
           method: "PUT",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ imgUrl: imgUrl, email: email, nickname: nickname, password: password, job: job, banned: banned })
-        }).then((response) => {
-          if (response.ok) {
-            response.json().then((response) => {
-              if (!banned) { dispatch("refreshUserInfo", ID); }
-              if (job) { dispatch("getUser", userId); }
-              resolve(response)
-            });
-          } else {
-            response.json().then((error) => {
-              reject(error)
-            });
-          }
+          body: JSON.stringify({ password: password, job: job, banned: banned })
         })
-          .catch((error) => {
-            reject(error.message)
-          });
+          .then((response) => {
+            if (response.ok) {
+              response.json().then((response) => {
+                if (!banned) { dispatch("refreshUserInfo", ID) }
+                if (job) { dispatch("getUser", userId) }
+                resolve(response)
+              })
+            } else {
+              response.json().then((error) => { reject(error) })
+            }
+          })
+          .catch((error) => { reject(error.message) })
       })
     },
 
+    // Modifie la photo de profil de l'utilisateur [ID]
     updateUserAvatar({ dispatch }, { ID, formData }) {
       return new Promise((resolve, reject) => {
-        fetch(`${process.env.VUE_APP_ROOT_API}api/user/${ID}`, {
-          method: "PUT",
-          credentials: "include",
-          body: formData
-        })
+        fetch(`${process.env.VUE_APP_ROOT_API}api/user/${ID}`, { method: "PUT", credentials: "include", body: formData })
           .then((response) => {
             if (response.ok) {
-              dispatch("getUser", ID);
-              dispatch("refreshUserInfo", ID);
-              dispatch("getUserPost", ID);
+              dispatch("getUser", ID)
+              dispatch("refreshUserInfo", ID)
+              dispatch("getUserPost", ID)
               resolve(response)
-
-            } else {
-              response.json().then((error) => {
-                reject(error)
-              });
-            }
+            } else { response.json().then((error) => { reject(error) }) }
           })
-          .catch((error) => {
-            reject(error)
-          });
+          .catch((error) => { reject(error) })
       })
     },
 
+    // Modifie la photo de couverture de l'utilisateur [ID]
     updateUserBanner({ dispatch }, { ID, formData }) {
       return new Promise((resolve, reject) => {
-        fetch(`${process.env.VUE_APP_ROOT_API}api/user/${ID}/banner`, {
-          method: "PUT",
-          credentials: "include",
-          body: formData
-        })
+        fetch(`${process.env.VUE_APP_ROOT_API}api/user/${ID}/banner`, { method: "PUT", credentials: "include", body: formData })
           .then((response) => {
             if (response.ok) {
-              dispatch("getUser", ID);
+              dispatch("getUser", ID)
               resolve(response)
-
-            } else {
-              response.json().then((error) => {
-                reject(error)
-              });
-            }
+            } else { response.json().then((error) => { reject(error) }) }
           })
-          .catch((error) => {
-            reject(error)
-          });
+          .catch((error) => { reject(error) })
       })
     },
 
-    sendPost({ dispatch }, formData) {
-      return new Promise((resolve, reject) => {
-        fetch(`${process.env.VUE_APP_ROOT_API}api/posts/`, {
-          method: "POST",
-          credentials: "include",
-          body: formData
-        })
-          .then((response) => {
-            if (response.ok) {
-              resolve()
-              dispatch("getPosts");
-            } else { response.json().then((error) => { reject(error) }); }
-          })
-          .catch((error) => { reject(error) });
-      })
-    },
-
-    editPost({ dispatch }, { formData, postId, postIndex }) {
-      return new Promise((resolve, reject) => {
-        fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}`, {
-          method: "PUT",
-          credentials: "include",
-          body: formData,
-        })
-          .then((response) => {
-            if (response.ok) {
-              resolve()
-              dispatch("refreshOnePost", { postId, postIndex })
-            } else { response.json().then((error) => { reject(error) }); }
-          })
-          .catch((error) => { reject(error) });
-      })
-    },
-
+    // Récupère la liste de toutes les publications
     getPosts({ commit }) {
-      fetch(`${process.env.VUE_APP_ROOT_API}api/posts/`, {
-        method: "GET",
-        credentials: "include",
-      }).then((response) => {
-        if (response.ok) {
-          response.json().then((response) => {
-            commit('GET_POSTS', response)
-          });
-        }
-      });
+      fetch(`${process.env.VUE_APP_ROOT_API}api/posts/`, { method: "GET", credentials: "include" })
+        .then((response) => {
+          if (response.ok) { response.json().then((response) => { commit('GET_POSTS', response) }) }
+        })
+        .catch((error) => { console.log(error.message) })
     },
 
+    // Récupère les 5 publications contenant des images les plus likées
+    getMostLikedPics({ commit }) {
+      fetch(`${process.env.VUE_APP_ROOT_API}api/posts/mostlikedpics`, { method: "GET", credentials: "include" })
+        .then((response) => {
+          if (response.ok) {
+            response.json().then((response) => { commit('GET_MOST_LIKED_PICS', response) })
+          }
+        })
+        .catch((error) => { console.log(error.message) })
+    },
+
+    // Récupère la liste de toutes les publications contenant des images
     getPicsPosts({ commit }) {
-      fetch(`${process.env.VUE_APP_ROOT_API}api/posts/pics`, {
-        method: "GET",
-        credentials: "include",
-      }).then((response) => {
-        if (response.ok) {
-          response.json().then((response) => {
-            commit('GET_POSTS', response)
-          });
-        }
-      });
+      fetch(`${process.env.VUE_APP_ROOT_API}api/posts/pics`, { method: "GET", credentials: "include" })
+        .then((response) => {
+          if (response.ok) { response.json().then((response) => { commit('GET_POSTS', response) }) }
+        })
+        .catch((error) => { console.log(error.message) })
     },
 
+    // Récupère la liste de toutes les publications likées par l'utilisateur [ID]
     getFavoritesPosts({ commit }, ID) {
-      fetch(`${process.env.VUE_APP_ROOT_API}api/posts/liked/${ID}`, {
-        method: "GET",
-        credentials: "include",
-      }).then((response) => {
-        if (response.ok) {
-          response.json().then((response) => {
-            commit('GET_POSTS', response)
-          });
-        }
-      });
+      fetch(`${process.env.VUE_APP_ROOT_API}api/posts/liked/${ID}`, { method: "GET", credentials: "include" })
+        .then((response) => {
+          if (response.ok) { response.json().then((response) => { commit('GET_POSTS', response) }) }
+        })
+        .catch((error) => { console.log(error.message) })
     },
 
+    // Récupère la publication [ID]
     getUniquePost({ commit }, ID) {
-      fetch(`${process.env.VUE_APP_ROOT_API}api/posts/unique/${ID}`, {
-        method: "GET",
-        credentials: "include",
-      }).then((response) => {
-        if (response.ok) {
-          response.json().then((response) => {
-            if (response[0] === null) { router.push({ name: "NotFound" }); }
-            commit('GET_POSTS', response)
-          });
-        }
-      });
-    },
-
-    getUserPost({ commit }, userId) {
-      fetch(`${process.env.VUE_APP_ROOT_API}api/posts/user/${userId}`, {
-        method: "GET",
-        credentials: "include",
-      }).then((response) => {
-        if (response.ok) {
-          response.json().then((response) => {
-            commit('GET_POSTS', response)
-          });
-        }
-      });
-    },
-
-    refreshPosts({ dispatch }, { currentRoute, ID, postId, userId }) {
-      if (currentRoute === "Home") { dispatch('getPosts'); }
-      if (currentRoute === "Favorites") { dispatch("getFavoritesPosts", ID); }
-      if (currentRoute === "Pictures") { dispatch("getPicsPosts"); }
-      if (currentRoute === "Post") { dispatch("getUniquePost", postId); }
-      if (currentRoute === "User") { dispatch("getUserPost", userId); }
-    },
-
-    deletePost({ dispatch, commit, state }, { postId, index }) {
-      return new Promise((reject) => {
-        fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}`, {
-          method: "DELETE",
-          credentials: "include",
-        })
-          .then((response) => {
-            if (response.ok) {
-              if (state.posts[index].imgUrl) { dispatch('getMostLikedPics'); }
-              commit('DELETE_POST', index)
-            } else {
-              response.json().then((error) => {
-                reject(error)
-              });
-            }
-          })
-          .catch((error) => {
-            reject(error)
-          });
-      })
-    },
-
-    deleteComment({ commit }, { postId, postIndex, commentId, commentIndex }) {
-      return new Promise((reject) => {
-        fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}/comment/${commentId}`, {
-          method: "DELETE",
-          credentials: "include",
-        })
-          .then((response) => {
-            if (response.ok) {
-              commit('DELETE_COMMENT', { postIndex, commentIndex })
-            } else {
-              response.json().then((error) => {
-                reject(error)
-              });
-            }
-          })
-          .catch((error) => {
-            reject(error)
-          });
-      })
-    },
-
-    likePost({ dispatch }, { postId, postIndex, currentRoute, ID }) {
-      return new Promise((reject) => {
-        fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}/like`, {
-          method: "POST",
-          credentials: "include",
-        })
-          .then((response) => {
-            if (response.ok) {
-              dispatch('getMostLikedPics');
-              if (currentRoute === "Favorites") { dispatch('getFavoritesPosts', ID) } else {
-                dispatch('refreshOnePost', { postId, postIndex })
-              }
-            } else {
-              response.json().then((error) => {
-                reject(error)
-              });
-            }
-          })
-          .catch((error) => {
-            reject(error)
-          });
-      })
-    },
-
-    refreshOnePost({ commit }, { postId, postIndex }) {
-      fetch(`${process.env.VUE_APP_ROOT_API}api/posts/unique/${postId}`, {
-        method: "GET",
-        credentials: "include",
-      })
+      fetch(`${process.env.VUE_APP_ROOT_API}api/posts/unique/${ID}`, { method: "GET", credentials: "include" })
         .then((response) => {
           if (response.ok) {
             response.json().then((response) => {
-              commit('REFRESH_ONE_POST', { response, postIndex })
+              if (response[0] === null) { router.push({ name: "NotFound" }) }
+              commit('GET_POSTS', response)
             })
-          } else {
-            response.json().then((error) => {
-              console.log(error)
-            });
           }
         })
-        .catch((error) => {
-          console.log(error)
-        });
+        .catch((error) => { console.log(error.message) })
     },
 
+    // Récupère la liste des publications postées par l'utilisateur [userId]
+    getUserPost({ commit }, userId) {
+      fetch(`${process.env.VUE_APP_ROOT_API}api/posts/user/${userId}`, { method: "GET", credentials: "include" })
+        .then((response) => {
+          if (response.ok) { response.json().then((response) => { commit('GET_POSTS', response) }) }
+        })
+        .catch((error) => { console.log(error.message) })
+    },
+
+    // Dispatch vers les actions de récupération de publications appropriées en fonction de [currentRoute] ($route.name)
+    refreshPosts({ dispatch }, { currentRoute, ID, postId, userId }) {
+      if (currentRoute === "Home") { dispatch('getPosts') }
+      if (currentRoute === "Favorites") { dispatch("getFavoritesPosts", ID) }
+      if (currentRoute === "Pictures") { dispatch("getPicsPosts") }
+      if (currentRoute === "Post") { dispatch("getUniquePost", postId) }
+      if (currentRoute === "User") { dispatch("getUserPost", userId) }
+    },
+
+    // Récupère la publication [postId] et la met à jour dans le store
+    refreshOnePost({ commit }, { postId, postIndex }) {
+      fetch(`${process.env.VUE_APP_ROOT_API}api/posts/unique/${postId}`, { method: "GET", credentials: "include" })
+        .then((response) => {
+          if (response.ok) {
+            response.json().then((response) => { commit('REFRESH_ONE_POST', { response, postIndex }) })
+          }
+        })
+        .catch((error) => { console.log(error.message) })
+    },
+
+    // Créer une nouvelle publication
+    sendPost({ dispatch }, formData) {
+      return new Promise((resolve, reject) => {
+        fetch(`${process.env.VUE_APP_ROOT_API}api/posts/`, { method: "POST", credentials: "include", body: formData })
+          .then((response) => {
+            if (response.ok) {
+              resolve()
+              dispatch("getPosts")
+            } else { response.json().then((error) => { reject(error) }) }
+          })
+          .catch((error) => { reject(error) })
+      })
+    },
+
+    // Modifie la publication [postId]
+    editPost({ dispatch }, { formData, postId, postIndex }) {
+      return new Promise((resolve, reject) => {
+        fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}`, { method: "PUT", credentials: "include", body: formData })
+          .then((response) => {
+            if (response.ok) {
+              resolve()
+              if (formData.has('image') || formData.has('imgUrl')) { dispatch('getMostLikedPics') }
+              dispatch("refreshOnePost", { postId, postIndex })
+            } else { response.json().then((error) => { reject(error) }) }
+          })
+          .catch((error) => { reject(error) })
+      })
+    },
+
+    // Supprime la publication [postId]
+    deletePost({ dispatch, commit, state }, { postId, index }) {
+      return new Promise((reject) => {
+        fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}`, { method: "DELETE", credentials: "include" })
+          .then((response) => {
+            if (response.ok) {
+              if (state.posts[index].imgUrl) { dispatch('getMostLikedPics') }
+              commit('DELETE_POST', index)
+            } else { response.json().then((error) => { reject(error) }) }
+          })
+          .catch((error) => { reject(error) })
+      })
+    },
+
+    // Like/Dislike la publication [postId]
+    likePost({ dispatch }, { postId, postIndex, currentRoute, ID }) {
+      return new Promise((reject) => {
+        fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}/like`, { method: "POST", credentials: "include" })
+          .then((response) => {
+            if (response.ok) {
+              dispatch('getMostLikedPics');
+              if (currentRoute === "Favorites") {
+                dispatch('getFavoritesPosts', ID)
+              } else { dispatch('refreshOnePost', { postId, postIndex }) }
+            } else { response.json().then((error) => { reject(error) }) }
+          })
+          .catch((error) => { reject(error) })
+      })
+    },
+
+    // Supprime le commentaire [commentId] de la publication [postId]
+    deleteComment({ commit }, { postId, postIndex, commentId, commentIndex }) {
+      return new Promise((reject) => {
+        fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}/comment/${commentId}`, { method: "DELETE", credentials: "include" })
+          .then((response) => {
+            if (response.ok) {
+              commit('DELETE_COMMENT', { postIndex, commentIndex })
+            } else { response.json().then((error) => { reject(error) }) }
+          })
+          .catch((error) => { reject(error) })
+      })
+    },
+
+    // Créer un nouveau commentaire pour la publication [postId]
     sendComment({ dispatch }, { postId, postIndex, content }) {
       return new Promise((resolve, reject) => {
         fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}/comment`, {
           method: "POST",
           credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ content: content })
         })
           .then((response) => {
             if (response.ok) {
               dispatch('refreshOnePost', { postId, postIndex })
               resolve()
-            } else {
-              response.json().then((error) => {
-                reject(error)
-              });
-            }
+            } else { response.json().then((error) => { reject(error) }) }
           })
-          .catch((error) => {
-            reject(error)
-          });
+          .catch((error) => { reject(error) })
       })
     },
 
+    // Modifie le commentaire [commentId] de la publication [postId]
     updateComment({ dispatch }, { postId, postIndex, commentId, commentContent }) {
       return new Promise((resolve, reject) => {
         fetch(`${process.env.VUE_APP_ROOT_API}api/posts/${postId}/comment/${commentId}`, {
           method: "PUT",
           credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ content: commentContent })
         })
           .then((response) => {
             if (response.ok) {
               dispatch('refreshOnePost', { postId, postIndex })
               resolve()
-            } else {
-              response.json().then((error) => {
-                reject(error)
-              });
-            }
+            } else { response.json().then((error) => { reject(error) }) }
           })
-          .catch((error) => {
-            console.log("Erreur lors du fetch : " + error.message);
-          });
+          .catch((error) => { reject(error) })
       })
-    },
-
-    getMostLikedPics({ commit }) {
-      fetch(`${process.env.VUE_APP_ROOT_API}api/posts/mostlikedpics`, {
-        method: "GET",
-        credentials: "include",
-      }).then((response) => {
-        if (response.ok) {
-          response.json().then((response) => {
-            commit('GET_MOST_LIKED_PICS', response)
-          });
-        }
-      })
-        .catch((error) => {
-          console.log("Erreur lors du fetch : " + error.message);
-        });
     }
-  },
+  }
 })

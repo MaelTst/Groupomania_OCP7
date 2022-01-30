@@ -1,3 +1,4 @@
+<!-- Composant Publication -->
 <template>
   <div>
     <div class="usersPosts mb-6">
@@ -6,16 +7,14 @@
           <router-link aria-label="Profil utilisateur" :to="'/user/'+post.user.id">
             <v-avatar class="rounded-lg" size="42">
               <v-img
-              v-ripple
+                v-ripple
                 :src="post.user.imgUrl || require('../assets/placeholder.png')"
                 alt="Photo de profil"
               />
             </v-avatar>
           </router-link>
           <div class="usersPosts__heading__text">
-            <v-card-title
-              class="text-subtitle-2"
-            >{{ post.user.nickname }}</v-card-title>
+            <v-card-title class="text-subtitle-2">{{ post.user.nickname }}</v-card-title>
             <v-card-subtitle
               :title="$moment(post.createdAt).calendar()"
             >{{ $moment(post.createdAt).subtract(30,'s').fromNow() }}</v-card-subtitle>
@@ -86,6 +85,24 @@
               background-color="bg-light-grey"
             ></v-textarea>
             <div class="d-flex mt-6 justify-end align-center flex-wrap">
+              <div
+                class="rounded-lg d-block d-sm-flex mr-4 overflow-hidden"
+                v-if="post.imgUrl && deleteCurrentImg === false && postFile === undefined"
+              >
+                <v-img height="48" width="48" :src="post.imgUrl" alt="Photo de la publication">
+                  <v-btn
+                    class="usersPosts__content__edit__deleteBtn"
+                    height="48"
+                    width="48"
+                    small
+                    aria-label="Supprimer la photo"
+                    depressed
+                    @click="deleteCurrentImg = true"
+                  >
+                    <v-icon>close</v-icon>
+                  </v-btn>
+                </v-img>
+              </div>
               <v-file-input
                 aria-label="Joindre un fichier"
                 v-model="postFile"
@@ -103,8 +120,8 @@
                 small
                 dark
                 color="secondary"
-                class="ml-3 mb-1"
-                @click="isEditing = false"
+                class="ml-3 my-1"
+                @click="isEditing = false, deleteCurrentImg = false, postFile = undefined"
               >Annuler</v-btn>
               <v-btn
                 depressed
@@ -112,13 +129,13 @@
                 :disabled="loading"
                 small
                 color="primary"
-                class="ml-3 mb-1"
+                class="ml-3 my-1"
                 @click="editPost"
               >Confirmer</v-btn>
             </div>
           </div>
           <v-img
-          v-ripple
+            v-ripple
             v-show="!isEditing"
             class="usersPosts__img rounded-lg mt-6"
             v-if="post.imgUrl"
@@ -172,7 +189,7 @@
             <router-link aria-label="Profil utilisateur" :to="'/user/'+userInfo.id">
               <v-avatar class="rounded-lg d-none d-sm-flex" size="32">
                 <v-img
-                v-ripple
+                  v-ripple
                   :src="userInfo.imgUrl || require('../assets/placeholder.png')"
                   alt="Photo de profil"
                 />
@@ -200,7 +217,14 @@
       </v-card>
     </div>
     <v-overlay :z-index="999" opacity="0.90" :value="fullScreenImg">
-      <v-btn class="d-flex ml-auto overlayBtn mb-1" aria-label="Quitter le mode plein écran" icon @click="fullScreenImg = false"><v-icon>close</v-icon></v-btn>
+      <v-btn
+        class="d-flex ml-auto overlayBtn mb-1"
+        aria-label="Quitter le mode plein écran"
+        icon
+        @click="fullScreenImg = false"
+      >
+        <v-icon>close</v-icon>
+      </v-btn>
       <v-img max-height="90vh" max-width="90vw" contain :src="this.post.imgUrl"></v-img>
     </v-overlay>
     <v-snackbar v-model="snackbar" :timeout="4000" :color="snackbarColor">
@@ -220,12 +244,13 @@ export default {
     fullScreenImg: false,
     isEditing: false,
     editPostContent: "",
-    postFile: null,
+    postFile: undefined,
     commentContent: "",
     snackbar: false,
     snackbarColor: "red darken-3",
     snackbarMsg: "",
     loading: false,
+    deleteCurrentImg: false,
   }),
 
   props: {
@@ -244,29 +269,38 @@ export default {
   },
 
   methods: {
+    // Vérifie la validité du champs [editPostContent] et déclenche l'action "editPost" du store
     editPost() {
-      if (!this.editPostContent.trim() || this.editPostContent.length < 6) {
+      if (this.editPostContent.trim().length < 6) {
         this.snackbarMsg = "Votre message doit comporter au moins 6 caractères";
         this.snackbar = true;
       } else {
         this.loading = true;
         let postId = this.post.id;
-        let postIndex = this.index
+        let postIndex = this.index;
         var formData = new FormData();
         formData.append("content", this.editPostContent);
-        if (this.postFile) { formData.append("image", this.postFile); }
+        if (this.postFile) {
+          formData.append("image", this.postFile);
+        } else {
+          if (this.deleteCurrentImg) {
+            formData.append("imgUrl", true);
+          }
+        }
         this.$store.dispatch("editPost", { formData, postId, postIndex }).then(
           () => {
             this.isEditing = false;
-            this.postFile = null;
+            this.deleteCurrentImg = false;
+            this.postFile = undefined;
             this.loading = false;
-            this.snackbarColor = "primary"
-            this.snackbarMsg = "Post modifié"
-            this.snackbar = true
+            this.snackbarColor = "primary";
+            this.snackbarMsg = "Publication modifiée";
+            this.snackbar = true;
           },
           (error) => {
             this.loading = false;
-            this.snackbarColor = "red darken-3"
+            this.deleteCurrentImg = false;
+            this.snackbarColor = "red darken-3";
             this.snackbarMsg = error.message || "Une erreur est survenue";
             this.snackbar = true;
           }
@@ -275,59 +309,66 @@ export default {
     },
 
     reportPost() {
-      this.snackbarMsg = "Post signalé (placeholder)";
+      this.snackbarMsg = "Publication signalée (placeholder)";
       this.snackbarColor = "primary";
       this.snackbar = true;
     },
 
+    // Déclenche l'action "deletePost" du store
     deletePost() {
       let postId = this.post.id;
       let index = this.index;
-      this.$store.dispatch("deletePost", { postId, index }).then(
-          (error) => {
-            this.loading = false;
-            this.snackbarColor = "red darken-3"
-            this.snackbarMsg = error.message || "Une erreur est survenue";
-            this.snackbar = true;
-          }
-        );
+      this.$store.dispatch("deletePost", { postId, index }).then((error) => {
+        this.loading = false;
+        this.snackbarColor = "red darken-3";
+        this.snackbarMsg = error.message || "Une erreur est survenue";
+        this.snackbar = true;
+      });
     },
 
+    // Déclenche l'action "likePost" du store
     likePost() {
       let postId = this.post.id;
       let postIndex = this.index;
       let currentRoute = this.$route.name;
       let ID = this.$getCookie("ID");
-      this.$store.dispatch("likePost", { postId, postIndex, currentRoute, ID }).then(
-          (error) => {
-            this.loading = false;
-            this.snackbarColor = "red darken-3"
-            this.snackbarMsg = error.message || "Une erreur est survenue";
-            this.snackbar = true;
-          }
-        );
+      this.$store
+        .dispatch("likePost", { postId, postIndex, currentRoute, ID })
+        .then((error) => {
+          this.loading = false;
+          this.snackbarColor = "red darken-3";
+          this.snackbarMsg = error.message || "Une erreur est survenue";
+          this.snackbar = true;
+        });
     },
 
+    // Vérifie la validité du champs [commentContent] et déclenche l'action "sendComment" du store
     sendComment() {
-      if (!this.commentContent.trim() || this.commentContent.length < 6) {
-        this.snackbarMsg = "Votre commentaire doit comporter au moins 6 caractères";
+      if (this.commentContent.trim().length < 6) {
+        this.snackbarMsg =
+          "Votre commentaire doit comporter au moins 6 caractères";
         this.snackbar = true;
       } else {
         let content = this.commentContent;
         let postId = this.post.id;
         let postIndex = this.index;
-        this.$store.dispatch("sendComment", { postId, postIndex, content }).then(
-          () => { this.commentContent = ""; },
-          (error) => {
-            this.loading = false;
-            this.snackbarColor = "red darken-3"
-            this.snackbarMsg = error.message || "Une erreur est survenue";
-            this.snackbar = true;
-          }
-        );
+        this.$store
+          .dispatch("sendComment", { postId, postIndex, content })
+          .then(
+            () => {
+              this.commentContent = "";
+            },
+            (error) => {
+              this.loading = false;
+              this.snackbarColor = "red darken-3";
+              this.snackbarMsg = error.message || "Une erreur est survenue";
+              this.snackbar = true;
+            }
+          );
       }
     },
 
+    // Donne le focus au champs [sendComment{postId}] au clic sur le bouton "Commentaire"
     focusComment(postId) {
       document.getElementById("sendComment" + postId).focus();
     },
@@ -346,6 +387,10 @@ export default {
   }
   &__content {
     white-space: pre-line;
+    &__edit__deleteBtn {
+      background-color: rgba(0, 0, 0, 0.3) !important;
+      color: white !important;
+    }
   }
   &__img {
     cursor: pointer;
@@ -358,6 +403,6 @@ export default {
   }
 }
 .overlayBtn {
-  background-color: rgb(0,0,0,0.2)
+  background-color: rgb(0, 0, 0, 0.2);
 }
 </style>

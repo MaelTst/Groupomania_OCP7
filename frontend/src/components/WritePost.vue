@@ -1,3 +1,4 @@
+<!-- Composant Création de publication -->
 <template>
   <v-form>
     <v-card class="boxShadowed rounded-lg d-flex flex-column flex-sm-row pa-4 mb-3">
@@ -5,7 +6,7 @@
         <router-link aria-label="Profil utilisateur" :to="'/user/'+userInfo.id">
           <v-avatar class="rounded-lg" size="42">
             <v-img
-            v-ripple
+              v-ripple
               :src="userInfo.imgUrl || require('../assets/placeholder.png')"
               alt="Photo de profil"
             />
@@ -78,8 +79,9 @@ export default {
   },
 
   methods: {
+    // Vérifie la validité du formulaire et déclenche l'action "sendPost"
     sendPost() {
-      if (!this.postContent.trim() || this.postContent.length < 6) {
+      if (this.postContent.trim().length < 6) {
         this.snackbarMsg = "Votre message doit comporter au moins 6 caractères";
         this.snackbar = true;
       } else {
@@ -93,8 +95,8 @@ export default {
           () => {
             this.postContent = "";
             if (this.postFile) {
-            this.$store.dispatch("getMostLikedPics")
-            this.postFile = null;
+              this.$store.dispatch("getMostLikedPics");
+              this.postFile = null;
             }
             this.loading = false;
             if (this.$route.name != "Home") {
@@ -103,7 +105,7 @@ export default {
           },
           (error) => {
             this.loading = false;
-            this.snackbarMsg = error.message;
+            this.snackbarMsg = error.message || "Une erreur est survenue";
             this.snackbar = true;
           }
         );

@@ -1,3 +1,4 @@
+<!-- Vue Profil utilisateur -->
 <template>
   <v-col lg="6" md="9" cols="12" class="mt-4">
     <UserProfile :userProfile="userProfile" />
@@ -40,6 +41,7 @@ export default {
   },
 
   watch: {
+    // Met à jour les informations et publications de l'utilisateur ayant pour ID $route.params.id lors d'un changement de route
     "$route.params.id": function () {
       let currentRoute = this.$route.name;
       let ID = this.$getCookie("ID");
@@ -50,6 +52,7 @@ export default {
   },
 
   beforeCreate() {
+    // Récupère les informations et publications de l'utilisateur ayant pour ID $route.params.id
     let currentRoute = this.$route.name;
     let ID = this.$getCookie("ID");
     let userId = this.$route.params.id;

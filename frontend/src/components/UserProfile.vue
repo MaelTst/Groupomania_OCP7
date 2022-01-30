@@ -1,3 +1,4 @@
+<!-- Composant Bannière profil utilisateur -->
 <template>
   <div>
     <v-card class="rounded-lg boxShadowed pa-2 mb-4">
@@ -14,8 +15,6 @@
             />
             <div
               tabindex="0"
-              role="button"
-              aria-label="Modifier l'avatar"
               v-if="userInfo.id === userProfile.id"
               @click="toggleInput('avatarInput')"
               @keydown.enter="toggleInput('avatarInput')"
@@ -146,7 +145,9 @@
           </v-col>
           <v-col cols="4" class="text-right text-sm-center flex-column">
             <v-card-title class="d-block px-0 pt-2">{{ this.$store.state.posts.length }}</v-card-title>
-            <v-card-subtitle class="d-block ellipsis px-0 pb-2">{{ this.$store.state.posts.length > 1 ? "Publications" : "Publication" }}</v-card-subtitle>
+            <v-card-subtitle
+              class="d-block ellipsis px-0 pb-2"
+            >{{ this.$store.state.posts.length > 1 ? "Publications" : "Publication" }}</v-card-subtitle>
           </v-col>
           <v-col sm="4" class="d-none d-sm-flex text-right flex-column">
             <v-card-title class="d-block px-0 pt-2">Inscrit</v-card-title>
@@ -225,6 +226,7 @@ export default {
   },
 
   methods: {
+    // Déclenche l'action "updateUserAvatar" du store
     updateUserAvatar() {
       let formData = new FormData();
       let ID = this.$getCookie("ID");
@@ -248,6 +250,7 @@ export default {
       }
     },
 
+    // Déclenche l'action "updateUserBanner" du store
     updateUserBanner() {
       let formData = new FormData();
       let ID = this.$getCookie("ID");
@@ -275,8 +278,9 @@ export default {
       document.getElementById(form).click();
     },
 
+    // Vérifie la validité de [editUserJob] et déclenche l'action "updateUser" du store
     updateUserJob() {
-      if (!this.editUserJob.trim() || this.editUserJob.length < 2) {
+      if (this.editUserJob.trim().length < 2) {
         this.snackbarColor = "red darken-3";
         this.snackbarMsg = "Votre poste doit comporter au moins 2 caractères";
         this.snackbar = true;
@@ -313,6 +317,7 @@ export default {
       this.snackbarMsg = "Placeholder";
     },
 
+    // déclenche l'action "updateUser" ou "deleteUser" du store en fonction du type de bannissement choisi
     banUser() {
       let ID = this.userProfile.id;
       let isAdminBan = true;
@@ -382,7 +387,6 @@ export default {
         opacity: 0;
         background-color: rgba(0, 0, 0, 0.5);
         color: white;
-        transition: all 0.5;
       }
       &:hover &__btn {
         opacity: 1;

@@ -24,9 +24,11 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
+  // Attribution d'une limite maximale de 10Mb aux fichiers reçus
   limits: {
     fileSize: 10000000
   },
+  // Vérifie que le MIME_TYPES du fichier reçu correspond à l'un des MIME_TYPES acceptés par le dictionnaire défini précédemment
   fileFilter: function (req, file, callback) {
     if (MIME_TYPES[file.mimetype]) {
       callback(null, true);

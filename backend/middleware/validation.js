@@ -33,7 +33,6 @@ exports.post = [
 // Middleware de validation pour la route de modification d'utilisateurs
 exports.updateUser = [
     check('password').optional().isStrongPassword({ minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 0 }),
-    check('nickname').optional().isLength({ min: 6, max: 30 }).isAlphanumeric('fr-FR', { ignore: ' ' }),
     (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {

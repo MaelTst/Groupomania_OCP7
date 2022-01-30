@@ -1,3 +1,4 @@
+<!-- Vue Page d'accueil --> 
 <template>
   <v-col lg="6" md="9" cols="12" class="mt-4">
     <MostLikedPics />
@@ -47,6 +48,7 @@ export default {
   },
 
   watch: {
+    // Met à jour les publications en fonction de $route.name et/ou $route.params.id lors d'un changement de route
     "$route.name": function () {
       let currentRoute = this.$route.name;
       let ID = this.$getCookie("ID");
@@ -63,6 +65,7 @@ export default {
   },
 
   beforeCreate() {
+    // Récupère les publications souhaitées en fonction de $route.name et/ou $route.params.id
     let currentRoute = this.$route.name;
     let ID = this.$getCookie("ID");
     let postId = this.$route.params.id;

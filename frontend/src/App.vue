@@ -1,3 +1,4 @@
+<!-- Racine de l'application -->
 <template>
   <v-app>
     <v-main class="grey lighten-5">
@@ -22,18 +23,23 @@ import Footer from "./components/Footer";
 
 export default {
   name: "App",
+
   components: {
     Header,
     LeftSidebar,
     UsersList,
     Footer,
   },
+
   methods: {
+    // Retourne la valeur du cookie "isLoggedIn"
     isLoggedIn() {
       return this.$getCookie("isLoggedIn");
     },
   },
+
   beforeCreate() {
+    // Actualise les informations de l'utilisateur ayant pour ID la valeur du cookie "ID"
     if (this.$getCookie("isLoggedIn")) {
       this.$store.dispatch("refreshUserInfo", this.$getCookie("ID"));
     }

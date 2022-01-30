@@ -90,6 +90,7 @@ const router = new VueRouter({
   routes
 })
 
+// Attribut le titre de page [meta.title] et vérifie si l'utilisateur peut y acceder (meta.requiresAuth) avant chaque changement de route
 router.beforeEach((to, from, next) => {
   document.title = to.meta.title || "Groupomania"
   if (to.meta.requiresAuth) {

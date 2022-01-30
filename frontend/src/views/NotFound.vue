@@ -1,3 +1,4 @@
+<!-- Vue Erreur 404 not found -->
 <template>
   <v-col lg="6" md="9" cols="12" class="mt-4">
     <v-card class="rounded-lg boxShadowed pa-7 text-center">

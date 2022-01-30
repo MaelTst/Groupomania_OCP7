@@ -1,31 +1,49 @@
+<!-- Composant Inscription / Connexion -->
 <template>
-  <div class="loginForm rounded-lg">
-    <v-tabs background-color="transparent" v-model="tabs" fixed-tabs>
-      <v-tab>Connexion</v-tab>
-      <v-tab>Inscription</v-tab>
+  <v-card class="loginForm rounded-lg boxShadowed">
+    <v-tabs icons-and-text class="pa-2" v-model="tabs" fixed-tabs>
+      <v-tab active-class="loginForm__TabActive1">
+        Connexion
+        <v-icon>login</v-icon>
+      </v-tab>
+      <v-tab active-class="loginForm__TabActive2">
+        Inscription
+        <v-icon>app_registration</v-icon>
+      </v-tab>
     </v-tabs>
-    <v-tabs-items class="loginForm__tabsItem" v-model="tabs">
+    <v-tabs-items v-model="tabs">
       <v-tab-item>
-        <v-card color="transparent" flat class="pa-5">
+        <div class="pa-5 pb-7">
           <v-form ref="formLogin" v-model="validLoginForm" lazy-validation>
             <v-text-field
-              id="emailLogin"
+              autocomplete="off"
+              class="mb-2"
+              prepend-inner-icon="alternate_email"
+              dense
+              rounded
+              background-color="bg-light-grey"
               v-model="emailLogin"
               :rules="emailRules"
               label="E-mail"
-              @click="resetForm('emailLogin', 'E-mail');"
               required
+              filled
+              @keydown.enter="login"
             ></v-text-field>
             <v-text-field
-              id="passwordLogin"
+              class="mb-2"
+              prepend-inner-icon="lock"
+              dense
+              rounded
+              background-color="bg-light-grey"
               v-model="passwordLogin"
-              :append-icon="showPassword ? 'visibility' : 'visibility_off'"
-              :type="showPassword ? 'text' : 'password'"
-              @click:append="showPassword = !showPassword"
+              :append-icon="showLoginPassword ? 'visibility' : 'visibility_off'"
+              :type="showLoginPassword ? 'text' : 'password'"
+              @click:append="showLoginPassword = !showLoginPassword"
               :rules="passwordRules"
               label="Mot de passe"
-              @click="resetForm('passwordLogin', 'Mot de passe');"
               required
+              filled
+              @keydown.enter="login"
             ></v-text-field>
             <v-btn
               :loading="loadingLogin"
@@ -33,38 +51,58 @@
               :disabled="!validLoginForm || loadingLogin"
               color="primary"
               class="mr-4 mt-5"
-              @click="login();"
+              @click="login"
             >Connexion</v-btn>
           </v-form>
-        </v-card>
+        </div>
       </v-tab-item>
-
       <v-tab-item>
-        <v-card color="transparent" flat class="pa-5">
+        <div class="pa-5 pb-7">
           <v-form ref="formSignup" v-model="validSignupForm" lazy-validation>
             <v-text-field
-              id="emailSignup"
+              autocomplete="off"
+              class="mb-2"
+              prepend-inner-icon="alternate_email"
+              dense
+              rounded
+              background-color="bg-light-grey"
               v-model="emailSignup"
               :rules="emailRules"
               label="E-mail"
               required
+              filled
+              @keydown.enter="signup"
             ></v-text-field>
             <v-text-field
-              id="passwordSignup"
+              class="mb-2"
+              prepend-inner-icon="lock"
+              dense
+              rounded
+              background-color="bg-light-grey"
               v-model="passwordSignup"
-              :append-icon="showPassword ? 'visibility' : 'visibility_off'"
-              :type="showPassword ? 'text' : 'password'"
-              @click:append="showPassword = !showPassword"
+              :append-icon="showSignupPassword ? 'visibility' : 'visibility_off'"
+              :type="showSignupPassword ? 'text' : 'password'"
+              @click:append="showSignupPassword = !showSignupPassword"
               :rules="passwordRules"
               label="Mot de passe"
               required
+              filled
+              @keydown.enter="signup"
             ></v-text-field>
             <v-text-field
+              class="mb-2"
+              prepend-inner-icon="person"
+              dense
+              rounded
+              background-color="bg-light-grey"
               v-model="nameSignup"
               :counter="30"
+              maxlength="30"
               :rules="nameRules"
               label="Nom d'affichage"
               required
+              filled
+              @keydown.enter="signup"
             ></v-text-field>
             <v-btn
               block
@@ -72,20 +110,19 @@
               :disabled="!validSignupForm || loadingSignup"
               color="primary"
               class="mr-4 mt-5"
-              @click="signup();"
+              @click="signup"
             >S'inscrire</v-btn>
           </v-form>
-        </v-card>
+        </div>
       </v-tab-item>
     </v-tabs-items>
-
     <v-snackbar v-model="snackbar" :timeout="4000" color="red darken-3">
       {{ snackbarMsg }}
       <template v-slot:action="{ attrs }">
         <v-btn color="white" text v-bind="attrs" @click="snackbar = false">Fermer</v-btn>
       </template>
     </v-snackbar>
-  </div>
+  </v-card>
 </template>
 
 <script>
@@ -99,33 +136,36 @@ export default {
     snackbarMsg: "",
     nameSignup: "",
     nameRules: [
-      (v) => !!v || "Veuillez renseigner votre nom d'affichage",
       (v) =>
-        (v && v.length <= 30) ||
-        "Le nom d'affichage doit contenir moins de 30 caractères",
+        v.trim().length >= 6 ||
+        "Votre nom d'affichage doit contenir au moins 6 caractères",
+      (v) =>
+        /^[A-Za-z0-9àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ\s]+[A-Za-z0-9àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ\s]+$(\.0-9+)?/.test(
+          v
+        ) || "Les caractères spéciaux ne sont pas autorisés",
     ],
     emailSignup: "",
-    emailLogin: "autogenerated3@groupomania.fr",
+    emailLogin: "demo@groupomania.fr",
     emailRules: [
-      (v) => !!v || "Veuillez renseigner votre adresse email",
       (v) => /.+@.+\..+/.test(v) || "L'adresse email doit être valide",
     ],
     passwordSignup: "",
-    passwordLogin: "Test1234",
+    passwordLogin: "DemoAccount1",
     passwordRules: [
-      (v) => !!v || "Veuillez renseigner votre mot de passe",
       (v) =>
-        (v && v.length >= 8) ||
-        "Votre mot de passe doit contenir au moins 8 caractères",
+        /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/.test(v) ||
+        "Votre mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre",
     ],
     tabs: null,
-    showPassword: false,
+    showLoginPassword: false,
+    showSignupPassword: false,
   }),
 
   methods: {
+    // Envoi les données de connexion à l'API et gère les potentielles erreurs retournées
     login() {
       this.$refs.formLogin.validate();
-      if (this.emailLogin && this.passwordLogin) {
+      if (this.validLoginForm && this.emailLogin && this.passwordLogin) {
         this.loadingLogin = true;
         let loginData = {
           email: this.emailLogin,
@@ -134,9 +174,7 @@ export default {
         fetch(`${process.env.VUE_APP_ROOT_API}api/user/auth/login`, {
           method: "POST",
           credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(loginData),
         })
           .then((response) => {
@@ -150,17 +188,17 @@ export default {
                 switch (error.code) {
                   case 1:
                     this.emailLogin = "";
-                    document.querySelector("label[for=emailLogin]").innerHTML =
-                      error.message;
+                    this.snackbarMsg = error.message;
+                    this.snackbar = true;
                     break;
                   case 2:
                     this.passwordLogin = "";
-                    document.querySelector(
-                      "label[for=passwordLogin]"
-                    ).innerHTML = error.message;
+                    this.snackbarMsg = error.message;
+                    this.snackbar = true;
                     break;
                   default:
-                    this.snackbarMsg = error.message;
+                    this.snackbarMsg =
+                      error.message || "Une erreur est survenue";
                     this.snackbar = true;
                     break;
                 }
@@ -169,16 +207,22 @@ export default {
             this.loadingLogin = false;
           })
           .catch((error) => {
-            this.snackbarMsg = error.message;
+            this.snackbarMsg = error.message || "Une erreur est survenue";
             this.snackbar = true;
             this.loadingLogin = false;
           });
       }
     },
 
+    // Envoi les données d'inscription à l'API et gère les potentielles erreurs retournées
     signup() {
       this.$refs.formSignup.validate();
-      if (this.emailSignup && this.passwordSignup && this.nameSignup) {
+      if (
+        this.validSignupForm &&
+        this.emailSignup &&
+        this.passwordSignup &&
+        this.nameSignup
+      ) {
         this.loadingSignup = true;
         let signupData = {
           email: this.emailSignup,
@@ -188,9 +232,7 @@ export default {
         fetch(`${process.env.VUE_APP_ROOT_API}api/user/auth/signup`, {
           method: "POST",
           credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(signupData),
         })
           .then((response) => {
@@ -201,33 +243,39 @@ export default {
               });
             } else {
               response.json().then((error) => {
-                if (error.code) {
-                  if (error.code.includes("1")) {
-                    console.log("code 1");
+                if (error.error.original.constraint) {
+                  switch (error.error.original.constraint) {
+                    case "users_nickname_key":
+                      this.nameSignup = "";
+                      this.snackbarMsg = "Ce nom d'affichage est déjà utilisé";
+                      this.snackbar = true;
+                      break;
+                    case "users_email_key":
+                      this.emailSignup = "";
+                      this.snackbarMsg =
+                        "Cette adresse email est déjà utilisée";
+                      this.snackbar = true;
+                      break;
+                    default:
+                      this.snackbarMsg = "Une erreur est survenue";
+                      this.snackbar = true;
+                      break;
                   }
-                  if (error.code.includes("2")) {
-                    console.log("code 2");
-                  }
-                  if (error.code.includes("3")) {
-                    console.log("code 3");
-                  }
+                } else {
+                  this.snackbarMsg = error.message || "Une erreur est survenue";
+                  this.snackbar = true;
+                  this.loadingLogin = false;
                 }
-                console.log(error); // GESTION ERREURS A TERMINER
               });
             }
             this.loadingSignup = false;
           })
           .catch((error) => {
-            console.log("Erreur lors du fetch : " + error.message);
-            this.snackbarMsg = error.message;
+            this.snackbarMsg = error.message || "Une erreur est survenue";
             this.snackbar = true;
             this.loadingSignup = false;
           });
       }
-    },
-
-    resetForm(input, text) {
-      document.querySelector(`label[for=${input}]`).innerHTML = text;
     },
   },
 };
@@ -237,8 +285,22 @@ export default {
 .loginForm {
   max-width: 420px;
   margin: auto;
-  &__tabsItem {
-    background-color: transparent !important;
+  &__TabActive1 {
+    border-top-left-radius: 8px;
+    &:before {
+      border-top-left-radius: 8px;
+      opacity: 0.14 !important;
+    }
   }
+  &__TabActive2 {
+    border-top-right-radius: 8px;
+    &:before {
+      border-top-right-radius: 8px;
+      opacity: 0.14 !important;
+    }
+  }
+}
+.v-text-field--rounded {
+  border-radius: 4px !important;
 }
 </style>

@@ -41,7 +41,7 @@ exports.getAll = (req, res, next) => {
         .catch(error => res.status(400).json({ error }));
 }
 
-// Controlleur pour la route GET /api/posts/user/:id - Affichage des posts d'un utilisateurs
+// Controlleur pour la route GET /api/posts/user/:id - Affichage des posts d'un utilisateur
 exports.getUserPost = (req, res, next) => {
     db.posts.findAll({
         where: { userId: req.params.id },
@@ -173,8 +173,8 @@ exports.updatePost = (req, res, next) => {
             })
                 .then(post => {
                     if (post.user.userId === req.token.userId || userFrom.isAdmin === true) {
-                        if (req.file) {
-                            var imgUrl = `${process.env.API_URL}/images/${req.file.filename}`
+                        if (req.file || req.body.imgUrl) {
+                            var imgUrl = req.body.imgUrl ? null : `${process.env.API_URL}/images/${req.file.filename}`
                             if (post.imgUrl) {
                                 let file = post.imgUrl.split('/images/')[1]
                                 fs.unlink(`img/${file}`, (err) => {

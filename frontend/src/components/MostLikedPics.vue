@@ -1,3 +1,4 @@
+<!-- Composant Images les plus likées -->
 <template>
   <div class="d-none d-sm-flex justify-space-between mb-6">
     <v-card
@@ -26,8 +27,6 @@
 
 <script>
 export default {
-  data: () => ({}),
-
   computed: {
     Pics() {
       return this.$store.state.mostLikedPics;

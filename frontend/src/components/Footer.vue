@@ -1,3 +1,4 @@
+<!-- Composant Footer -->
 <template>
   <footer class="footer py-6">
     <div class="footer__content px-4 d-flex justify-space-between align-center">

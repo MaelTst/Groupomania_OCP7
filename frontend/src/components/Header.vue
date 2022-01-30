@@ -1,3 +1,4 @@
+<!-- Composant Header -->
 <template>
   <div class="py-4 header">
     <div class="header__content px-4">
@@ -9,7 +10,6 @@
             contain
             :src="require('../assets/logo_blue_rounded.png')"
             transition="scale-transition"
-            origin="center center"
             width="42"
           />
           <v-img
@@ -18,7 +18,6 @@
             contain
             :src="require('../assets/logo_blue_text.png')"
             transition="scale-transition"
-            origin="center center"
             width="100"
           />
         </div>
@@ -27,18 +26,18 @@
         <v-autocomplete
           :items="items"
           color="blue-grey lighten-2"
-          placeholder="Chercher un utilisateur"
+          placeholder="Commencez à taper..."
           hide-details
           hide-selected
           :search-input.sync="search"
-          @click="items = []"
+          @click="items = [], noData = true"
           :menu-props="{ closeOnContentClick: true, transition: 'slide-y-transition', rounded: true}"
           class="rounded-lg mr-6"
           dense
           flat
           solo
           append-icon
-          hide-no-data
+          :hide-no-data="noData"
           no-data-text="Aucun résultat"
           background-color="bg-light-grey"
           label="Chercher un utilisateur"
@@ -50,9 +49,7 @@
               <v-list-item-avatar class="rounded-lg">
                 <v-img :src="data.item.imgUrl || require('../assets/placeholder.png')"></v-img>
               </v-list-item-avatar>
-              <v-list-item-content
-                class="text-subtitle-2"
-              >{{ data.item.nickname }}</v-list-item-content>
+              <v-list-item-content class="text-subtitle-2">{{ data.item.nickname }}</v-list-item-content>
             </v-list-item>
           </template>
           <template v-slot:selection></template>
@@ -60,7 +57,7 @@
         <router-link aria-label="Profil utilisateur" :to="'/user/'+user.id">
           <v-avatar class="rounded-lg d-none d-md-flex" size="42">
             <v-img
-            v-ripple
+              v-ripple
               :src="user.imgUrl || require('../assets/placeholder.png')"
               alt="Photo de profil"
             />
@@ -73,48 +70,42 @@
         ></v-app-bar-nav-icon>
         <v-navigation-drawer v-model="drawer" fixed temporary>
           <v-list nav>
-            <v-list-item-group>
-              <v-list-item color="primary" to="/" class="pl-8 pa-1">
-                <v-list-item-icon>
-                  <v-icon>home</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content class="text-subtitle-2">Accueil</v-list-item-content>
-              </v-list-item>
-              <v-list-item color="primary" to="/favorites" class="pl-8 pa-1">
-                <v-list-item-icon>
-                  <v-icon>star</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content class="text-subtitle-2">Favoris</v-list-item-content>
-              </v-list-item>
-              <v-list-item color="primary" to="/pictures" class="pl-8 pa-1">
-                <v-list-item-icon>
-                  <v-icon>panorama</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content class="text-subtitle-2">Photos</v-list-item-content>
-              </v-list-item>
-              <v-list-item color="primary" :to="'/user/'+user.id" class="pl-8 pa-1">
-                <v-list-item-icon>
-                  <v-icon>person</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content class="text-subtitle-2">Profil</v-list-item-content>
-              </v-list-item>
-              <v-list-item color="primary" to="/settings" class="pl-8 pa-1">
-                <v-list-item-icon>
-                  <v-icon>settings</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content
-                  class="text-subtitle-2"
-                >Paramètres</v-list-item-content>
-              </v-list-item>
-              <v-list-item color="primary" class="pl-8 pa-1" @click="logOut()">
-                <v-list-item-icon>
-                  <v-icon>logout</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content
-                  class="text-subtitle-2"
-                >Deconnexion</v-list-item-content>
-              </v-list-item>
-            </v-list-item-group>
+            <v-list-item color="primary" to="/" class="pl-8 pa-1">
+              <v-list-item-icon>
+                <v-icon>home</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content class="text-subtitle-2">Accueil</v-list-item-content>
+            </v-list-item>
+            <v-list-item color="primary" to="/favorites" class="pl-8 pa-1">
+              <v-list-item-icon>
+                <v-icon>star</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content class="text-subtitle-2">Favoris</v-list-item-content>
+            </v-list-item>
+            <v-list-item color="primary" to="/pictures" class="pl-8 pa-1">
+              <v-list-item-icon>
+                <v-icon>panorama</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content class="text-subtitle-2">Photos</v-list-item-content>
+            </v-list-item>
+            <v-list-item color="primary" :to="'/user/'+user.id" class="pl-8 pa-1">
+              <v-list-item-icon>
+                <v-icon>person</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content class="text-subtitle-2">Profil</v-list-item-content>
+            </v-list-item>
+            <v-list-item color="primary" to="/settings" class="pl-8 pa-1">
+              <v-list-item-icon>
+                <v-icon>settings</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content class="text-subtitle-2">Paramètres</v-list-item-content>
+            </v-list-item>
+            <v-list-item color="primary" class="pl-8 pa-1" @click="logOut()">
+              <v-list-item-icon>
+                <v-icon>logout</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content class="text-subtitle-2">Deconnexion</v-list-item-content>
+            </v-list-item>
           </v-list>
         </v-navigation-drawer>
       </div>
@@ -127,6 +118,7 @@ export default {
   data: () => ({
     drawer: false,
     search: null,
+    noData: true,
     items: [],
   }),
 
@@ -136,6 +128,7 @@ export default {
       this.$store.dispatch("logOut");
     },
 
+    // Attribue à [this.items] les 5 premiers utilisateurs pouvant correspondre à la recherche [value]
     searchBarFilter(value) {
       this.items = this.users
         .filter(function (item) {
@@ -155,8 +148,10 @@ export default {
   },
 
   watch: {
+    // Appel searchBarFilter() à chaque modification de [val] (search-input.sync="search")
     search(val) {
-      let value = val || ""
+      let value = val || "";
+      this.noData = false;
       this.searchBarFilter(value);
     },
   },

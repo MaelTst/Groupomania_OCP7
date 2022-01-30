@@ -1,3 +1,4 @@
+<!-- Composant Liste des utilisateurs -->
 <template>
   <v-col cols="3" class="mt-4 d-none d-lg-block" id="rightSidebar">
     <div class="usersList">
@@ -18,9 +19,7 @@
                     alt="Photo de profil"
                   />
                 </v-list-item-avatar>
-                <v-list-item-content
-                  class="text-subtitle-2"
-                >{{ user.nickname }}</v-list-item-content>
+                <v-list-item-content class="text-subtitle-2">{{ user.nickname }}</v-list-item-content>
               </v-list-item>
               <v-menu
                 :attach="'#userMenu'+user.id"
@@ -147,6 +146,7 @@ export default {
   },
 
   methods: {
+    // Ajuste la hauteur de l'élement en fonction du scroll afin de tenir compte du header
     UsersListdynamicHeight() {
       let scrollPos = document.documentElement.scrollTop - 91;
       if (scrollPos > 0) {
@@ -163,6 +163,7 @@ export default {
       this.snackbarMsg = "Placeholder";
     },
 
+    // déclenche l'action "updateUser" ou "deleteUser" du store en fonction du type de bannissement choisi
     banUser() {
       let ID = this.banUserInfo.id;
       let isAdminBan = true;
