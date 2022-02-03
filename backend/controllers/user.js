@@ -3,13 +3,15 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const { Op } = require("sequelize");
+const CryptoJS = require("crypto-js");
 
 // Controlleur pour la route POST /api/user/auth/signup - Création d'un utilisateur
 exports.signup = (req, res, next) => {
+    let emailHash = CryptoJS.SHA256(req.body.email).toString();
     bcrypt.hash(req.body.password, 10)
         .then(hash => {
             db.users.create({
-                email: req.body.email,
+                email: emailHash,
                 password: hash,
                 nickname: req.body.nickname
             })
@@ -36,7 +38,7 @@ exports.signup = (req, res, next) => {
                             domain: process.env.SITE_DOMAIN,
                             expires: new Date(Date.now() + 8 * 3600000)
                         })
-                        .json({ id: user.id, createdAt: user.createdAt, email: user.email, userId: user.userId, imgUrl: user.imgUrl, job: user.job, isAdmin: user.isAdmin, nickname: user.nickname });
+                        .json({ id: user.id, createdAt: user.createdAt, userId: user.userId, imgUrl: user.imgUrl, job: user.job, isAdmin: user.isAdmin, nickname: user.nickname });
                 })
                 .catch(error => res.status(400).json({ error }))
         })
@@ -45,7 +47,8 @@ exports.signup = (req, res, next) => {
 
 // Controlleur pour la route POST /api/user/auth/login - Connexion d'un utilisateur
 exports.login = (req, res, next) => {
-    db.users.findOne({ where: { email: req.body.email } })
+    let emailHash = CryptoJS.SHA256(req.body.email).toString();
+    db.users.findOne({ where: { email: emailHash } })
         .then(user => {
             if (!user) {
                 return res.status(401).json({ code: 1, message: "Cet utilisateur n'existe pas" });
@@ -78,7 +81,7 @@ exports.login = (req, res, next) => {
                             domain: process.env.SITE_DOMAIN,
                             expires: new Date(Date.now() + 8 * 3600000)
                         })
-                        .json({ id: user.id, createdAt: user.createdAt, email: user.email, userId: user.userId, imgUrl: user.imgUrl, job: user.job, isAdmin: user.isAdmin, nickname: user.nickname });
+                        .json({ id: user.id, createdAt: user.createdAt, userId: user.userId, imgUrl: user.imgUrl, job: user.job, isAdmin: user.isAdmin, nickname: user.nickname });
                 })
                 .catch(error => res.status(500).json({ error }))
         })
@@ -118,10 +121,10 @@ exports.getAll = (req, res, next) => {
 // Controlleur pour la route GET /api/user/:id - Affichage d'un utilisateur
 exports.getOne = (req, res, next) => {
     db.users.findByPk(req.params.id, {
-        attributes: ['userId', 'id', 'nickname', 'email', 'imgUrl', 'bannerUrl', 'job', 'isAdmin', 'loggedIn', 'createdAt', 'updatedAt']
+        attributes: ['userId', 'id', 'nickname', 'imgUrl', 'bannerUrl', 'job', 'isAdmin', 'loggedIn', 'createdAt', 'updatedAt']
     })
         .then(user => {
-            if (user.userId === req.token.userId) { res.status(200).json({ id: user.id, nickname: user.nickname, email: user.email, imgUrl: user.imgUrl, bannerUrl: user.bannerUrl, job: user.job, isAdmin: user.isAdmin, loggedIn: user.loggedIn, createdAt: user.createdAt, updatedAt: user.updatedAt }) }
+            if (user.userId === req.token.userId) { res.status(200).json({ id: user.id, nickname: user.nickname, imgUrl: user.imgUrl, bannerUrl: user.bannerUrl, job: user.job, isAdmin: user.isAdmin, loggedIn: user.loggedIn, createdAt: user.createdAt, updatedAt: user.updatedAt }) }
             else { res.status(200).json({ nickname: user.nickname, imgUrl: user.imgUrl, bannerUrl: user.bannerUrl, job: user.job, id: user.id, loggedIn: user.loggedIn, isAdmin: user.isAdmin, createdAt: user.createdAt }) }
         })
         .catch(error => res.status(404).json({ error }))

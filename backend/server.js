@@ -2,6 +2,7 @@ const http = require('http');
 const app = require('./app');
 const db = require("./models");
 const bcrypt = require('bcrypt');
+const CryptoJS = require("crypto-js");
 
 // Verifie que la valeur passée est un Int positif et le return, sinon return False
 const normalizePort = val => {
@@ -51,14 +52,13 @@ server.on('listening', () => {
       console.log('Listening on ' + bind);
       db.users.findOne({ where: { isAdmin: true } })
         .then(user => {
-          if (user) {
-            console.log(`\nCompte administrateur existant : ${user.email}`);
-          } else {
+          if (!user) {
             console.log("\nAucun compte administrateur détécté\n");
             bcrypt.hash(process.env.ADMIN_PASSWORD, 10)
               .then(hash => {
+                let emailHash = CryptoJS.SHA256(process.env.ADMIN_EMAIL).toString();
                 db.users.create({
-                  email: process.env.ADMIN_EMAIL,
+                  email: emailHash,
                   password: hash,
                   nickname: "SuperAdmin",
                   isAdmin: true

@@ -243,7 +243,7 @@ export default {
               });
             } else {
               response.json().then((error) => {
-                if (error.error.original.constraint) {
+                if ("error" in error) {
                   switch (error.error.original.constraint) {
                     case "users_nickname_key":
                       this.nameSignup = "";

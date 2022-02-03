@@ -5,10 +5,6 @@
       <v-card-title class="pa-0 pb-6">
         <v-icon class="mr-3" size="32">settings</v-icon>Paramètres du compte
       </v-card-title>
-      <div class="d-flex flex-row align-center">
-        <v-card-subtitle class="flex-grow-1 py-3">Email du compte</v-card-subtitle>
-        <span class="ellipsis">{{ userInfo.email }}</span>
-      </div>
       <v-divider></v-divider>
       <div class="d-flex flex-row align-center">
         <v-card-subtitle class="flex-grow-1 py-3">Mot de passe</v-card-subtitle>
@@ -131,7 +127,7 @@ export default {
     passwordRules: [
       (v) => !!v || "Veuillez renseigner votre nouveau mot de passe",
       (v) =>
-        /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9]{8,}$/.test(v) ||
+        /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/.test(v) ||
         "Votre mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre",
     ],
   }),

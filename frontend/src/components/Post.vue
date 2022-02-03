@@ -345,6 +345,7 @@ export default {
     // Vérifie la validité du champs [commentContent] et déclenche l'action "sendComment" du store
     sendComment() {
       if (this.commentContent.trim().length < 6) {
+        this.snackbarColor = "red darken-3";
         this.snackbarMsg =
           "Votre commentaire doit comporter au moins 6 caractères";
         this.snackbar = true;
